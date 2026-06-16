@@ -3,6 +3,7 @@
 // presentation — each wheel just animates to a bucket we already know the
 // answer for. Reveal order is UX only, not the correlation structure.
 import { CONTINENTS, countriesIn } from '../data';
+import { desirabilityColor } from './desirability';
 import type { Seg } from './Wheel';
 
 export type StageId = 'continent' | 'country' | 'wealth' | 'height' | 'iq' | 'looks' | 'life';
@@ -21,20 +22,12 @@ export type StageView = {
 const flagEmoji = (code: string) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 
-// brighten/darken a hex colour by amt (-1..1)
-function tint(hex: string, amt: number) {
-  const n = parseInt(hex.slice(1), 16);
-  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-  const f = (x: number) => Math.max(0, Math.min(255, Math.round(x + 255 * amt)));
-  return `rgb(${f(r)},${f(g)},${f(b)})`;
-}
-
 type Bucket = { label: string; max: number };
 
-// A stat wheel: equal slices, low buckets dark -> high buckets bright, landing
-// on the bucket that contains the rolled value.
+// A stat wheel: equal slices coloured by desirability (low buckets bad/crimson
+// -> high buckets good/emerald), landing on the bucket holding the rolled value.
 function statStage(
-  title: string, color: string, buckets: Bucket[],
+  title: string, buckets: Bucket[],
   value: number, result: string, durationMs = 1300,
 ): StageView {
   let targetIndex = buckets.findIndex((b) => value < b.max);
@@ -43,7 +36,7 @@ function statStage(
   const segments: Seg[] = buckets.map((b, i) => ({
     label: b.label,
     frac: 1 / n,
-    color: tint(color, -0.2 + (0.4 * i) / (n - 1)),
+    color: desirabilityColor(i / (n - 1)),
   }));
   return { segments, targetIndex, title, result, durationMs };
 }
@@ -72,25 +65,25 @@ const LIFE_BUCKETS: Bucket[] = [
 export function buildStage(id: StageId, life: any): StageView {
   switch (id) {
     case 'continent': {
-      const segments = CONTINENTS.map((c) => ({ label: c.name, frac: c.frac, color: c.color }));
+      const segments = CONTINENTS.map((c) => ({ label: c.name, frac: c.frac, color: desirabilityColor(c.desir) }));
       const targetIndex = CONTINENTS.findIndex((c) => c.name === life.continent);
       return { segments, targetIndex, title: 'CONTINENT', result: life.continent, durationMs: 1900 };
     }
     case 'country': {
       const list = countriesIn(life.continent);
-      const segments = list.map((c) => ({ label: c.name, frac: c.frac, color: c.color, flag: flagEmoji(c.code) }));
+      const segments = list.map((c) => ({ label: c.name, frac: c.frac, color: desirabilityColor(c.desir), flag: flagEmoji(c.code) }));
       const targetIndex = list.findIndex((c) => c.code === life.code);
       return { segments, targetIndex, title: 'COUNTRY', result: `${life.flag}\n${life.country}`, durationMs: 2100 };
     }
     case 'wealth':
-      return statStage('NET WORTH', '#f5a623', WEALTH_BUCKETS, life.netWorth, life.netWorthLabel);
+      return statStage('NET WORTH', WEALTH_BUCKETS, life.netWorth, life.netWorthLabel);
     case 'height':
-      return statStage('HEIGHT', '#51cf66', HEIGHT_BUCKETS, life.heightCm, life.heightLabel);
+      return statStage('HEIGHT', HEIGHT_BUCKETS, life.heightCm, life.heightLabel);
     case 'iq':
-      return statStage('IQ', '#4dabf7', IQ_BUCKETS, life.iq, String(life.iq));
+      return statStage('IQ', IQ_BUCKETS, life.iq, String(life.iq));
     case 'looks':
-      return statStage('LOOKS', '#f06595', LOOKS_BUCKETS, life.looks, life.looks.toFixed(1));
+      return statStage('LOOKS', LOOKS_BUCKETS, life.looks, life.looks.toFixed(1));
     case 'life':
-      return statStage('LIVES TO', '#ff6b6b', LIFE_BUCKETS, life.age, String(life.age));
+      return statStage('LIVES TO', LIFE_BUCKETS, life.age, String(life.age));
   }
 }
