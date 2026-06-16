@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Wheel, type Seg } from './Wheel';
 import { Card } from './Card';
 import { roller, CONTINENTS } from '../data';
+import { desirabilityColor } from './desirability';
 import { REVEAL_ORDER, buildStage, type StageView } from './revealStages';
 
 type Phase = 'idle' | 'spinning' | 'landed' | 'reveal';
@@ -10,7 +11,7 @@ type Phase = 'idle' | 'spinning' | 'landed' | 'reveal';
 const HOLD_MS = 600;
 
 // populated wheel shown before the first spin
-const IDLE_SEGS: Seg[] = CONTINENTS.map((c) => ({ label: c.name, frac: c.frac, color: c.color }));
+const IDLE_SEGS: Seg[] = CONTINENTS.map((c) => ({ label: c.name, frac: c.frac, color: desirabilityColor(c.desir) }));
 
 export function SpinScreen({
   spins, onSpend, onLife,
@@ -72,7 +73,6 @@ export function SpinScreen({
   }
 
   const busy = phase === 'spinning' || phase === 'landed';
-  const progress = busy ? `${stageIdx + 1} / ${REVEAL_ORDER.length}` : '';
   const segments: Seg[] = view ? view.segments : IDLE_SEGS;
 
   return (
@@ -86,7 +86,11 @@ export function SpinScreen({
         onSettled={onSettled}
         centerLabel={center}
       />
-      <div className="stage-progress">{progress}</div>
+      <div className="stage-progress">
+        {(busy || phase === 'reveal') && REVEAL_ORDER.map((_, i) => (
+          <span key={i} className={'dot' + (i < stageIdx || phase === 'reveal' ? ' done' : i === stageIdx ? ' active' : '')} />
+        ))}
+      </div>
       <button className="spin-btn" onClick={spin} disabled={busy || spins <= 0}>
         {busy ? 'Spinning…' : phase === 'reveal' ? 'Again?' : spins <= 0 ? 'Out of spins' : 'Spin'}
       </button>

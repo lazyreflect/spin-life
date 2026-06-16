@@ -79,9 +79,15 @@ export function wealthClass(rank) {
   const labels = ['lower class', 'working class', 'middle class', 'upper-middle class', 'upper class', 'the elite'];
   return labels[clamp(Math.floor(rank * 6), 0, 5)];
 }
+const article = (word) => (/^[aeiou]/i.test(word) ? 'an' : 'a');
+const classPhrase = (label) => (label.startsWith('the') ? label : `the ${label}`);
 export function buildSentence(life) {
-  const sex = life.sex === 'Female' ? 'female' : 'male';
-  return `You are born as ${life.name}, a ${life.heightLabel} ${sex} in ${life.flag} ${life.country}, ` +
-    `with family net worth of ${money(life.familyWealth)}, a ${life.iq} IQ, expected to live to ${life.age}, ` +
-    `and a ${life.looks.toFixed(1)} looks rating.`;
+  const job = (life.career?.title || 'nobody').toLowerCase();
+  const work = `became ${article(job)} ${job}`;
+  const delta = life.mobilityDelta ?? 0;
+  const end =
+    delta > 4 ? `climbed to ${classPhrase(life.classFinal)} and died at ${life.age}` :
+    delta < -4 ? `slid to ${classPhrase(life.classFinal)} and died at ${life.age}` :
+    `died at ${life.age}, still ${classPhrase(life.classFinal)}`;
+  return `Born into ${classPhrase(life.classOrigin)} in ${life.flag} ${life.country}, ${work}, ${end}.`;
 }
