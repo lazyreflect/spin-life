@@ -55,7 +55,7 @@ export function rollCareer(life, country, careers) {
     // education match: people gravitate to jobs that use their schooling, so the
     // heavily over-qualified (e.g. a postgrad barber) are rare. Gap of 0-1 is free.
     const gap = Math.max(0, tier - eduRank(c.minEducation) - 1);
-    w *= Math.exp(-(gap * gap) / 4);
+    w *= Math.exp(-(gap * gap) / 2.5);
     if (c.prestige === 'rare') w *= 0.5;
     if (c.prestige === 'legendary') w *= 0.12;
     return w;
