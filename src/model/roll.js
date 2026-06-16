@@ -22,7 +22,7 @@ const W_CAREER = 0.55; // career's share of the destination-wealth signal
 // high-income professional cannot end up destitute.
 const CAREER_RANGE = {
   low: [0.00, 0.45], lowmid: [0.02, 0.58], mid: [0.10, 0.72],
-  highmid: [0.22, 0.86], high: [0.38, 0.96], elite: [0.55, 1.0],
+  highmid: [0.35, 0.86], high: [0.55, 0.96], elite: [0.70, 1.0],
 };
 
 export function makeRoller({ countries, params, names, careers }) {
