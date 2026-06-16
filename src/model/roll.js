@@ -31,9 +31,10 @@ export function makeRoller({ countries, params, names, careers }) {
     return { education, career };
   }
 
-  // calibrate childRaw mean + spread once (now includes the career-income premium)
-  let mu = 0.5, sd = 0.2;
-  { const N = 30000, vals = new Array(N);
+  // calibrate childRaw mean + spread once (now includes the career-income
+  // premium), plus the spread of the parent->child rank jump (for arc rarity)
+  let mu = 0.5, sd = 0.2, jumpSd = 0.2;
+  { const N = 30000, vals = new Array(N), par = new Array(N);
     for (let i = 0; i < N; i++) {
       const c = countries[sampleCumulative(cum, totalBirths)];
       const male = Math.random() < params.sexMaleProb;
@@ -41,11 +42,13 @@ export function makeRoller({ countries, params, names, careers }) {
       const parentRank = normCdf(z[0]);
       const beta = betaOf(c.wealthGini);
       const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
+      par[i] = parentRank;
       vals[i] = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + M.luckSd * randn();
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
-    let s = 0; for (const v of vals) s += (v - mu) ** 2;
-    sd = Math.sqrt(s / N);
+    let s = 0; for (const v of vals) s += (v - mu) ** 2; sd = Math.sqrt(s / N);
+    let j = 0; for (let i = 0; i < N; i++) { const cr = normCdf((vals[i] - mu) / sd); j += (cr - par[i]) ** 2; }
+    jumpSd = Math.sqrt(j / N);
   }
 
   function rollLife() {
@@ -95,9 +98,11 @@ export function makeRoller({ countries, params, names, careers }) {
     };
     life.countryChance = (country.births / totalBirths) * 100;
 
-    // rarity = 1 / sqrt(product of marginal probabilities)  (v1; joint version later)
+    // rarity = 1 / sqrt(product of marginal probabilities) + mobility-arc axis,
+    // so a big rank jump/fall is rare even when the marginal stats are ordinary.
     const p = (x) => clamp(x / 100, 1e-6, 1);
-    const prod = p(life.pct.money) * p(life.pct.iq) * p(life.pct.height) * p(life.pct.life) * p(life.pct.looks);
+    const arcP = clamp(2 * (1 - normCdf(Math.abs(childRank - parentRank) / jumpSd)), 1e-4, 1);
+    const prod = p(life.pct.money) * p(life.pct.iq) * p(life.pct.height) * p(life.pct.life) * p(life.pct.looks) * arcP;
     life.rarity = 1 / Math.sqrt(prod);
     life.rarityLabel = rarityText(life.rarity);
 
