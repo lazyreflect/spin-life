@@ -1,0 +1,39 @@
+{
+  "_note": "Calibrated trait-model parameters (locked via sim/simulate.mjs, N=200k). See DESIGN.md §math.",
+  "sexMaleProb": 0.512,
+  "iqSd": 15,
+  "heightSdM": 7.5,
+  "heightSdF": 6.7,
+  "looksMean": 5.0,
+  "looksSd": 2.0,
+  "mobility": {
+    "betaBase": 0.25,
+    "betaPerGini": 0.006,
+    "betaMin": 0.20,
+    "betaMax": 0.60,
+    "wIqIncome": 0.065,
+    "wLooksIncome": 0.022,
+    "wHeightIncome": 0.010,
+    "luckSd": 0.26
+  },
+  "lifespan": {
+    "iqLifeYrsPerSd": 1.05,
+    "wealthLifeRich": 7,
+    "wealthLifePoor": 5
+  },
+  "endowmentCorr": {
+    "order": ["famWealth", "iq", "height", "looks"],
+    "male": [
+      [1.00, 0.15, 0.05, 0.05],
+      [0.15, 1.00, 0.10, 0.03],
+      [0.05, 0.10, 1.00, 0.20],
+      [0.05, 0.03, 0.20, 1.00]
+    ],
+    "female": [
+      [1.00, 0.15, 0.05, 0.05],
+      [0.15, 1.00, 0.10, 0.03],
+      [0.05, 0.10, 1.00, 0.10],
+      [0.05, 0.03, 0.10, 1.00]
+    ]
+  }
+}
