@@ -25,8 +25,8 @@ const W_CAREER = 0.55; // career's share of the destination-wealth signal
 // (high) or business ownership (elite) — a salaried highmid role (nurse,
 // accountant, civil servant, scientist) tops out at "upper", never elite.
 const CAREER_RANGE = {
-  low: [0.00, 0.45], lowmid: [0.02, 0.58], mid: [0.10, 0.66],
-  highmid: [0.35, 0.82], high: [0.55, 0.96], elite: [0.70, 1.0],
+  low: [0.00, 0.40], lowmid: [0.06, 0.55], mid: [0.20, 0.66],
+  highmid: [0.40, 0.82], high: [0.58, 0.96], elite: [0.72, 1.0],
 };
 
 export function makeRoller({ countries, params, names, careers }) {
