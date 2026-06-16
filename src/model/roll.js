@@ -19,7 +19,8 @@ const INCOME_PREMIUM = { low: -0.10, lowmid: -0.05, mid: 0.0, highmid: 0.08, hig
 // IQ-65 holding upper-mid) the career signal alone misses.
 const EDU_RANK = { none: 0, primary: 1, secondary: 2, vocational: 3, bachelor: 4, postgrad: 5 };
 const WHC = 0.10;
-const hcTerm = (zIq, education) => WHC * (0.6 * zIq + 0.4 * ((EDU_RANK[education] - 2.5) / 2.5));
+// IQ + education + a smaller looks (beauty premium) buffer against large drops
+const hcTerm = (zIq, zLooks, education) => WHC * (0.5 * zIq + 0.15 * zLooks + 0.35 * ((EDU_RANK[education] - 2.5) / 2.5));
 
 export function makeRoller({ countries, params, names, careers }) {
   const totalBirths = countries.reduce((a, c) => a + c.births, 0);
@@ -50,7 +51,7 @@ export function makeRoller({ countries, params, names, careers }) {
       const beta = betaOf(c.wealthGini);
       const { education, career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
       par[i] = parentRank;
-      vals[i] = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + hcTerm(z[1], education) + M.luckSd * randn();
+      vals[i] = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + hcTerm(z[1], z[3], education) + M.luckSd * randn();
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
     let s = 0; for (const v of vals) s += (v - mu) ** 2; sd = Math.sqrt(s / N);
@@ -73,7 +74,7 @@ export function makeRoller({ countries, params, names, careers }) {
 
     // education + career first: career income drives destination wealth
     const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
-    const childRaw = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + hcTerm(zIq, education) + M.luckSd * randn();
+    const childRaw = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + hcTerm(zIq, zLk, education) + M.luckSd * randn();
     const childRank = clamp(normCdf((childRaw - mu) / sd), 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);

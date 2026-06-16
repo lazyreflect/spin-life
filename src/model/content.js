@@ -50,12 +50,19 @@ export function rollCareer(life, country, careers) {
   const weights = pool.map((c) => {
     let w = Math.max(0.02, sectorShare(c.sector));
     if (life.sex === 'Female') w *= clamp(0.4 + femaleLF, 0.3, 1.3);
-    const tilt = 1 + 0.05 * (c.iqTilt * life.zIq + c.looksTilt * life.zLooks + c.heightTilt * life.zHeight);
-    w *= clamp(tilt, 0.2, 3);
-    // education match: people gravitate to jobs that use their schooling, so the
-    // heavily over-qualified (e.g. a postgrad barber) are rare. Gap of 0-1 is free.
-    const gap = Math.max(0, tier - eduRank(c.minEducation) - 1);
-    w *= Math.exp(-(gap * gap) / 2.5);
+    const cMin = eduRank(c.minEducation);
+    // IQ aligns with the job's skill demand: low IQ avoids high-skill jobs and
+    // is steered to low-skill ones, and vice-versa (fixes IQ-78 journalist).
+    const demand = (cMin - 2.5) / 2.5; // -1 (unskilled) .. +1 (postgrad-level)
+    w *= clamp(1 + 0.6 * demand * life.zIq, 0.1, 3);
+    // over-qualification: the heavily over-educated rarely take lower-skill jobs
+    // (fixes postgrad electrician). Penalised from the first level above minimum.
+    const gap = tier - cMin;
+    w *= Math.exp(-(gap * gap) / 3);
+    // career-specific trait tilts (looks/height + extra IQ sensitivity), now with
+    // real weight so the very attractive gravitate to looks-rewarding careers.
+    const tilt = 1 + 0.12 * (c.looksTilt * life.zLooks + c.heightTilt * life.zHeight) + 0.08 * (c.iqTilt * life.zIq);
+    w *= clamp(tilt, 0.1, 4);
     if (c.prestige === 'rare') w *= 0.5;
     if (c.prestige === 'legendary') w *= 0.12;
     return w;
