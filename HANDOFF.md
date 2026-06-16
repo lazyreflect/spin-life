@@ -138,20 +138,25 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   population occupation distribution at their wealth percentile (`parentOccOf` in `roll.js`), and
   score `classOrigin` with it — now origin & destination share one marginal, mean Δ ≈ 0, big
   crashes ≈ symmetric with big climbs. For (b): `forcedArcEvent` in `events.js` forces an
-  explanatory story on any steep fall (origin−destination standing ≥ 0.18, i.e. Δ ≲ −18) that
+  explanatory story on any noticeable fall (origin−destination standing ≥ 0.13, i.e. Δ ≲ −13) that
   isn't already explained by a decline/inheritance event, AND **calibrates the wealth** — an idle
   heir's inherited cushion is drawn partway down toward the job's level (so a domestic worker
-  isn't left in the top wealth band). Stories: "lived off the family money" / "coasted on
-  inherited wealth" (kept it), "watched the family money run dry", "never recovered after the
-  family fell on hard times" (lost it). Upward arcs are NOT forced (the career itself is the
-  story). `npm run sim` now asserts **mean Δ ≈ 0** and **≥98% of ≤−18 arcs carry a story**.
-  `ruin` softened (−0.38→−0.30: a wipeout usually leaves a residue). Event rate ≈ 37%.
+  isn't left in the top wealth band). The phrasing **scales with the drawdown** so words and the
+  calibrated net worth agree: small drawdown → "lived off the family money" / "coasted on
+  inherited wealth" (kept it); big drawdown → "ran through the family money" / "let the family
+  fortune slip away"; ended modest → "watched the family money run dry"; ended poor → "never
+  recovered after the family fell on hard times". Upward arcs are NOT forced (the career itself is
+  the story). `npm run sim` now asserts **mean Δ ≈ 0** and **≥98% of ≤−13 arcs carry a story**.
+  `ruin` softened (−0.38→−0.30: a wipeout usually leaves a residue). Event rate ≈ 45%.
 - **Name clusters split (2026-06):** Nigeria pulled out of the Nigeria+Ghana+Caribbean cluster
   (was emitting Ghanaian "Addo" etc.) into its own Igbo/Yoruba/Hausa list; the Central-Asian
   Turkic states (Uzbekistan/Turkmenistan/Kyrgyzstan/Kazakhstan) split from the Persian cluster
-  (was emitting "Parisa"/"Amirhossein" in Uzbekistan) into a Turkic list. Remaining cross-border
-  name bleed (e.g. Kenyan "Kamau" in Tanzania, "Silva" in India) is inherent to culture-cluster
-  granularity — fixing every one needs per-country lists (`data/names.json`).
+  (was emitting "Parisa"/"Amirhossein" in Uzbekistan) into a Turkic list; Sri Lanka split from
+  the India+Nepal+Bhutan cluster (was emitting Sinhalese "Jayasinghe"/"Silva" in India) into a
+  Sinhalese/Tamil list; and "Kumari" (a female given name) removed from the Indian SURNAME list
+  (was producing male "… Kumari"). Remaining cross-border bleed (e.g. Kenyan "Kamau" in Tanzania)
+  is inherent to culture-cluster granularity — fixing every one needs per-country lists
+  (`data/names.json`).
 - **Event probabilities realistic + country-scaled (2026-06):** lottery ~1 in 1,400, serious
   illness ~1 in 14, etc. Adversity (war/famine/illness/accident/crime) scales with country
   `instabilityOf` (low-life-expectancy proxy); opportunity (business/lucky-break) scales with

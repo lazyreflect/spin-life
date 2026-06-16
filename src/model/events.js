@@ -38,7 +38,12 @@ export const EVENTS = [
 // events whose presence already explains a fall in standing/wealth, so no
 // forced trajectory story is needed on top of them.
 const DECLINE_IDS = new Set(['illness', 'war', 'famine', 'accident', 'crime', 'addiction', 'ruin', 'scandal']);
+// kept most of the money (small drawdown) vs ran through it (large drawdown) —
+// phrasing must agree with the calibrated ending wealth, so "coasted" never
+// pairs with a gutted net worth.
 const IDLE_HEIR = ['lived off the family money', 'coasted on inherited wealth', 'never had to work the family money'];
+const RAN_THROUGH = ['ran through the family money', 'frittered away the inheritance', 'let the family fortune slip away'];
+const pick = (arr, rand) => arr[Math.floor(rand() * arr.length)];
 
 // A large DOWNWARD status arc from a privileged origin (the rich heir who
 // underachieves into a low-status job) needs a story — otherwise the card shows
@@ -50,14 +55,15 @@ const IDLE_HEIR = ['lived off the family money', 'coasted on inherited wealth', 
 function forcedArcEvent(ctx, childPost, keep, rand) {
   const occ = ctx.occ ?? 0.40;
   const origin = ctx.originStanding ?? ctx.parentRank;
-  if (origin - (0.60 * occ + 0.40 * childPost) < 0.18) return null; // not a steep fall
+  if (origin - (0.60 * occ + 0.40 * childPost) < 0.13) return null; // not a noticeable fall
   if (keep.some((e) => DECLINE_IDS.has(e.id))) return null;         // already explained
   if (childPost >= 0.55) {
     if (keep.some((e) => e.id === 'windfall' || e.id === 'married')) return null; // inheritance tells it
     const pull = clamp(0.35 * (childPost - occ), 0.04, 0.20);
-    return { id: 'arc-fall', text: IDLE_HEIR[Math.floor(rand() * IDLE_HEIR.length)], w: -pull, child: false };
+    // big drawdown reads as running through it; a light one as living off it
+    return { id: 'arc-fall', text: pick(pull >= 0.13 ? RAN_THROUGH : IDLE_HEIR, rand), w: -pull, child: false };
   }
-  if (childPost >= 0.38) return { id: 'arc-fall', text: 'watched the family money run dry', w: -0.05, child: false };
+  if (childPost >= 0.38) return { id: 'arc-fall', text: 'watched the family money run dry', w: -0.06, child: false };
   return { id: 'arc-fall', text: 'never recovered after the family fell on hard times', w: 0, child: false };
 }
 
