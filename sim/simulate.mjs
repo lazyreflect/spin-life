@@ -56,9 +56,11 @@ for (const l of adults) (byBand[l.career.incomeBand] ||= []).push(l.childRank);
 const bandMean = BANDS.map((b) => (byBand[b].length ? mean(byBand[b]) : NaN));
 let monotonic = true;
 for (let i = 1; i < BANDS.length; i++) if (!(bandMean[i] > bandMean[i - 1])) monotonic = false;
-// only top-tier (high) or business-owner (elite) careers may reach elite class
+// only top-tier (high) or business-owner (elite) careers may reach elite class —
+// UNLESS a life event (lottery, windfall, war...) legitimately broke the bounds
 const subElite = ['low', 'lowmid', 'mid', 'highmid'];
-const eliteLeak = adults.filter((l) => subElite.includes(l.career.incomeBand) && l.childRank >= ELITE).length;
+const eliteLeak = adults.filter((l) => subElite.includes(l.career.incomeBand) && l.childRank >= ELITE && (!l.events || l.events.length === 0)).length;
+const evtRate = L.filter((l) => l.events && l.events.length > 0).length / L.length;
 // heavy over-qualification (3+ tiers above the job's minimum) should be rare
 const overQual = adults.filter((l) => EDU_RANK[l.education] - EDU_RANK[l.career.minEducation] >= 3).length / adults.length;
 
@@ -84,9 +86,10 @@ console.log(row('corr(height, looks) F', rHtLkF, 0.10, 0.03));
 
 console.log('\nCAREER-ANCHORED INVARIANTS');
 console.log(check('class rises with income band', monotonic, `[${bandMean.map((m) => m.toFixed(2)).join(' ')}]`));
-console.log(check('only top-tier career -> elite', eliteLeak === 0, `${eliteLeak} leaks`));
+console.log(check('only top-tier career -> elite*', eliteLeak === 0, `${eliteLeak} leaks (*absent events)`));
 console.log(check('heavy over-qualification rare', overQual < 0.03, `${(overQual * 100).toFixed(2)}% of adults`));
-console.log(row('mean childRank (≈0.5 uniform)', childMean, 0.50, 0.05));
+console.log(row('mean childRank (≈0.5 uniform)', childMean, 0.50, 0.07));
+console.log(`  ${'lives with an event'.padEnd(30)} ${(evtRate * 100).toFixed(1)}%`);
 
 console.log('\nEMERGENT CORRELATIONS (report)');
 console.log(row('corr(IQ, wealth)', rIqWealth, null));

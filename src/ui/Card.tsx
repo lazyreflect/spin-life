@@ -30,6 +30,12 @@ export function Card({ life }: { life: Life }) {
 
       <p className="card-sentence">{life.sentence}</p>
 
+      {life.events && life.events.length > 0 && (
+        <div className="card-events">
+          {life.events.map((e: string, i: number) => <span key={i} className="event-chip">⚡ {e}</span>)}
+        </div>
+      )}
+
       {life.diedYoung ? (
         <div className="card-attr">— {life.name}, {life.flag} {life.country}</div>
       ) : (
