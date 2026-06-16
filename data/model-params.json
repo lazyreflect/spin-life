@@ -14,7 +14,7 @@
     "wIqIncome": 0.065,
     "wLooksIncome": 0.022,
     "wHeightIncome": 0.010,
-    "luckSd": 0.12
+    "luckSd": 0.10
   },
   "lifespan": {
     "iqLifeYrsPerSd": 1.05,
