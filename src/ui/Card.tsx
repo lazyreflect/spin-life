@@ -29,20 +29,27 @@ export function Card({ life }: { life: Life }) {
       </div>
 
       <p className="card-sentence">{life.sentence}</p>
-      <div className="card-attr">— {life.name} · {life.career.emoji} {life.career.title} · {life.education}</div>
 
-      <div className="card-arc">
-        <span className="arc-route">{life.classOrigin} → <b>{life.classFinal}</b></span>
-        <span className={flat ? 'arc-delta' : up ? 'arc-delta up' : 'arc-delta down'}>{arc}</span>
-      </div>
+      {life.diedYoung ? (
+        <div className="card-attr">— {life.name}, {life.flag} {life.country}</div>
+      ) : (
+        <>
+          <div className="card-attr">— {life.name} · {life.career.emoji} {life.career.title} · {life.education}</div>
 
-      <div className="card-strip">
-        <Stat label="Net worth" top={life.pct.money} value={life.netWorthLabel} />
-        <Stat label="IQ" top={life.pct.iq} value={String(life.iq)} />
-        <Stat label="Height" top={life.pct.height} value={life.heightLabel} />
-        <Stat label="Looks" top={life.pct.looks} value={life.looks.toFixed(1)} />
-        <Stat label="Lives to" top={life.pct.life} value={String(life.age)} />
-      </div>
+          <div className="card-arc">
+            <span className="arc-route">{life.classOrigin} → <b>{life.classFinal}</b></span>
+            <span className={flat ? 'arc-delta' : up ? 'arc-delta up' : 'arc-delta down'}>{arc}</span>
+          </div>
+
+          <div className="card-strip">
+            <Stat label="Net worth" top={life.pct.money} value={life.netWorthLabel} />
+            <Stat label="IQ" top={life.pct.iq} value={String(life.iq)} />
+            <Stat label="Height" top={life.pct.height} value={life.heightLabel} />
+            <Stat label="Looks" top={life.pct.looks} value={life.looks.toFixed(1)} />
+            <Stat label="Lives to" top={life.pct.life} value={String(life.age)} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

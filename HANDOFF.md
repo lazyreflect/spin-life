@@ -114,9 +114,17 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   `SpinScreen.tsx`. The whole life is rolled up front (`rollLife`), so reveal order is pure
   presentation — adding/removing/reordering stages never touches the model.
 - **The card is the hero** — the deadpan one-line sentence is the viral asset; don't bloat it.
-- The model is duplicated in `sim/simulate.mjs` (inline, the validation oracle) vs `src/model/`
-  (shared). Keep them in sync if you change coefficients, or refactor simulate.mjs to import the
-  shared model.
+- **Realism pass (2026-06):** the model was tuned for plausible rolls (validated against
+  external review of sample batches): career `incomeBand` now drives destination wealth so
+  class/net-worth/career agree; national IQ compressed toward 100 (`adjCountryIq`, k=0.55);
+  education has a country floor; mortality tail tightened (no centenarian floods); rarity is
+  mobility-aware; **mobility luck `luckSd` 0.26 → 0.12** (strong dampening — realism over the
+  old "loud luck" surprise dial); careers prefer matching the person's education; early deaths
+  (<18) skip career/class. Tunable in `model-params.json` + `content.js`.
+- **`sim/simulate.mjs` is now STALE** — it's an inline copy of the *original* trait-based model
+  (direct IQ/looks income terms, luck 0.26, no careers/IQ-compression) and still prints "all
+  green", but it no longer reflects the app's wealth/mobility path. Re-sync it (ideally refactor
+  it to import `src/model`) before trusting it again. Validate rolls via `npm run cards` for now.
 - Deploy workflow uses Node-20 actions (GitHub deprecation warning, non-blocking). Bump action
   versions / Node 24 when convenient.
 - Original spinyour.life reference data lives only in this repo's `data/` now; the source bundle
