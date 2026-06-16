@@ -17,6 +17,13 @@ const flagEmoji = (code) =>
 // education, looks) flows in through career SELECTION, not a separate add-on.
 const CAREER_RANK = { low: 0.20, lowmid: 0.33, mid: 0.48, highmid: 0.64, high: 0.80, elite: 0.93 };
 const W_CAREER = 0.55; // career's share of the destination-wealth signal
+// Hard [floor, ceiling] on the national wealth rank a career can reach, even
+// with inheritance + luck. A clerk (mid) literally cannot end up elite; a
+// high-income professional cannot end up destitute.
+const CAREER_RANGE = {
+  low: [0.00, 0.45], lowmid: [0.02, 0.58], mid: [0.10, 0.72],
+  highmid: [0.22, 0.86], high: [0.38, 0.96], elite: [0.55, 1.0],
+};
 
 export function makeRoller({ countries, params, names, careers }) {
   const totalBirths = countries.reduce((a, c) => a + c.births, 0);
@@ -72,7 +79,8 @@ export function makeRoller({ countries, params, names, careers }) {
     // education + career first: career income drives destination wealth
     const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
     const childRaw = W_CAREER * careerRank(career) + wI * parentRank + (1 - W_CAREER - wI) * 0.5 + M.luckSd * randn();
-    const childRank = clamp(normCdf((childRaw - mu) / sd), 0.0005, 0.9995);
+    const [cFloor, cCeil] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
+    const childRank = clamp(normCdf((childRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
     const netWorth = wealthQuantile(country.netWorth, country.wealthGini, childRank);

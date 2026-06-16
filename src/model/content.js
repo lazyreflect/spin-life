@@ -58,7 +58,7 @@ export function rollCareer(life, country, careers) {
     // over-qualification: the heavily over-educated rarely take lower-skill jobs
     // (fixes postgrad electrician). Penalised from the first level above minimum.
     const gap = tier - cMin;
-    w *= Math.exp(-(gap * gap) / 3);
+    w *= Math.exp(-(gap * gap) / 2);
     // career-specific trait tilts (looks/height + extra IQ sensitivity), now with
     // real weight so the very attractive gravitate to looks-rewarding careers.
     const tilt = 1 + 0.12 * (c.looksTilt * life.zLooks + c.heightTilt * life.zHeight) + 0.08 * (c.iqTilt * life.zIq);
