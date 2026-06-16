@@ -121,6 +121,17 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   mobility-aware; **mobility luck `luckSd` 0.26 → 0.12** (strong dampening — realism over the
   old "loud luck" surprise dial); careers prefer matching the person's education + IQ↔skill
   demand; early deaths (<18) skip career/class. Tunable in `model-params.json` + `content.js`.
+- **Class is OCCUPATION-based (2026-06), not net worth.** `classOf()` in `content.js`: each
+  career has an occupational rank (`OCC_RANK`: laboring→ruling); class standing = 0.6·occupation
+  + 0.4·wealth, then labelled. **"The elite" is the power elite** — a ruling career (`RULING`:
+  entrepreneur/executive/politician) AND wealthy, OR dynastic controlling wealth (born top-2%
+  AND still wealthy). A merely-rich lottery winner / top professional is "wealthy/upper", NOT
+  elite. Realistic class shares (≈10/28/35/16/9/1%); elite ≈1%.
+- **Event probabilities realistic + country-scaled (2026-06):** lottery ~1 in 1,400, serious
+  illness ~1 in 14, etc. Adversity (war/famine/illness/accident/crime) scales with country
+  `instabilityOf` (low-life-expectancy proxy); opportunity (business/lucky-break) scales with
+  development; positive gains face diminishing rank-headroom (lottery exempt, so it can mint
+  elite). Tune in `events.js`.
 - **Life-event layer (2026-06):** discrete events (`src/model/events.js`) replace faceless
   Gaussian luck as the driver of TAIL outcomes — war/famine/illness/accident, windfall/lottery/
   inheritance, "built a thriving business" (the within-career upside a fixed income band can't

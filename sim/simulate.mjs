@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { makeRoller } from '../src/model/roll.js';
+import { RULING } from '../src/model/content.js';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const load = (f) => JSON.parse(fs.readFileSync(path.join(__dir, '../data', f), 'utf8'));
@@ -56,11 +57,12 @@ for (const l of adults) (byBand[l.career.incomeBand] ||= []).push(l.childRank);
 const bandMean = BANDS.map((b) => (byBand[b].length ? mean(byBand[b]) : NaN));
 let monotonic = true;
 for (let i = 1; i < BANDS.length; i++) if (!(bandMean[i] > bandMean[i - 1])) monotonic = false;
-// a sub-top career reaches elite ONLY via dynastic inheritance (very high parent
-// rank) or a life event — never on earned income alone (career ceiling bars it)
-const subElite = ['low', 'lowmid', 'mid', 'highmid'];
-const eliteLeak = adults.filter((l) => subElite.includes(l.career.incomeBand) && l.childRank >= ELITE && l.parentRank < 0.9 && (!l.events || l.events.length === 0)).length;
+// elite (occupation-based) must be the power elite (ruling career) or dynastic —
+// and wealthy. Nobody is elite on wealth/career alone without commanding position.
+const elites = adults.filter((l) => l.classFinal === 'the elite');
+const eliteLeak = elites.filter((l) => !(RULING.has(l.career.id) || l.parentRank >= 0.98)).length;
 const evtRate = L.filter((l) => l.events && l.events.length > 0).length / L.length;
+const eliteRate = elites.length / adults.length;
 // heavy over-qualification (3+ tiers above the job's minimum) should be rare
 const overQual = adults.filter((l) => EDU_RANK[l.education] - EDU_RANK[l.career.minEducation] >= 3).length / adults.length;
 
@@ -86,10 +88,11 @@ console.log(row('corr(height, looks) F', rHtLkF, 0.10, 0.03));
 
 console.log('\nCAREER-ANCHORED INVARIANTS');
 console.log(check('class rises with income band', monotonic, `[${bandMean.map((m) => m.toFixed(2)).join(' ')}]`));
-console.log(check('elite needs career/heir/event', eliteLeak === 0, `${eliteLeak} unearned leaks`));
+console.log(check('elite = power + wealth/dynasty', eliteLeak === 0, `${eliteLeak} unearned leaks`));
 console.log(check('heavy over-qualification rare', overQual < 0.03, `${(overQual * 100).toFixed(2)}% of adults`));
 console.log(row('mean childRank (≈0.5 uniform)', childMean, 0.50, 0.07));
 console.log(`  ${'lives with an event'.padEnd(30)} ${(evtRate * 100).toFixed(1)}%`);
+console.log(`  ${'adults in the elite class'.padEnd(30)} ${(eliteRate * 100).toFixed(2)}%`);
 
 console.log('\nEMERGENT CORRELATIONS (report)');
 console.log(row('corr(IQ, wealth)', rIqWealth, null));
