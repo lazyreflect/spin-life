@@ -56,7 +56,14 @@ export function rollCareer(life, country, careers) {
     const cMin = eduRank(c.minEducation);
     // IQ aligns with the job's skill demand: low IQ avoids high-skill jobs and
     // is steered to low-skill ones, and vice-versa (fixes IQ-78 journalist).
-    const demand = (cMin - 2.5) / 2.5; // -1 (unskilled) .. +1 (postgrad-level)
+    // For COGNITIVELY-loaded careers (high iqTilt), the demand is set by how
+    // demanding the OUTCOME is (income band), not just formal schooling — so a
+    // "Founder" (secondary min, but elite band) isn't mistaken for low-skill and
+    // handed to low-IQ people (fixes IQ-60 elite founders). Physical/artistic
+    // careers (low iqTilt: athlete, actor) keep the education-based demand.
+    const BAND_SKILL = { low: 1, lowmid: 1.5, mid: 2, highmid: 3.5, high: 4, elite: 5 };
+    const skill = (c.iqTilt || 0) >= 0.4 ? Math.max(cMin, BAND_SKILL[c.incomeBand] ?? cMin) : cMin;
+    const demand = (skill - 2.5) / 2.5; // -1 (unskilled) .. +1 (postgrad-level)
     w *= clamp(1 + 1.0 * demand * life.zIq, 0.06, 3.5);
     // over-qualification: the heavily over-educated rarely take lower-skill jobs
     // (fixes postgrad electrician). Penalised from the first level above minimum.
