@@ -148,23 +148,22 @@ iqTilt, looksTilt, heightTilt, incomeBand, prestige, regions}`. `regions` defaul
 
 ---
 
-## 5. Validation targets & latest result
+## 5. Validation (`node sim/simulate.mjs`)
 
-`node sim/simulate.mjs 200000` — **all green** at the locked params:
+The harness now drives the **shared model** (`src/model/roll.js`) — it validates what ships,
+not a separate inline copy. Three groups:
 
-| Metric | Target | Got |
-|---|---|---|
-| corr(IQ, income) | 0.28 ±0.03 | 0.277 |
-| corr(looks, income) | 0.12 ±0.03 | 0.103 |
-| corr(height, income) | 0.10 ±0.03 | 0.080 |
-| corr(height, looks) M / F | 0.20 / 0.10 ±0.03 | 0.196 / 0.098 |
-| corr(IQ, lifespan) | 0.12 ±0.03 | 0.140 |
-| rank-rank slope | ≈ avg β (0.547) ±0.05 | 0.532 |
-| dispersion ratio child/parent | 1.0 ±0.1 | 1.011 |
+- **Structural (hard targets):** copula corr(height, looks) M/F = 0.20 / 0.10 ±0.03.
+- **Career-anchored invariants (PASS/FAIL):** mean class rises monotonically across income
+  bands; **no low/lowmid/mid career ever reaches the elite class** (0 leaks); heavy
+  over-qualification < 3% of adults; mean childRank ≈ 0.5.
+- **Emergent correlations (reported):** latest at N=200k — corr(IQ, wealth) ≈ 0.35,
+  corr(education, wealth) ≈ 0.64, corr(parent, child wealth) ≈ 0.60, corr(IQ, lifespan) ≈ 0.14.
 
-Directional sanity: born-rich+low-IQ → 0.62, born-poor+high-IQ → 0.39 (climbs but doesn't
-top out; inherited class beats merit). Population-weighted avg β is high (~0.55) because most
-people live in high-inequality countries — realistic low global mobility.
+Directional sanity (mean adult wealth rank): rich+highIQ 0.83 > rich+lowIQ 0.53 >
+poor+highIQ 0.36 > poor+lowIQ 0.18 — monotonic in both origin and merit, with neither
+dominating. (NOTE: the old trait-term targets — corr(IQ/looks/height, income), rank-rank =
+β, dispersion — predate the career-anchored refactor and no longer apply.)
 
 ---
 

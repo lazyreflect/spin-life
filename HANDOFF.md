@@ -128,10 +128,12 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   class agree by construction; mobility flows the realistic way (origin → education → career →
   income → class). Tune the band→rank map / weights in `roll.js`. NOTE: `model-params.json`
   `mobility.beta*` and `wIqIncome/...` are now UNUSED (kept for the stale sim).
-- **`sim/simulate.mjs` is now STALE** — it's an inline copy of the *original* trait-based model
-  (direct IQ/looks income terms, luck 0.26, no careers/IQ-compression) and still prints "all
-  green", but it no longer reflects the app's wealth/mobility path. Re-sync it (ideally refactor
-  it to import `src/model`) before trusting it again. Validate rolls via `npm run cards` for now.
+- **`sim/simulate.mjs` now drives the SHARED model** (imports `src/model/roll.js`), so it
+  validates what actually ships. It checks the structural copula corr (height↔looks), the
+  career-anchored invariants (class rises monotonically with income band; no low/mid career
+  reaches elite; over-qualification rare; mean childRank ≈ 0.5), and reports emergent
+  correlations (IQ/edu/parent → wealth, IQ → lifespan) + directional sanity. `npm run sim`
+  rolls 200k full lives (~30s); pass a smaller N for a quick check (`node sim/simulate.mjs 40000`).
 - Deploy workflow uses Node-20 actions (GitHub deprecation warning, non-blocking). Bump action
   versions / Node 24 when convenient.
 - Original spinyour.life reference data lives only in this repo's `data/` now; the source bundle
