@@ -54,7 +54,7 @@ export function rollCareer(life, country, careers) {
     // IQ aligns with the job's skill demand: low IQ avoids high-skill jobs and
     // is steered to low-skill ones, and vice-versa (fixes IQ-78 journalist).
     const demand = (cMin - 2.5) / 2.5; // -1 (unskilled) .. +1 (postgrad-level)
-    w *= clamp(1 + 0.6 * demand * life.zIq, 0.1, 3);
+    w *= clamp(1 + 1.0 * demand * life.zIq, 0.06, 3.5);
     // over-qualification: the heavily over-educated rarely take lower-skill jobs
     // (fixes postgrad electrician). Penalised from the first level above minimum.
     const gap = tier - cMin;
