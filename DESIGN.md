@@ -168,14 +168,24 @@ people live in high-inequality countries — realistic low global mobility.
 
 ---
 
-## 6. Open decisions (resolve before/at build)
+## 6. Decisions
 
-1. **Tech stack** — Vite+React / Next.js / Expo (RN-Web, matches original).
-2. **v1 scope** — client-only MVP vs backend (leaderboard + account sync).
-3. **IQ data** — keep extracted Lynn values, replace, or drop the dimension (it's the
-   shakiest input; don't let it propagate deterministically regardless).
-4. **Project name** — folder is `spin-life` as a working name; rename freely.
-5. **Career in v1** — ship two-stage wealth first, add the career line in v1.1?
+Resolved:
+1. **Tech stack** — Vite + React + TypeScript. ✅
+2. **v1 scope** — client-only, no backend; spins + Lives in localStorage; deployed to
+   GitHub Pages (auto-deploy on push to main). ✅
+3. **Career in v1** — included (education → occupation, structural country weighting). ✅
+
+Still open:
+4. **IQ data** — currently the extracted Lynn values (e.g. DR Congo 51). Shakiest input;
+   decide keep / replace / drop. It does NOT propagate deterministically (luck dominant).
+5. **Project name** — `spin-life` working name; rename freely.
+6. **Rarity** — still the marginal-product `1/√(∏ pᵢ)` placeholder; the joint/empirical
+   version (§4.5) is the planned upgrade.
+7. **Deferred Full-Life features** — marriage, kids, happiness, health, migration, etc.
+
+Career weighting needs the World Bank employment/enrollment columns — **now fetched and
+merged into `countries.json`** (empAg/empIndustry/empServices, femaleLFP, secondaryEnrollment).
 
 ## 7. Data provenance (credit honestly)
 
