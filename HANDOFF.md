@@ -115,12 +115,19 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   presentation — adding/removing/reordering stages never touches the model.
 - **The card is the hero** — the deadpan one-line sentence is the viral asset; don't bloat it.
 - **Realism pass (2026-06):** the model was tuned for plausible rolls (validated against
-  external review of sample batches): career `incomeBand` now drives destination wealth so
-  class/net-worth/career agree; national IQ compressed toward 100 (`adjCountryIq`, k=0.55);
+  external review of sample batches): national IQ compressed toward 100 (`adjCountryIq`, k=0.55);
   education has a country floor; mortality tail tightened (no centenarian floods); rarity is
   mobility-aware; **mobility luck `luckSd` 0.26 → 0.12** (strong dampening — realism over the
-  old "loud luck" surprise dial); careers prefer matching the person's education; early deaths
-  (<18) skip career/class. Tunable in `model-params.json` + `content.js`.
+  old "loud luck" surprise dial); careers prefer matching the person's education + IQ↔skill
+  demand; early deaths (<18) skip career/class. Tunable in `model-params.json` + `content.js`.
+- **Career-anchored wealth (2026-06 refactor):** the recurring "job vs class" contradictions
+  (office-clerk→elite, cook→elite) were architectural — destination wealth used to be
+  inheritance-anchored with career as a weak ± premium. It's now **anchored on the career's
+  income ceiling** (`CAREER_RANK` per income band, `W_CAREER=0.55`), with inheritance
+  (`inheritWeight`, rises with Gini — Great Gatsby) + luck modulating within bounds. So job and
+  class agree by construction; mobility flows the realistic way (origin → education → career →
+  income → class). Tune the band→rank map / weights in `roll.js`. NOTE: `model-params.json`
+  `mobility.beta*` and `wIqIncome/...` are now UNUSED (kept for the stale sim).
 - **`sim/simulate.mjs` is now STALE** — it's an inline copy of the *original* trait-based model
   (direct IQ/looks income terms, luck 0.26, no careers/IQ-compression) and still prints "all
   green", but it no longer reflects the app's wealth/mobility path. Re-sync it (ideally refactor
