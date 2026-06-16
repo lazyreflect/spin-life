@@ -6,6 +6,7 @@ import {
   moneyTopPercent, iqTopPercent, heightTopPercent, looksTopPercent, lifeTopPercent,
 } from './distributions.js';
 import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, wealthClass, buildSentence } from './content.js';
+import { rollEvents } from './events.js';
 
 const flagEmoji = (code) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
@@ -83,22 +84,31 @@ export function makeRoller({ countries, params, names, careers }) {
     const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
     const childRaw = W_CAREER * careerRank(career) + wI * parentRank + (1 - W_CAREER - wI) * 0.5 + M.luckSd * randn();
     const [cFloor, cCeil] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
-    const childRank = clamp(normCdf((childRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
+    const childBase = clamp(normCdf((childRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
+
+    // life events: shift the outcome (may break career bounds — windfall, war),
+    // cut the lifespan, and give the card a story
+    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career }, country);
+    const childRank = clamp(childBase + evt.wealthDelta, 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
     const netWorth = wealthQuantile(country.netWorth, country.wealthGini, childRank);
 
     const baseLE = sex === 'Female' ? country.lifeF : country.lifeM;
     const targetLE = clamp(baseLE + wealthLifeAdj(childRank) + LS.iqLifeYrsPerSd * zIq, 28, 98);
-    const age = sampleAge(baseLE, targetLE);
+    let age = sampleAge(baseLE, targetLE);
+    if (evt.fatal) age = clamp(Math.round(16 + Math.random() * (age - 16)), 15, age);
+    else age = clamp(Math.round(age + evt.ageDelta), 1, 110);
     const diedYoung = age < 18; // never reached a career / adult class
+    // suppress adult-life events (marriage, business…) for those who died young
+    const eventTexts = (diedYoung ? evt.events.filter((e) => e.child) : evt.events).map((e) => e.text);
 
     const life = {
       country: country.name, code: country.code, flag: flagEmoji(country.code), continent: country.continent,
       sex, zIq, zHeight: zHt, zLooks: zLk, diedYoung,
       iq, heightCm, heightLabel: heightImperial(heightCm), looks,
       parentRank, childRank, familyWealth, netWorth,
-      age, baseLE: Math.round(baseLE),
+      age, baseLE: Math.round(baseLE), events: eventTexts,
     };
     life.name = pickName(country, sex, names);
     life.education = education;

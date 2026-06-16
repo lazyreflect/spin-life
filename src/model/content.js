@@ -98,16 +98,17 @@ export function wealthClass(rank) {
 const article = (word) => (/^[aeiou]/i.test(word) ? 'an' : 'a');
 const classPhrase = (label) => (label.startsWith('the') ? label : `the ${label}`);
 export function buildSentence(life) {
+  const ev = life.events && life.events.length ? `, ${life.events[0]}` : '';
   if (life.diedYoung) {
     const when = life.age < 1 ? 'as an infant' : `at ${life.age}`;
-    return `Born into ${classPhrase(life.classOrigin)} in ${life.flag} ${life.country}, died ${when}.`;
+    return `Born into ${classPhrase(life.classOrigin)} in ${life.flag} ${life.country}${ev}, died ${when}.`;
   }
   const job = (life.career?.title || 'nobody').toLowerCase();
   const work = `became ${article(job)} ${job}`;
-  const delta = life.mobilityDelta ?? 0;
-  const end =
-    delta > 4 ? `climbed to ${classPhrase(life.classFinal)} and died at ${life.age}` :
-    delta < -4 ? `slid to ${classPhrase(life.classFinal)} and died at ${life.age}` :
-    `died at ${life.age}, still ${classPhrase(life.classFinal)}`;
-  return `Born into ${classPhrase(life.classOrigin)} in ${life.flag} ${life.country}, ${work}, ${end}.`;
+  const changed = life.classFinal !== life.classOrigin;
+  const dir = (life.mobilityDelta ?? 0) > 0 ? 'climbed to' : 'slid to';
+  const end = changed
+    ? `${dir} ${classPhrase(life.classFinal)} and died at ${life.age}`
+    : `died at ${life.age}, still ${classPhrase(life.classFinal)}`;
+  return `Born into ${classPhrase(life.classOrigin)} in ${life.flag} ${life.country}, ${work}${ev}, ${end}.`;
 }

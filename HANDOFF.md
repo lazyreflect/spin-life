@@ -36,6 +36,7 @@ src/
     distributions.js   wealth (lognormal+Pareto) + mortality curve (both ported from original)
                        + global TOP% percentile fns
     content.js         names, education+career roll, formatting, class labels, sentence
+    events.js          life-event catalog + rollEvents() (the structured "luck" layer)
     roll.js            makeRoller({countries,params,names,careers}) -> rollLife()  [orchestrator]
   ui/
     Wheel.tsx          conic-gradient spinning wheel (categorical OR value-bucket segments)
@@ -120,6 +121,14 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   mobility-aware; **mobility luck `luckSd` 0.26 → 0.12** (strong dampening — realism over the
   old "loud luck" surprise dial); careers prefer matching the person's education + IQ↔skill
   demand; early deaths (<18) skip career/class. Tunable in `model-params.json` + `content.js`.
+- **Life-event layer (2026-06):** discrete events (`src/model/events.js`) replace faceless
+  Gaussian luck as the driver of TAIL outcomes — war/famine/illness/accident, windfall/lottery/
+  inheritance, "built a thriving business" (the within-career upside a fixed income band can't
+  express), ruin/scandal/addiction, emigration, marriage. They shift destination wealth in rank
+  space and **may legitimately break the career bounds** (a lottery → elite cook), can cut the
+  lifespan (fatal events), and surface on the card as story + in the sentence. ~39% of lives get
+  ≥1 event; capped at 2. Adult-only events are suppressed for early deaths. Tune the catalog
+  (probs/deltas) in `events.js`. The sim's "only top-tier → elite" invariant excludes event lives.
 - **Career-anchored wealth (2026-06 refactor):** the recurring "job vs class" contradictions
   (office-clerk→elite, cook→elite) were architectural — destination wealth used to be
   inheritance-anchored with career as a weak ± premium. It's now **anchored on the career's
