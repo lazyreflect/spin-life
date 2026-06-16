@@ -12,7 +12,11 @@ roll into a shareable life story.
 - **Live (phone-friendly):** https://lazyreflect.github.io/spin-life/
 - **Repo:** https://github.com/lazyreflect/spin-life  (account `lazyreflect`, public)
 - **Status:** working client-only prototype, deployed. Spin loop + life card + Lives history done.
+  The model went through a major **realism overhaul** (2026-06) — see model notes below.
 - **Auto-deploy:** push to `main` → GitHub Actions builds and publishes to Pages (~1 min).
+- **Governing principle (updated):** **realism first.** This overrides DESIGN.md §2 ("not realism —
+  surprise + story") and the "loud luck" dial — the project decision is that rolls must be
+  *plausible*. Keep this in mind when reading DESIGN.md (parts predate the overhaul).
 
 ## Stack & decisions (resolved)
 
@@ -42,33 +46,31 @@ src/
     Wheel.tsx          conic-gradient spinning wheel (categorical OR value-bucket segments)
     SpinScreen.tsx     stage machine: steps through REVEAL_ORDER, holds on each landed value, → reveal
     revealStages.ts    builds the per-dimension reveal wheels (continent→country→wealth→height→IQ→looks→life)
-    Card.tsx           the result card (sentence, rarity, class arc, career, 7 stats w/ TOP%)
+    Card.tsx           editorial result card (serif life-story sentence, rarity, class arc, life-event chips, stat strip)
     Lives.tsx          history list, sorted by rarity
   App.tsx              tabs (Spin/Lives), spins counter + refill, localStorage
   data.ts             imports JSON, builds the roller, continent aggregation + colors
 sim/
-  simulate.mjs         model validation harness (correlation targets) — inline model copy
+  simulate.mjs         model validation harness — drives the SHARED model (imports roll.js)
   cards.js             prints sample life-cards using the SHARED model
 .github/workflows/deploy.yml   GitHub Pages deploy
 ```
 
 ## How the roll works (pipeline)
 
-Per life (`roll.js → rollLife`):
+Per life (`roll.js → rollLife`) — see the model-architecture notes below for the *why*:
 1. Pick **country** weighted by births; pick **sex** (51.2% M).
-2. Draw correlated endowments `[famWealth, IQ, height, looks]` from a **Gaussian copula**
-   (sex-specific matrix, within country×sex).
-3. Map to displayed values: `IQ = countryIQ + 15·z`, height/looks similarly; `parentRank = Φ(z_fw)`.
-4. **Destination wealth (mobility):** `childRank = Φ((β·parentRank + (1-β)·0.5 + premiums + luck − μ)/σ)`,
-   `β` from Gini (Great Gatsby curve). Maps to $ via lognormal-Pareto quantile.
-5. **Lifespan:** base life expectancy + wealth adjustment + IQ adjustment → sample age from the
-   ported mortality curve.
-6. **Education + career:** education from IQ/family/enrollment/sex; career filtered by education,
-   weighted by the country's employment-sector mix.
-7. **TOP%** for each stat (population-weighted across all countries), **rarity**, **class arc**.
+2. Draw correlated endowments `[famWealth, IQ, height, looks]` from a **Gaussian copula** (within country×sex).
+3. Map to displayed: `IQ = adjCountryIq(countryIQ) + 15·z` (national IQ compressed toward 100, clamped 60–160); height/looks similarly; `parentRank = Φ(z_fw)`.
+4. **Education → career:** education from IQ/family/enrollment (+ country floor); career filtered by education, weighted by employment-sector mix × IQ↔skill-demand alignment × over-qualification penalty × looks/height tilts.
+5. **Destination wealth = two-component** `max(earned income, inherited-asset floor)`: income = career band (`CAREER_RANK`) + luck, renormalized, clamped to the career's `CAREER_RANGE`; assetFloor = `parentRank^1.4 · transferOf(Gini)` (convex). Both map to $ via the lognormal-Pareto quantile.
+6. **Life events** (`events.js`): a few contextual, country-scaled events fire — shift wealth (may break career bounds: lottery/windfall), cut lifespan (fatal), add story.
+7. **Lifespan:** national life expectancy + wealth + IQ adjustments → mortality sampler (low-LE countries have a tighter upper tail); events may cut it short. Early deaths (<18) skip career/class.
+8. **Class** = OCCUPATION-based (`classOf`), **TOP%** percentiles, **rarity** (marginal + mobility-arc), class arc, deadpan sentence.
 
-Calibration is locked in `model-params.json`; `npm run sim` re-checks all 8 correlation
-targets (currently green). Mean is 0.5 by symmetry; `roll.js` measures childRaw σ once at init.
+There are **no locked correlation targets anymore** (the original "calibrated trait model" was
+replaced — see notes). `npm run sim` validates the model by *invariants* + emergent-correlation
+sanity instead. Several `model-params.json` fields (`mobility.beta*`, `wIqIncome*`) are now legacy/unused.
 
 ## Commands
 
@@ -76,7 +78,7 @@ targets (currently green). Mean is 0.5 by symmetry; `roll.js` measures childRaw 
 npm install
 npm run dev        # local dev (http://localhost:5173)
 npm run build      # production build -> dist/
-npm run sim        # validate trait-model correlations (200k lives)
+npm run sim        # validate the model — invariants + correlations (200k lives, ~30s)
 npm run cards      # print 10 sample life-cards in the terminal
 ```
 
@@ -95,8 +97,8 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
 1. **IQ data (values call).** The per-country IQ estimates are the shakiest input and
    contentious. Decide: keep / replace / drop the dimension. It does NOT propagate
    deterministically (luck dominates every roll), but the raw numbers are visible on cards.
-2. **Rarity** is still the marginal-product placeholder `1/√(∏ pᵢ)`, which overstates rarity for
-   correlated lucky combos. Planned upgrade: empirical fortune-score distribution (DESIGN §4.5).
+2. **Rarity** = `1/√(∏ pᵢ)` over the stat percentiles **plus a mobility-arc term** (big climbs/
+   falls are rarer). Still a heuristic; the planned upgrade is an empirical fortune-score CDF (DESIGN §4.5).
 3. **Project name** — `spin-life` is a working name; rename freely (relative-base build means a
    repo rename only changes the URL, nothing breaks).
 4. **Deferred "Full Life" features** — marriage/partner (assortative), children/fertility,
@@ -118,7 +120,7 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
 - **Realism pass (2026-06):** the model was tuned for plausible rolls (validated against
   external review of sample batches): national IQ compressed toward 100 (`adjCountryIq`, k=0.55);
   education has a country floor; mortality tail tightened (no centenarian floods); rarity is
-  mobility-aware; **mobility luck `luckSd` 0.26 → 0.12** (strong dampening — realism over the
+  mobility-aware; **mobility luck `luckSd` 0.26 → 0.10** (strong dampening — realism over the
   old "loud luck" surprise dial); careers prefer matching the person's education + IQ↔skill
   demand; early deaths (<18) skip career/class. Tunable in `model-params.json` + `content.js`.
 - **Class is OCCUPATION-based (2026-06), not net worth.** `classOf()` in `content.js`: each
@@ -139,7 +141,7 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   space and **may legitimately break the career bounds** (a lottery → elite cook), can cut the
   lifespan (fatal events), and surface on the card as story + in the sentence. ~39% of lives get
   ≥1 event; capped at 2. Adult-only events are suppressed for early deaths. Tune the catalog
-  (probs/deltas) in `events.js`. The sim's "only top-tier → elite" invariant excludes event lives.
+  (probs/deltas) in `events.js`. (Event rate is now ~24% after the realistic-probability pass.)
 - **Two-component wealth (2026-06):** destination wealth is `max(income, assetFloor)` —
   the better of (a) EARNED income: career-anchored (`CAREER_RANK` per band, `W_CAREER=0.55`)
   and bounded by the career's `CAREER_RANGE` [floor,ceiling]; and (b) an INHERITED-asset floor:
@@ -152,11 +154,11 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   `CAREER_RANGE`, `transferOf`, the `^1.4` convexity, and `luckSd` in `roll.js`/params.
   NOTE: `model-params.json` `mobility.beta*` / `wIqIncome*` are UNUSED (legacy).
 - **`sim/simulate.mjs` now drives the SHARED model** (imports `src/model/roll.js`), so it
-  validates what actually ships. It checks the structural copula corr (height↔looks), the
-  career-anchored invariants (class rises monotonically with income band; no low/mid career
-  reaches elite; over-qualification rare; mean childRank ≈ 0.5), and reports emergent
-  correlations (IQ/edu/parent → wealth, IQ → lifespan) + directional sanity. `npm run sim`
-  rolls 200k full lives (~30s); pass a smaller N for a quick check (`node sim/simulate.mjs 40000`).
+  validates what actually ships. Checks: structural copula corr (height↔looks); invariants —
+  wealth rises monotonically with income band, **elite = power + wealth/dynasty** (0 unearned
+  leaks), over-qualification rare, mean wealth-rank ≈ 0.5; and reports emergent correlations
+  (IQ/edu/parent → wealth, IQ → lifespan), event rate, elite rate, + directional sanity.
+  `npm run sim` rolls 200k full lives (~30s); pass a smaller N for a quick check (`node sim/simulate.mjs 40000`).
 - Deploy workflow uses Node-20 actions (GitHub deprecation warning, non-blocking). Bump action
   versions / Node 24 when convenient.
 - Original spinyour.life reference data lives only in this repo's `data/` now; the source bundle
