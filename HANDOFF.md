@@ -153,11 +153,19 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   **mean Δ ≈ 0** and **≥98% of ≤−13 arcs carry a story**. `ruin` softened (−0.38→−0.30: a wipeout
   usually leaves a residue). Event rate ≈ 45%.
 - **Rarity reserves extreme values for FORTUNE combinations (2026-06).** The marginal-rarity
-  product over-weighted a single extreme stat — a 6'7" waiter scored 1-in-664 on height alone.
-  Now the cosmetic dimensions (height, looks) are **floored at top-5%** in the product (`pPhys` in
-  `roll.js`), so a lone physical outlier can't blow up an otherwise ordinary life, while wealth /
-  longevity / IQ / mobility still count fully — extreme rarity now needs a genuine *combination*.
-  (The real upgrade is still the empirical fortune-score CDF; this is a targeted heuristic fix.)
+  product over-weighted a single extreme stat — a 6'7" waiter scored 1-in-664 on height alone, and
+  a single big climb pushed a high-IQ pharmacist to 1-in-2,552. Now the cosmetic dimensions
+  (height, looks) are **floored at top-5%** and the **mobility-arc term at top-2.5%** in the
+  product (`pPhys` / `arcP` floor in `roll.js`), so no lone outlier dimension can blow up an
+  otherwise ordinary life, while wealth / longevity / IQ still count fully — extreme rarity now
+  needs a genuine *combination* (Agus-type big climbers land ~1-in-250, not 1-in-2,500). (The real
+  upgrade is still the empirical fortune-score CDF; this is a targeted heuristic fix.)
+- **Looks/height are a mobility modifier, not just a career filter (2026-06).** They already tilt
+  career SELECTION; now they also nudge EARNED income, scaled by each career's own
+  `looksTilt`/`heightTilt` (`traitIncome`, `TRAIT_INCOME=0.045` in `roll.js`). Effect is
+  concentrated where the role rewards the trait: overall corr(looks, wealth) ≈ 0.04, but for
+  actors ≈ 0.29. So very low looks / short stature is a mild headwind in looks- or
+  stature-sensitive roles, an offsettable one (high IQ, events), and near-irrelevant at a desk.
 - **Name clusters split (2026-06):** Nigeria pulled out of the Nigeria+Ghana+Caribbean cluster
   (was emitting Ghanaian "Addo" etc.) into its own Igbo/Yoruba/Hausa list; the Central-Asian
   Turkic states (Uzbekistan/Turkmenistan/Kyrgyzstan/Kazakhstan) split from the Persian cluster

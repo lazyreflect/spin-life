@@ -36,6 +36,13 @@ export function makeRoller({ countries, params, names, careers }) {
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
   const M = params.mobility, LS = params.lifespan;
   const careerRank = (career) => CAREER_RANK[career.incomeBand] ?? 0.5;
+  // looks/height tailwind on EARNED income, scaled by how much the career rewards
+  // them (its own looksTilt/heightTilt) — so attractive/tall people climb a little
+  // more in looks- or stature-sensitive roles (actor, sales, athletics) and very
+  // low looks / short stature is a mild headwind there, while desk roles barely care.
+  const TRAIT_INCOME = 0.045;
+  const traitIncome = (career, zLooks, zHeight) =>
+    TRAIT_INCOME * ((career.looksTilt || 0) * zLooks + (career.heightTilt || 0) * zHeight);
   // Two-component wealth: a person's position is the better of what they EARN
   // (career-anchored income, bounded by the career) and an inherited-asset FLOOR.
   // The floor is CONVEX in parent rank (inheritance is Pareto-concentrated: the
@@ -73,7 +80,7 @@ export function makeRoller({ countries, params, names, careers }) {
       const [lo, hi] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
       par[i] = parentRank; cf[i] = lo; cc[i] = hi; af[i] = assetFloorOf(parentRank, c.wealthGini);
       occSorted[i] = occRankOf(career.id);
-      vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + M.luckSd * randn();
+      vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, z[3], z[2]) + M.luckSd * randn();
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
     let s = 0; for (const v of vals) s += (v - mu) ** 2; sd = Math.sqrt(s / N);
@@ -103,7 +110,7 @@ export function makeRoller({ countries, params, names, careers }) {
 
     // education + career first: career income drives the EARNED component
     const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
-    const incomeRaw = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + M.luckSd * randn();
+    const incomeRaw = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, zLk, zHt) + M.luckSd * randn();
     const [cFloor, cCeil] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
     const incomeRank = clamp(normCdf((incomeRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
     // inherited-asset floor (convex in parents' rank); wealth = the better of the two
@@ -162,7 +169,9 @@ export function makeRoller({ countries, params, names, careers }) {
     // outlier (e.g. a 6'7" waiter) can't blow up the rarity of an otherwise modest life.
     const p = (x) => clamp(x / 100, 1e-6, 1);
     const pPhys = (x) => clamp(Math.max(x, 5) / 100, 0.05, 1);
-    const arcP = clamp(2 * (1 - normCdf(Math.abs(childRank - parentRank) / jumpSd)), 1e-4, 1);
+    // arc floored at ~top-2.5%: a single big climb/fall is rare, but can't by itself
+    // push a life to 1-in-thousands — extreme rarity still needs a real combination.
+    const arcP = clamp(2 * (1 - normCdf(Math.abs(childRank - parentRank) / jumpSd)), 0.025, 1);
     const prod = p(life.pct.money) * p(life.pct.iq) * pPhys(life.pct.height) * p(life.pct.life) * pPhys(life.pct.looks) * arcP;
     life.rarity = 1 / Math.sqrt(prod);
     life.rarityLabel = rarityText(life.rarity);
