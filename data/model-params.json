@@ -5,7 +5,7 @@
   "heightSdM": 7.5,
   "heightSdF": 6.7,
   "looksMean": 5.0,
-  "looksSd": 2.0,
+  "looksSd": 1.4,
   "mobility": {
     "betaBase": 0.25,
     "betaPerGini": 0.006,

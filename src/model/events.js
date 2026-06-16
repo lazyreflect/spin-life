@@ -43,7 +43,7 @@ const DECLINE_IDS = new Set(['illness', 'war', 'famine', 'accident', 'crime', 'a
 // Phrasing must agree with the calibrated ending wealth (a "kept" phrase never
 // pairs with a gutted net worth) and the magnitude of the fall.
 const FALL_KEPT = ['lived off the family money', 'coasted on inherited wealth', 'never had to work the family name', 'lived comfortably off old money'];
-const FALL_DRAWN = ['ran through the family money', 'frittered away the inheritance', 'let the family fortune slip away', 'sank it all into a failing business', 'made a string of bad investments'];
+const FALL_DRAWN = ['ran through the family money', 'frittered away the inheritance', 'let the family fortune slip away', 'sank it all into a failing business', 'made a string of bad investments', 'gambled away the family money', 'backed one bad venture after another', 'watched the family firm go under', 'was bled dry by a long legal battle', 'co-signed a loan that ruined them'];
 const FALL_MODERATE = ['watched the family money run dry', 'never rebuilt after a business collapsed', 'was set back by a costly divorce', 'drained the savings supporting relatives', 'lost steady work to a lasting injury'];
 const FALL_DEEP = ['never recovered after the family fell on hard times', 'was buried by debts that never cleared', 'lost the family land and never replaced it', 'never worked the same after a bad injury'];
 const FALL_UNSTABLE = ['lost everything when the economy collapsed', 'was wiped out by hyperinflation', "saw the family's standing erased by upheaval", 'was driven off the family land by conflict', 'lost it all to a corrupt official'];
