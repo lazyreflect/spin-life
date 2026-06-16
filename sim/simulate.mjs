@@ -56,9 +56,9 @@ for (const l of adults) (byBand[l.career.incomeBand] ||= []).push(l.childRank);
 const bandMean = BANDS.map((b) => (byBand[b].length ? mean(byBand[b]) : NaN));
 let monotonic = true;
 for (let i = 1; i < BANDS.length; i++) if (!(bandMean[i] > bandMean[i - 1])) monotonic = false;
-// a low/lowmid/mid-income career must never reach the elite class
-const lowCeil = ['low', 'lowmid', 'mid'];
-const eliteLeak = adults.filter((l) => lowCeil.includes(l.career.incomeBand) && l.childRank >= ELITE).length;
+// only top-tier (high) or business-owner (elite) careers may reach elite class
+const subElite = ['low', 'lowmid', 'mid', 'highmid'];
+const eliteLeak = adults.filter((l) => subElite.includes(l.career.incomeBand) && l.childRank >= ELITE).length;
 // heavy over-qualification (3+ tiers above the job's minimum) should be rare
 const overQual = adults.filter((l) => EDU_RANK[l.education] - EDU_RANK[l.career.minEducation] >= 3).length / adults.length;
 
@@ -84,7 +84,7 @@ console.log(row('corr(height, looks) F', rHtLkF, 0.10, 0.03));
 
 console.log('\nCAREER-ANCHORED INVARIANTS');
 console.log(check('class rises with income band', monotonic, `[${bandMean.map((m) => m.toFixed(2)).join(' ')}]`));
-console.log(check('no low/mid career -> elite', eliteLeak === 0, `${eliteLeak} leaks`));
+console.log(check('only top-tier career -> elite', eliteLeak === 0, `${eliteLeak} leaks`));
 console.log(check('heavy over-qualification rare', overQual < 0.03, `${(overQual * 100).toFixed(2)}% of adults`));
 console.log(row('mean childRank (≈0.5 uniform)', childMean, 0.50, 0.05));
 

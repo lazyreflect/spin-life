@@ -20,9 +20,12 @@ const W_CAREER = 0.55; // career's share of the destination-wealth signal
 // Hard [floor, ceiling] on the national wealth rank a career can reach, even
 // with inheritance + luck. A clerk (mid) literally cannot end up elite; a
 // high-income professional cannot end up destitute.
+// Elite wealth (childRank >= 0.833) is reachable only by top-tier professions
+// (high) or business ownership (elite) — a salaried highmid role (nurse,
+// accountant, civil servant, scientist) tops out at "upper", never elite.
 const CAREER_RANGE = {
   low: [0.00, 0.45], lowmid: [0.02, 0.58], mid: [0.10, 0.72],
-  highmid: [0.35, 0.86], high: [0.55, 0.96], elite: [0.70, 1.0],
+  highmid: [0.35, 0.82], high: [0.55, 0.96], elite: [0.70, 1.0],
 };
 
 export function makeRoller({ countries, params, names, careers }) {
