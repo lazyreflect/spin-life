@@ -91,9 +91,32 @@ export function rarityText(rarity) {
   const n = Math.round(rarity);
   return `1 in ${n.toLocaleString()}`;
 }
-export function wealthClass(rank) {
-  const labels = ['lower class', 'working class', 'middle class', 'upper-middle class', 'upper class', 'the elite'];
-  return labels[clamp(Math.floor(rank * 6), 0, 5)];
+// Class is OCCUPATION-based (relation to capital / authority / skill), not a net-
+// worth rank. Each career carries an occupational class position; wealth + power
+// modify standing. "The elite" is the power elite — those who COMMAND capital or
+// institutions (entrepreneur/executive/politician) AND are wealthy, or dynastic
+// controlling wealth. Merely rich (a lottery winner, a top-paid professional) is
+// "wealthy/upper", not elite.
+export const RULING = new Set(['entrepreneur', 'executive', 'politician']);
+const OCC_RANK = {
+  'subsistence-farmer': 0.15, farmer: 0.15, herder: 0.15, fisher: 0.15, 'street-vendor': 0.15, 'domestic-worker': 0.15,
+  'factory-worker': 0.28, 'construction-worker': 0.28, 'truck-driver': 0.28, driver: 0.28, waiter: 0.28, 'retail-clerk': 0.28, 'security-guard': 0.28,
+  miner: 0.40, mechanic: 0.40, electrician: 0.40, tailor: 0.40, cook: 0.40, barber: 0.40, soldier: 0.40, clerk: 0.40,
+  shopkeeper: 0.52, 'civil-servant': 0.52, teacher: 0.52, nurse: 0.52, journalist: 0.52, clergy: 0.52, musician: 0.52, artist: 0.52, athlete: 0.52, actor: 0.52,
+  accountant: 0.70, engineer: 0.70, 'software-developer': 0.70, architect: 0.70, pharmacist: 0.70, banker: 0.70, lawyer: 0.70, doctor: 0.70, professor: 0.70, scientist: 0.70, pilot: 0.70, astronaut: 0.70,
+  politician: 0.82, executive: 0.82, entrepreneur: 0.82,
+};
+export const occRankOf = (careerId) => OCC_RANK[careerId] ?? 0.40;
+
+// occupational class standing, nudged by realized wealth; elite gated by power+wealth
+export function classOf(occRank, wealthRank, ruling, dynastic) {
+  const wealthy = wealthRank >= 0.90;
+  if ((ruling && wealthy) || (dynastic && wealthy)) return 'the elite';
+  const standing = 0.60 * occRank + 0.40 * wealthRank;
+  const cuts = [0.20, 0.38, 0.56, 0.74, 0.90];
+  const labels = ['lower class', 'working class', 'middle class', 'upper-middle class', 'upper class', 'upper class'];
+  let i = 0; for (const c of cuts) if (standing >= c) i++;
+  return labels[i];
 }
 const article = (word) => (/^[aeiou]/i.test(word) ? 'an' : 'a');
 const classPhrase = (label) => (label.startsWith('the') ? label : `the ${label}`);

@@ -5,7 +5,7 @@ import {
   wealthQuantile, sampleAge, wealthLifeAdj, adjCountryIq,
   moneyTopPercent, iqTopPercent, heightTopPercent, looksTopPercent, lifeTopPercent,
 } from './distributions.js';
-import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, wealthClass, buildSentence } from './content.js';
+import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, classOf, occRankOf, RULING, buildSentence } from './content.js';
 import { rollEvents } from './events.js';
 
 const flagEmoji = (code) =>
@@ -147,10 +147,14 @@ export function makeRoller({ countries, params, names, careers }) {
     life.rarity = 1 / Math.sqrt(prod);
     life.rarityLabel = rarityText(life.rarity);
 
-    // mobility / class arc
-    life.classOrigin = wealthClass(parentRank);
-    life.classFinal = wealthClass(childRank);
-    life.mobilityDelta = Math.round((childRank - parentRank) * 100);
+    // mobility / class arc — class is occupation-based, modified by wealth + power
+    const ruling = RULING.has(career.id);
+    const dynastic = parentRank >= 0.98;
+    const occ = occRankOf(career.id);
+    life.classOrigin = classOf(parentRank, parentRank, false, dynastic); // family standing (no parent occupation modeled)
+    life.classFinal = classOf(occ, childRank, ruling, dynastic);
+    const finalStanding = 0.60 * occ + 0.40 * childRank;
+    life.mobilityDelta = Math.round((finalStanding - parentRank) * 100);
     life.familyWealthLabel = money(familyWealth);
     life.netWorthLabel = money(netWorth);
     life.sentence = buildSentence({ ...life, country: country.name });
