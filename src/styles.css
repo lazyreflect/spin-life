@@ -90,7 +90,9 @@ body {
 .stat + .stat { border-left: 1px solid var(--line); }
 .stat-label { font-size: 10px; letter-spacing: .4px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
 .stat-value { font-size: 17px; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
-.stat-top { font-size: 9.5px; color: var(--gold); font-weight: 700; margin-top: 2px; }
+.stat-top { font-size: 9.5px; font-weight: 700; margin-top: 2px; }
+.stat-top.good { color: var(--gold); }
+.stat-top.bad { color: var(--muted); }
 
 /* lives */
 .screen-title { align-self: flex-start; font-family: var(--serif); font-weight: 600; font-size: 22px; margin: 8px 0 14px; }

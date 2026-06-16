@@ -5,11 +5,14 @@ function pct(x: number) {
 }
 
 function Stat({ label, top, value }: { label: string; top?: number; value: string }) {
+  // `top` = % of the world at or above you. Low = rare/good tail; high = common.
+  const good = top != null && top <= 50;
+  const tag = top == null ? null : good ? `top ${pct(top)}%` : `bottom ${pct(100 - top)}%`;
   return (
     <div className="stat">
       <div className="stat-label">{label}</div>
       <div className="stat-value">{value}</div>
-      {top != null && <div className="stat-top">top {pct(top)}%</div>}
+      {tag && <div className={good ? 'stat-top good' : 'stat-top bad'}>{tag}</div>}
     </div>
   );
 }
