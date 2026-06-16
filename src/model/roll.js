@@ -40,7 +40,7 @@ export function makeRoller({ countries, params, names, careers }) {
   // them (its own looksTilt/heightTilt) — so attractive/tall people climb a little
   // more in looks- or stature-sensitive roles (actor, sales, athletics) and very
   // low looks / short stature is a mild headwind there, while desk roles barely care.
-  const TRAIT_INCOME = 0.045;
+  const TRAIT_INCOME = 0.06;
   const traitIncome = (career, zLooks, zHeight) =>
     TRAIT_INCOME * ((career.looksTilt || 0) * zLooks + (career.heightTilt || 0) * zHeight);
   // Two-component wealth: a person's position is the better of what they EARN
@@ -106,7 +106,7 @@ export function makeRoller({ countries, params, names, careers }) {
 
     const iq = clamp(Math.round(adjCountryIq(country.iq) + params.iqSd * zIq), 60, 160);
     const heightCm = (sex === 'Female' ? country.heightF : country.heightM) + (sex === 'Female' ? params.heightSdF : params.heightSdM) * zHt;
-    const looks = clamp(params.looksMean + params.looksSd * zLk, 0.1, 10);
+    const looks = clamp(params.looksMean + params.looksSd * zLk, 1, 10);
 
     // education + career first: career income drives the EARNED component
     const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);

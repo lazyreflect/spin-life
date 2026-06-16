@@ -90,7 +90,9 @@ Deploy = `git push origin main`. To watch: `gh run watch`. Pages source is alrea
 World Bank (population/births, life expectancy, Gini, employment, enrollment), UBS Global
 Wealth Databook (median net worth), NCD-RisC (height), per-country IQ estimates (IQ —
 see caveat), ILO via World Bank (employment, female LFP), UNESCO/WB (enrollment). **Looks is
-synthetic** (global 0–10 normal, no country data). Names = bundled culture lists.
+synthetic** — a global **N(5, 1.4)** on a 1–10 scale, floored at 1 (no country data); the tight
+SD keeps a `1` (or a `10`) a few-in-a-thousand extreme rather than ~2% of people. Names = bundled
+culture lists.
 
 ## Open decisions / TODO
 

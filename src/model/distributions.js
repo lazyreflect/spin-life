@@ -75,7 +75,9 @@ export function heightTopPercent(cm, sex, countries, totalBirths) {
   let s = 0; for (const c of countries) { const m = sex === 'Female' ? c.heightF : c.heightM; s += c.births * (1 - normCdf((cm - m) / sd)); }
   return clamp((s / totalBirths) * 100, 0.001, 100);
 }
-export const looksTopPercent = (looks) => clamp((1 - normCdf((looks - 5) / 2)) * 100, 0.001, 100);
+// looks ~ N(5, 1.4) on a 1–10 scale: ~68% land 3.6–6.4, and a 1 (or a 10) is a
+// few-in-a-thousand extreme — matching "1 = the rare bottom of the scale".
+export const looksTopPercent = (looks) => clamp((1 - normCdf((looks - 5) / 1.4)) * 100, 0.001, 100);
 export function lifeTopPercent(age, sex, countries, totalBirths) {
   let s = 0; for (const c of countries) { const le = sex === 'Female' ? c.lifeF : c.lifeM; s += c.births * (1 - normCdf((age - le) / 13)); }
   return clamp((s / totalBirths) * 100, 0.001, 100);
