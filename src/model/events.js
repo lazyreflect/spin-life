@@ -69,8 +69,9 @@ function forcedArcEvent(ctx, childPost, keep, rand, inst = 0) {
   if (childPost >= 0.55) {
     if (keep.some((e) => e.id === 'windfall' || e.id === 'married')) return null; // inheritance tells it
     const pull = clamp(0.35 * (childPost - occ), 0.04, 0.20);
-    // big drawdown reads as running through it; a light one as living off it
-    return { id: 'arc-fall', text: pick(pull >= 0.13 ? FALL_DRAWN : FALL_KEPT, rand), w: -pull, child: false };
+    // "kept" phrasing only if they END comfortable after the drawdown; otherwise
+    // they ran it down (so "coasted" never pairs with a working-class outcome)
+    return { id: 'arc-fall', text: pick(childPost - pull >= 0.55 ? FALL_KEPT : FALL_DRAWN, rand), w: -pull, child: false };
   }
   if (childPost >= 0.38) return { id: 'arc-fall', text: pick(FALL_MODERATE, rand), w: -0.06, child: false };
   return { id: 'arc-fall', text: pick(FALL_DEEP, rand), w: 0, child: false };
