@@ -10,17 +10,13 @@ import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText,
 const flagEmoji = (code) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 
-// Career income routed into destination wealth (rank-space premium).
-const INCOME_PREMIUM = { low: -0.10, lowmid: -0.05, mid: 0.0, highmid: 0.08, high: 0.16, elite: 0.30 };
-
-// Direct human-capital buffer on destination wealth: high IQ + education resist
-// large downward mobility; low IQ resists staying high. Keeps career-income as
-// the main channel but stops the worst contradictions (postgrad/IQ-115 craterer,
-// IQ-65 holding upper-mid) the career signal alone misses.
-const EDU_RANK = { none: 0, primary: 1, secondary: 2, vocational: 3, bachelor: 4, postgrad: 5 };
-const WHC = 0.10;
-// IQ + education + a smaller looks (beauty premium) buffer against large drops
-const hcTerm = (zIq, zLooks, education) => WHC * (0.5 * zIq + 0.15 * zLooks + 0.35 * ((EDU_RANK[education] - 2.5) / 2.5));
+// Destination wealth is ANCHORED on the career's income ceiling (its central
+// national wealth rank); inheritance + luck only modulate within bounds. This
+// makes job and class agree by construction: a clerk can't reach elite, and a
+// rich kid who underachieves into a low-income job drops. Human capital (IQ,
+// education, looks) flows in through career SELECTION, not a separate add-on.
+const CAREER_RANK = { low: 0.20, lowmid: 0.33, mid: 0.48, highmid: 0.64, high: 0.80, elite: 0.93 };
+const W_CAREER = 0.55; // career's share of the destination-wealth signal
 
 export function makeRoller({ countries, params, names, careers }) {
   const totalBirths = countries.reduce((a, c) => a + c.births, 0);
@@ -28,8 +24,9 @@ export function makeRoller({ countries, params, names, careers }) {
   for (const c of countries) { t += c.births; cum.push(t); }
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
   const M = params.mobility, LS = params.lifespan;
-  const betaOf = (g) => clamp(M.betaBase + M.betaPerGini * (g - 30), M.betaMin, M.betaMax);
-  const incomePrem = (career) => INCOME_PREMIUM[career.incomeBand] ?? 0;
+  // Great Gatsby: inheritance persists more in high-inequality countries
+  const inheritWeight = (g) => clamp(0.15 + 0.005 * (g - 30), 0.12, 0.35);
+  const careerRank = (career) => CAREER_RANK[career.incomeBand] ?? 0.5;
 
   // roll education + career for a draw (career income drives wealth, so it must
   // be known before the destination-wealth step)
@@ -48,10 +45,10 @@ export function makeRoller({ countries, params, names, careers }) {
       const male = Math.random() < params.sexMaleProb;
       const z = corrNormals(male ? L.Male : L.Female);
       const parentRank = normCdf(z[0]);
-      const beta = betaOf(c.wealthGini);
-      const { education, career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
+      const wI = inheritWeight(c.wealthGini);
+      const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
       par[i] = parentRank;
-      vals[i] = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + hcTerm(z[1], z[3], education) + M.luckSd * randn();
+      vals[i] = W_CAREER * careerRank(career) + wI * parentRank + (1 - W_CAREER - wI) * 0.5 + M.luckSd * randn();
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
     let s = 0; for (const v of vals) s += (v - mu) ** 2; sd = Math.sqrt(s / N);
@@ -66,7 +63,7 @@ export function makeRoller({ countries, params, names, careers }) {
     const zFw = z[0], zIq = z[1], zHt = z[2], zLk = z[3];
 
     const parentRank = normCdf(zFw);
-    const beta = betaOf(country.wealthGini);
+    const wI = inheritWeight(country.wealthGini);
 
     const iq = clamp(Math.round(adjCountryIq(country.iq) + params.iqSd * zIq), 55, 160);
     const heightCm = (sex === 'Female' ? country.heightF : country.heightM) + (sex === 'Female' ? params.heightSdF : params.heightSdM) * zHt;
@@ -74,7 +71,7 @@ export function makeRoller({ countries, params, names, careers }) {
 
     // education + career first: career income drives destination wealth
     const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
-    const childRaw = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + hcTerm(zIq, zLk, education) + M.luckSd * randn();
+    const childRaw = W_CAREER * careerRank(career) + wI * parentRank + (1 - W_CAREER - wI) * 0.5 + M.luckSd * randn();
     const childRank = clamp(normCdf((childRaw - mu) / sd), 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
