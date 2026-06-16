@@ -38,8 +38,9 @@ src/
     content.js         names, education+career roll, formatting, class labels, sentence
     roll.js            makeRoller({countries,params,names,careers}) -> rollLife()  [orchestrator]
   ui/
-    Wheel.tsx          conic-gradient spinning wheel (continent + country segments)
-    SpinScreen.tsx     phase machine: idle → continent → country → reveal; auto-scrolls to card
+    Wheel.tsx          conic-gradient spinning wheel (categorical OR value-bucket segments)
+    SpinScreen.tsx     stage machine: steps through REVEAL_ORDER, holds on each landed value, → reveal
+    revealStages.ts    builds the per-dimension reveal wheels (continent→country→wealth→height→IQ→looks→life)
     Card.tsx           the result card (sentence, rarity, class arc, career, 7 stats w/ TOP%)
     Lives.tsx          history list, sorted by rarity
   App.tsx              tabs (Spin/Lives), spins counter + refill, localStorage
@@ -84,14 +85,14 @@ Deploy = `git push origin main`. To watch: `gh run watch`. Pages source is alrea
 ## Data provenance
 
 World Bank (population/births, life expectancy, Gini, employment, enrollment), UBS Global
-Wealth Databook (median net worth), NCD-RisC (height), Lynn/Vanhanen "national IQ" (IQ —
+Wealth Databook (median net worth), NCD-RisC (height), per-country IQ estimates (IQ —
 see caveat), ILO via World Bank (employment, female LFP), UNESCO/WB (enrollment). **Looks is
 synthetic** (global 0–10 normal, no country data). Names = bundled culture lists.
 
 ## Open decisions / TODO
 
-1. **IQ data (values call).** Currently the extracted Lynn national-IQ figures (e.g. DR Congo 51).
-   Scientifically discredited. Decide: keep / replace / drop the dimension. It does NOT propagate
+1. **IQ data (values call).** The per-country IQ estimates are the shakiest input and
+   contentious. Decide: keep / replace / drop the dimension. It does NOT propagate
    deterministically (luck dominates every roll), but the raw numbers are visible on cards.
 2. **Rarity** is still the marginal-product placeholder `1/√(∏ pᵢ)`, which overstates rarity for
    correlated lucky combos. Planned upgrade: empirical fortune-score distribution (DESIGN §4.5).
@@ -106,9 +107,12 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
 
 ## Gotchas / notes
 
-- **Spin speed is sacred** (design principle): keep the loop fast. The wheel does continent
-  (~2.2s) + country (~2.6s); don't serialize more reveal stages into the default spin — put
-  depth on the card or behind an opt-in "Full Life" mode.
+- **Spin flow (product decision, 2026-06):** the default now runs the FULL per-stat reveal
+  sequence (continent→country→wealth→height→IQ→looks→life), restoring the original's "many
+  spins" feel — overriding the earlier "spin speed is sacred / single fast reveal" default.
+  Stages live in `revealStages.ts`; tune cadence via per-stage `durationMs` + `HOLD_MS` in
+  `SpinScreen.tsx`. The whole life is rolled up front (`rollLife`), so reveal order is pure
+  presentation — adding/removing/reordering stages never touches the model.
 - **The card is the hero** — the deadpan one-line sentence is the viral asset; don't bloat it.
 - The model is duplicated in `sim/simulate.mjs` (inline, the validation oracle) vs `src/model/`
   (shared). Keep them in sync if you change coefficients, or refactor simulate.mjs to import the

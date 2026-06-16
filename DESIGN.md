@@ -21,9 +21,9 @@ Status: design locked, math calibrated, no app built yet.
 - Data per country: `births, netWorth(median), wealthGini, heightM, heightF, iq, lifeM, lifeF`.
   Names = 37 cultural clusters (each maps many countries → name lists, continent fallback).
   Looks = a global synthetic 0–10 curve (no per-country data).
-- Sourced from World Bank + UBS (credited); height = NCD-RisC and IQ = Lynn/Vanhanen
-  (used but **not** credited in the original). `data/countries.json` here is extracted
-  verbatim from the original bundle (241 countries).
+- Sourced from World Bank + UBS (credited); height = NCD-RisC and IQ = per-country
+  estimates (used but **not** credited in the original). `data/countries.json` here is
+  extracted verbatim from the original bundle (241 countries).
 
 ## 2. Governing principle
 
@@ -177,7 +177,7 @@ Resolved:
 3. **Career in v1** — included (education → occupation, structural country weighting). ✅
 
 Still open:
-4. **IQ data** — currently the extracted Lynn values (e.g. DR Congo 51). Shakiest input;
+4. **IQ data** — the per-country IQ estimates are the shakiest, most contentious input;
    decide keep / replace / drop. It does NOT propagate deterministically (luck dominant).
 5. **Project name** — `spin-life` working name; rename freely.
 6. **Rarity** — still the marginal-product `1/√(∏ pᵢ)` placeholder; the joint/empirical
@@ -190,5 +190,5 @@ merged into `countries.json`** (empAg/empIndustry/empServices, femaleLFP, second
 ## 7. Data provenance (credit honestly)
 
 World Bank (population, life expectancy, Gini, and later employment/enrollment),
-UBS Global Wealth Databook (net worth), NCD-RisC (height), Lynn/Vanhanen "national IQ"
+UBS Global Wealth Databook (net worth), NCD-RisC (height), per-country IQ estimates
 (IQ — with the caveat above), ILO/UNESCO (career, when built). Looks is synthetic.
