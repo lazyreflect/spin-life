@@ -38,11 +38,15 @@ export const EVENTS = [
 // events whose presence already explains a fall in standing/wealth, so no
 // forced trajectory story is needed on top of them.
 const DECLINE_IDS = new Set(['illness', 'war', 'famine', 'accident', 'crime', 'addiction', 'ruin', 'scandal']);
-// kept most of the money (small drawdown) vs ran through it (large drawdown) —
-// phrasing must agree with the calibrated ending wealth, so "coasted" never
-// pairs with a gutted net worth.
-const IDLE_HEIR = ['lived off the family money', 'coasted on inherited wealth', 'never had to work the family money'];
-const RAN_THROUGH = ['ran through the family money', 'frittered away the inheritance', 'let the family fortune slip away'];
+// Varied, specific causes for a forced downward arc, chosen by how much wealth
+// survived and by country conditions — so big drops aren't all "family money".
+// Phrasing must agree with the calibrated ending wealth (a "kept" phrase never
+// pairs with a gutted net worth) and the magnitude of the fall.
+const FALL_KEPT = ['lived off the family money', 'coasted on inherited wealth', 'never had to work the family name', 'lived comfortably off old money'];
+const FALL_DRAWN = ['ran through the family money', 'frittered away the inheritance', 'let the family fortune slip away', 'sank it all into a failing business', 'made a string of bad investments'];
+const FALL_MODERATE = ['watched the family money run dry', 'never rebuilt after a business collapsed', 'was set back by a costly divorce', 'drained the savings supporting relatives', 'lost steady work to a lasting injury'];
+const FALL_DEEP = ['never recovered after the family fell on hard times', 'was buried by debts that never cleared', 'lost the family land and never replaced it', 'never worked the same after a bad injury'];
+const FALL_UNSTABLE = ['lost everything when the economy collapsed', 'was wiped out by hyperinflation', "saw the family's standing erased by upheaval", 'was driven off the family land by conflict', 'lost it all to a corrupt official'];
 const pick = (arr, rand) => arr[Math.floor(rand() * arr.length)];
 
 // A large DOWNWARD status arc from a privileged origin (the rich heir who
@@ -52,19 +56,24 @@ const pick = (arr, rand) => arr[Math.floor(rand() * arr.length)];
 // partway down toward the job's level, so a domestic worker isn't left sitting
 // in the top wealth band without any backstory. Skipped when a decline event
 // (or, for the still-wealthy case, an inheritance) already tells the story.
-function forcedArcEvent(ctx, childPost, keep, rand) {
+function forcedArcEvent(ctx, childPost, keep, rand, inst = 0) {
   const occ = ctx.occ ?? 0.40;
   const origin = ctx.originStanding ?? ctx.parentRank;
-  if (origin - (0.60 * occ + 0.40 * childPost) < 0.13) return null; // not a noticeable fall
-  if (keep.some((e) => DECLINE_IDS.has(e.id))) return null;         // already explained
+  const gap = origin - (0.60 * occ + 0.40 * childPost);
+  if (gap < 0.13) return null;                              // not a noticeable fall
+  if (keep.some((e) => DECLINE_IDS.has(e.id))) return null; // already explained
+  // in volatile countries, a big fall is often an external shock (war/economy/graft)
+  if (inst > 0.45 && gap >= 0.20 && rand() < 0.6) {
+    return { id: 'arc-fall', text: pick(FALL_UNSTABLE, rand), w: -clamp(0.10 + 0.30 * (gap - 0.20), 0.06, 0.24), child: false };
+  }
   if (childPost >= 0.55) {
     if (keep.some((e) => e.id === 'windfall' || e.id === 'married')) return null; // inheritance tells it
     const pull = clamp(0.35 * (childPost - occ), 0.04, 0.20);
     // big drawdown reads as running through it; a light one as living off it
-    return { id: 'arc-fall', text: pick(pull >= 0.13 ? RAN_THROUGH : IDLE_HEIR, rand), w: -pull, child: false };
+    return { id: 'arc-fall', text: pick(pull >= 0.13 ? FALL_DRAWN : FALL_KEPT, rand), w: -pull, child: false };
   }
-  if (childPost >= 0.38) return { id: 'arc-fall', text: 'watched the family money run dry', w: -0.06, child: false };
-  return { id: 'arc-fall', text: 'never recovered after the family fell on hard times', w: 0, child: false };
+  if (childPost >= 0.38) return { id: 'arc-fall', text: pick(FALL_MODERATE, rand), w: -0.06, child: false };
+  return { id: 'arc-fall', text: pick(FALL_DEEP, rand), w: 0, child: false };
 }
 
 // ctx: { parentRank, childRank (= pre-event position), zIq, career, occ }
@@ -82,7 +91,7 @@ export function rollEvents(ctx, country, rand = Math.random) {
   let wealthDelta = keep.reduce((s, e) => s + gainOf(e), 0);
 
   // force an explanatory story (+ wealth calibration) for a steep unexplained fall
-  const forced = forcedArcEvent(ctx, clamp(ctx.childRank + wealthDelta, 0.0005, 0.9995), keep, rand);
+  const forced = forcedArcEvent(ctx, clamp(ctx.childRank + wealthDelta, 0.0005, 0.9995), keep, rand, inst);
   if (forced) {
     keep = [forced, ...keep.filter((e) => e.id !== forced.id)].slice(0, 2); // forced is the headline
     wealthDelta = keep.reduce((s, e) => s + gainOf(e), 0);

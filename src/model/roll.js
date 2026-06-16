@@ -157,9 +157,13 @@ export function makeRoller({ countries, params, names, careers }) {
 
     // rarity = 1 / sqrt(product of marginal probabilities) + mobility-arc axis,
     // so a big rank jump/fall is rare even when the marginal stats are ordinary.
+    // Extreme rarity is reserved for FORTUNE combinations (wealth/longevity/mobility):
+    // the cosmetic stats (height, looks) are floored at top-5%, so a lone physical
+    // outlier (e.g. a 6'7" waiter) can't blow up the rarity of an otherwise modest life.
     const p = (x) => clamp(x / 100, 1e-6, 1);
+    const pPhys = (x) => clamp(Math.max(x, 5) / 100, 0.05, 1);
     const arcP = clamp(2 * (1 - normCdf(Math.abs(childRank - parentRank) / jumpSd)), 1e-4, 1);
-    const prod = p(life.pct.money) * p(life.pct.iq) * p(life.pct.height) * p(life.pct.life) * p(life.pct.looks) * arcP;
+    const prod = p(life.pct.money) * p(life.pct.iq) * pPhys(life.pct.height) * p(life.pct.life) * pPhys(life.pct.looks) * arcP;
     life.rarity = 1 / Math.sqrt(prod);
     life.rarityLabel = rarityText(life.rarity);
 

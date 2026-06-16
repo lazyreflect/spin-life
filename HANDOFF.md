@@ -145,9 +145,19 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   calibrated net worth agree: small drawdown → "lived off the family money" / "coasted on
   inherited wealth" (kept it); big drawdown → "ran through the family money" / "let the family
   fortune slip away"; ended modest → "watched the family money run dry"; ended poor → "never
-  recovered after the family fell on hard times". Upward arcs are NOT forced (the career itself is
-  the story). `npm run sim` now asserts **mean Δ ≈ 0** and **≥98% of ≤−13 arcs carry a story**.
-  `ruin` softened (−0.38→−0.30: a wipeout usually leaves a residue). Event rate ≈ 45%.
+  recovered after the family fell on hard times". The cause is drawn from a **24-phrase catalog**
+  (`FALL_KEPT/DRAWN/MODERATE/DEEP/UNSTABLE` in `events.js`) selected by surviving wealth, and in
+  volatile countries (`instabilityOf > 0.45`) a big fall is biased toward an **external shock**
+  (economic collapse, hyperinflation, conflict, corruption) — so big drops aren't all "family
+  money". Upward arcs are NOT forced (the career itself is the story). `npm run sim` now asserts
+  **mean Δ ≈ 0** and **≥98% of ≤−13 arcs carry a story**. `ruin` softened (−0.38→−0.30: a wipeout
+  usually leaves a residue). Event rate ≈ 45%.
+- **Rarity reserves extreme values for FORTUNE combinations (2026-06).** The marginal-rarity
+  product over-weighted a single extreme stat — a 6'7" waiter scored 1-in-664 on height alone.
+  Now the cosmetic dimensions (height, looks) are **floored at top-5%** in the product (`pPhys` in
+  `roll.js`), so a lone physical outlier can't blow up an otherwise ordinary life, while wealth /
+  longevity / IQ / mobility still count fully — extreme rarity now needs a genuine *combination*.
+  (The real upgrade is still the empirical fortune-score CDF; this is a targeted heuristic fix.)
 - **Name clusters split (2026-06):** Nigeria pulled out of the Nigeria+Ghana+Caribbean cluster
   (was emitting Ghanaian "Addo" etc.) into its own Igbo/Yoruba/Hausa list; the Central-Asian
   Turkic states (Uzbekistan/Turkmenistan/Kyrgyzstan/Kazakhstan) split from the Persian cluster
