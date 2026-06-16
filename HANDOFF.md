@@ -129,14 +129,17 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   lifespan (fatal events), and surface on the card as story + in the sentence. ~39% of lives get
   ≥1 event; capped at 2. Adult-only events are suppressed for early deaths. Tune the catalog
   (probs/deltas) in `events.js`. The sim's "only top-tier → elite" invariant excludes event lives.
-- **Career-anchored wealth (2026-06 refactor):** the recurring "job vs class" contradictions
-  (office-clerk→elite, cook→elite) were architectural — destination wealth used to be
-  inheritance-anchored with career as a weak ± premium. It's now **anchored on the career's
-  income ceiling** (`CAREER_RANK` per income band, `W_CAREER=0.55`), with inheritance
-  (`inheritWeight`, rises with Gini — Great Gatsby) + luck modulating within bounds. So job and
-  class agree by construction; mobility flows the realistic way (origin → education → career →
-  income → class). Tune the band→rank map / weights in `roll.js`. NOTE: `model-params.json`
-  `mobility.beta*` and `wIqIncome/...` are now UNUSED (kept for the stale sim).
+- **Two-component wealth (2026-06):** destination wealth is `max(income, assetFloor)` —
+  the better of (a) EARNED income: career-anchored (`CAREER_RANK` per band, `W_CAREER=0.55`)
+  and bounded by the career's `CAREER_RANGE` [floor,ceiling]; and (b) an INHERITED-asset floor:
+  `parentRank^1.4 · transferOf(Gini)`, convex (Pareto-concentrated — the genuinely rich retain
+  a lot, the middle little) and peaking just below elite. This is the architectural fix for the
+  heir-crash vs sticky-elite oscillation: a rich heir in a modest job is cushioned to
+  "comfortable" (assets), a self-made earner climbs (income), and a sub-top career reaches
+  ELITE only via dynastic inheritance (parentRank≳0.93), a top-tier career, or an event.
+  Then life events apply, then class/net-worth derive from the final rank. Tune `CAREER_RANK`,
+  `CAREER_RANGE`, `transferOf`, the `^1.4` convexity, and `luckSd` in `roll.js`/params.
+  NOTE: `model-params.json` `mobility.beta*` / `wIqIncome*` are UNUSED (legacy).
 - **`sim/simulate.mjs` now drives the SHARED model** (imports `src/model/roll.js`), so it
   validates what actually ships. It checks the structural copula corr (height↔looks), the
   career-anchored invariants (class rises monotonically with income band; no low/mid career

@@ -35,11 +35,16 @@ export function makeRoller({ countries, params, names, careers }) {
   for (const c of countries) { t += c.births; cum.push(t); }
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
   const M = params.mobility, LS = params.lifespan;
-  // Great Gatsby: inheritance persists more in high-inequality countries. Acts as
-  // a realistic cushion (inherited assets keep an underachieving heir comfortable —
-  // up to their career's ceiling, which still bars a modest job from true elite).
-  const inheritWeight = (g) => clamp(0.22 + 0.006 * (g - 30), 0.18, 0.42);
   const careerRank = (career) => CAREER_RANK[career.incomeBand] ?? 0.5;
+  // Two-component wealth: a person's position is the better of what they EARN
+  // (career-anchored income, bounded by the career) and an inherited-asset FLOOR.
+  // The floor is CONVEX in parent rank (inheritance is Pareto-concentrated: the
+  // genuinely rich retain a lot, the middle little) — so privilege is sticky (a
+  // rich heir stays comfortable even in a modest job) while the asset floor still
+  // peaks just below elite, so minting into the top tier needs a top-tier career,
+  // ownership, or an event. Less dilution in high-inequality countries.
+  const transferOf = (g) => clamp(0.70 + 0.006 * (g - 30), 0.62, 0.88);
+  const assetFloorOf = (parentRank, g) => Math.pow(parentRank, 1.4) * transferOf(g);
 
   // roll education + career for a draw (career income drives wealth, so it must
   // be known before the destination-wealth step)
@@ -49,23 +54,28 @@ export function makeRoller({ countries, params, names, careers }) {
     return { education, career };
   }
 
-  // calibrate childRaw mean + spread once (now includes the career-income
-  // premium), plus the spread of the parent->child rank jump (for arc rarity)
+  // calibrate the EARNED-income spread once, plus the parent->child jump spread
+  // (for arc rarity), using the full income+asset combination.
   let mu = 0.5, sd = 0.2, jumpSd = 0.2;
-  { const N = 30000, vals = new Array(N), par = new Array(N);
+  { const N = 30000, vals = new Array(N), par = new Array(N), cf = new Array(N), cc = new Array(N), af = new Array(N);
     for (let i = 0; i < N; i++) {
       const c = countries[sampleCumulative(cum, totalBirths)];
       const male = Math.random() < params.sexMaleProb;
       const z = corrNormals(male ? L.Male : L.Female);
       const parentRank = normCdf(z[0]);
-      const wI = inheritWeight(c.wealthGini);
       const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
-      par[i] = parentRank;
-      vals[i] = W_CAREER * careerRank(career) + wI * parentRank + (1 - W_CAREER - wI) * 0.5 + M.luckSd * randn();
+      const [lo, hi] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
+      par[i] = parentRank; cf[i] = lo; cc[i] = hi; af[i] = assetFloorOf(parentRank, c.wealthGini);
+      vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + M.luckSd * randn();
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
     let s = 0; for (const v of vals) s += (v - mu) ** 2; sd = Math.sqrt(s / N);
-    let j = 0; for (let i = 0; i < N; i++) { const cr = normCdf((vals[i] - mu) / sd); j += (cr - par[i]) ** 2; }
+    let j = 0;
+    for (let i = 0; i < N; i++) {
+      const income = clamp(normCdf((vals[i] - mu) / sd), Math.max(cf[i], 0.0005), Math.min(cc[i], 0.9995));
+      const childBase = Math.max(income, af[i]);
+      j += (childBase - par[i]) ** 2;
+    }
     jumpSd = Math.sqrt(j / N);
   }
 
@@ -76,17 +86,19 @@ export function makeRoller({ countries, params, names, careers }) {
     const zFw = z[0], zIq = z[1], zHt = z[2], zLk = z[3];
 
     const parentRank = normCdf(zFw);
-    const wI = inheritWeight(country.wealthGini);
 
     const iq = clamp(Math.round(adjCountryIq(country.iq) + params.iqSd * zIq), 60, 160);
     const heightCm = (sex === 'Female' ? country.heightF : country.heightM) + (sex === 'Female' ? params.heightSdF : params.heightSdM) * zHt;
     const looks = clamp(params.looksMean + params.looksSd * zLk, 0.1, 10);
 
-    // education + career first: career income drives destination wealth
+    // education + career first: career income drives the EARNED component
     const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
-    const childRaw = W_CAREER * careerRank(career) + wI * parentRank + (1 - W_CAREER - wI) * 0.5 + M.luckSd * randn();
+    const incomeRaw = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + M.luckSd * randn();
     const [cFloor, cCeil] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
-    const childBase = clamp(normCdf((childRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
+    const incomeRank = clamp(normCdf((incomeRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
+    // inherited-asset floor (convex in parents' rank); wealth = the better of the two
+    const assetFloor = assetFloorOf(parentRank, country.wealthGini);
+    const childBase = Math.max(incomeRank, assetFloor);
 
     // life events: shift the outcome (may break career bounds — windfall, war),
     // cut the lifespan, and give the card a story
