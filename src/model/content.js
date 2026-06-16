@@ -47,34 +47,53 @@ export function rollCareer(life, country, careers) {
     return (country.empServices ?? 50) / 100;
   };
   const femaleLF = (country.femaleLFP ?? 55) / 100;
+  // informal & non-employment "menu shares" come from their own country attributes
+  // (real World Bank columns) instead of the sector employment split.
+  const informality = clamp((country.vulnEmployment ?? 30) / 100, 0.02, 0.95);
+  const unemp = clamp((country.unemployment ?? 6) / 100, 0.01, 0.5);
   const eligible = careers.filter((c) => eduRank(c.minEducation) <= tier && (c.regions.includes('*') || c.regions.includes(country.continent)));
   const pool = eligible.length ? eligible : careers.filter((c) => eduRank(c.minEducation) <= tier);
   if (!pool.length) return careers.find((c) => c.id === 'subsistence-farmer') || careers[0];
+  const BAND_SKILL = { low: 1, lowmid: 1.5, mid: 2, highmid: 3.5, high: 4, elite: 5 };
   const weights = pool.map((c) => {
-    let w = Math.max(0.02, sectorShare(c.sector));
-    if (life.sex === 'Female') w *= clamp(0.4 + femaleLF, 0.3, 1.3);
+    const cohort = c.cohort; // undefined = formal employment
+    // base "menu share": formal jobs follow the sector employment split; the
+    // special cohorts are weighted by their own country attribute.
+    let base;
+    if (cohort === 'informal') base = informality;
+    else if (cohort === 'unemployed') base = unemp;
+    else if (cohort === 'homemaker') base = life.sex === 'Female' ? clamp(1 - femaleLF, 0.05, 0.9) : 0.02;
+    else base = Math.max(0.02, sectorShare(c.sector));
+    // prevalence = how common the role is GIVEN eligibility (replaces the old
+    // prestige throttle; prestige is now a pure collectible label).
+    let w = base * (c.prevalence ?? 1);
+    // female labor-force participation tilt for PAID work (formal + informal);
+    // homemaker already encodes the inverse, unemployment is part of the LF.
+    if (life.sex === 'Female' && cohort !== 'homemaker') w *= clamp(0.4 + femaleLF, 0.3, 1.3);
+    // IQ aligns with a JOB's skill demand: low IQ avoids high-skill jobs and is
+    // steered to low-skill ones (fixes IQ-78 journalist). For cognitively-loaded
+    // careers (high iqTilt) demand is set by how demanding the OUTCOME is (income
+    // band), so a "Founder" (secondary min, elite band) isn't handed to low-IQ
+    // people (IQ-gated founders). Skipped for not-in-work states, which aren't
+    // skill-allocated. Physical/artistic careers (low iqTilt) keep the edu demand.
     const cMin = eduRank(c.minEducation);
-    // IQ aligns with the job's skill demand: low IQ avoids high-skill jobs and
-    // is steered to low-skill ones, and vice-versa (fixes IQ-78 journalist).
-    // For COGNITIVELY-loaded careers (high iqTilt), the demand is set by how
-    // demanding the OUTCOME is (income band), not just formal schooling — so a
-    // "Founder" (secondary min, but elite band) isn't mistaken for low-skill and
-    // handed to low-IQ people (fixes IQ-60 elite founders). Physical/artistic
-    // careers (low iqTilt: athlete, actor) keep the education-based demand.
-    const BAND_SKILL = { low: 1, lowmid: 1.5, mid: 2, highmid: 3.5, high: 4, elite: 5 };
-    const skill = (c.iqTilt || 0) >= 0.4 ? Math.max(cMin, BAND_SKILL[c.incomeBand] ?? cMin) : cMin;
-    const demand = (skill - 2.5) / 2.5; // -1 (unskilled) .. +1 (postgrad-level)
-    w *= clamp(1 + 1.0 * demand * life.zIq, 0.06, 3.5);
-    // over-qualification: the heavily over-educated rarely take lower-skill jobs
-    // (fixes postgrad electrician). Penalised from the first level above minimum.
-    const gap = tier - cMin;
-    w *= Math.exp(-(gap * gap) / 2);
+    if (cohort !== 'homemaker' && cohort !== 'unemployed') {
+      const skill = (c.iqTilt || 0) >= 0.4 ? Math.max(cMin, BAND_SKILL[c.incomeBand] ?? cMin) : cMin;
+      const demand = (skill - 2.5) / 2.5; // -1 (unskilled) .. +1 (postgrad-level)
+      w *= clamp(1 + 1.0 * demand * life.zIq, 0.06, 3.5);
+    }
+    // over-qualification: the heavily over-educated rarely take lower-skill FORMAL
+    // jobs (fixes postgrad electrician). Informal work & non-employment are escape
+    // hatches, not credential-sorted, so they skip this penalty (lets an educated
+    // woman in a low-LFP country still land Homemaker).
+    if (!cohort) {
+      const gap = tier - cMin;
+      w *= Math.exp(-(gap * gap) / 2);
+    }
     // career-specific trait tilts (looks/height + extra IQ sensitivity), now with
     // real weight so the very attractive gravitate to looks-rewarding careers.
     const tilt = 1 + 0.12 * (c.looksTilt * life.zLooks + c.heightTilt * life.zHeight) + 0.08 * (c.iqTilt * life.zIq);
     w *= clamp(tilt, 0.1, 4);
-    if (c.prestige === 'rare') w *= 0.5;
-    if (c.prestige === 'legendary') w *= 0.12;
     return w;
   });
   return pool[sampleWeights(weights)];
@@ -106,12 +125,32 @@ export function rarityText(rarity) {
 // "wealthy/upper", not elite.
 export const RULING = new Set(['entrepreneur', 'executive', 'politician']);
 const OCC_RANK = {
+  // not-in-work / informal survival economy (own household standing is set by
+  // inherited wealth; the occupation itself confers little)
+  unemployed: 0.10, 'waste-picker': 0.10, 'unpaid-family-worker': 0.12, homemaker: 0.35,
+  'day-laborer': 0.15, 'informal-trader': 0.15, 'rickshaw-puller': 0.15, 'artisanal-miner': 0.15, 'sex-worker': 0.15,
+  // elementary / low-skill
   'subsistence-farmer': 0.15, farmer: 0.15, herder: 0.15, fisher: 0.15, 'street-vendor': 0.15, 'domestic-worker': 0.15,
+  cleaner: 0.15, 'farm-laborer': 0.15, 'plantation-worker': 0.15, caregiver: 0.20, 'childcare-worker': 0.20,
+  'garment-worker': 0.20, 'delivery-courier': 0.20, 'warehouse-worker': 0.20, 'sanitation-worker': 0.20,
+  // operatives / service workers
   'factory-worker': 0.28, 'construction-worker': 0.28, 'truck-driver': 0.28, driver: 0.28, waiter: 0.28, 'retail-clerk': 0.28, 'security-guard': 0.28,
-  miner: 0.40, mechanic: 0.40, electrician: 0.40, tailor: 0.40, cook: 0.40, barber: 0.40, soldier: 0.40, clerk: 0.40,
+  mason: 0.28, forester: 0.28, 'bus-driver': 0.28, 'dock-worker': 0.28, 'hotel-staff': 0.28, 'postal-worker': 0.28,
+  'call-center-agent': 0.28, receptionist: 0.28, 'teaching-assistant': 0.28,
+  // skilled trades / technicians / clerical
+  miner: 0.40, mechanic: 0.40, electrician: 0.40, plumber: 0.40, welder: 0.40, carpenter: 0.40, machinist: 0.40,
+  'oil-rig-worker': 0.40, sailor: 0.40, 'train-operator': 0.40, tailor: 0.40, cook: 0.40, barber: 0.40, soldier: 0.40, clerk: 0.40,
+  'sales-rep': 0.40, 'bank-teller': 0.40, bookkeeper: 0.40, 'community-health-worker': 0.40,
+  // mid professionals / supervisors / public service
   shopkeeper: 0.52, 'civil-servant': 0.52, teacher: 0.52, nurse: 0.52, journalist: 0.52, clergy: 0.52, musician: 0.52, artist: 0.52, athlete: 0.52, actor: 0.52,
+  'factory-supervisor': 0.52, 'power-plant-operator': 0.52, 'it-support': 0.52, chef: 0.52, 'police-officer': 0.52, firefighter: 0.52,
+  midwife: 0.52, paramedic: 0.52, 'pharmacy-tech': 0.52, 'lab-technician': 0.52, 'social-worker': 0.52, 'content-creator': 0.52,
+  // upper professionals
   accountant: 0.70, engineer: 0.70, 'software-developer': 0.70, architect: 0.70, pharmacist: 0.70, banker: 0.70, lawyer: 0.70, doctor: 0.70, professor: 0.70, scientist: 0.70, pilot: 0.70, astronaut: 0.70,
-  politician: 0.82, executive: 0.82, entrepreneur: 0.82,
+  'real-estate-agent': 0.62, agronomist: 0.62, veterinarian: 0.70, 'dental-hygienist': 0.62, 'military-officer': 0.70,
+  'data-analyst': 0.70, 'management-consultant': 0.70, psychologist: 0.70, dentist: 0.70,
+  // authority / power elite
+  diplomat: 0.82, judge: 0.82, politician: 0.82, executive: 0.82, entrepreneur: 0.82,
 };
 export const occRankOf = (careerId) => OCC_RANK[careerId] ?? 0.40;
 

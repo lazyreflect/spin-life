@@ -64,13 +64,19 @@ const eliteLeak = elites.filter((l) => !(RULING.has(l.career.id) || l.parentRank
 const evtRate = L.filter((l) => l.events && l.events.length > 0).length / L.length;
 const eliteRate = elites.length / adults.length;
 // mobility must be roughly mean-zero (origin & destination on one scale) and any
-// steep downward arc must carry an explanatory event (no silent -40 slides)
+// steep downward arc must carry an explanatory story (no silent -40 slides). A
+// story is either an explicit event OR landing in a non-employment / informal
+// cohort — the card literally reads "now Unemployed / Homemaker / Day Laborer",
+// which IS the narrative reason for the fall.
 const mobMean = mean(col(adults, (l) => l.mobilityDelta));
 const steepDrops = adults.filter((l) => l.mobilityDelta <= -13);
-const steepUnexplained = steepDrops.filter((l) => !(l.events && l.events.length)).length;
+const steepUnexplained = steepDrops.filter((l) => !((l.events && l.events.length) || l.career.cohort)).length;
 const steepCovered = steepDrops.length ? 1 - steepUnexplained / steepDrops.length : 1;
-// heavy over-qualification (3+ tiers above the job's minimum) should be rare
-const overQual = adults.filter((l) => EDU_RANK[l.education] - EDU_RANK[l.career.minEducation] >= 3).length / adults.length;
+// heavy over-qualification (3+ tiers above the job's minimum) should be rare.
+// Non-employment / informal cohorts are escape hatches (an educated homemaker or
+// laid-off graduate isn't "over-qualified" in the formal-credentialing sense), so
+// they are excluded.
+const overQual = adults.filter((l) => !l.career.cohort && EDU_RANK[l.education] - EDU_RANK[l.career.minEducation] >= 3).length / adults.length;
 
 // ---- directional sanity ----------------------------------------------------
 const cond = (f) => { const a = adults.filter(f).map((l) => l.childRank); return a.length ? mean(a) : NaN; };
