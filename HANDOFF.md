@@ -85,14 +85,14 @@ Deploy = `git push origin main`. To watch: `gh run watch`. Pages source is alrea
 ## Data provenance
 
 World Bank (population/births, life expectancy, Gini, employment, enrollment), UBS Global
-Wealth Databook (median net worth), NCD-RisC (height), Lynn/Vanhanen "national IQ" (IQ —
+Wealth Databook (median net worth), NCD-RisC (height), per-country IQ estimates (IQ —
 see caveat), ILO via World Bank (employment, female LFP), UNESCO/WB (enrollment). **Looks is
 synthetic** (global 0–10 normal, no country data). Names = bundled culture lists.
 
 ## Open decisions / TODO
 
-1. **IQ data (values call).** Currently the extracted Lynn national-IQ figures (e.g. DR Congo 51).
-   Scientifically discredited. Decide: keep / replace / drop the dimension. It does NOT propagate
+1. **IQ data (values call).** The per-country IQ estimates are the shakiest input and
+   contentious. Decide: keep / replace / drop the dimension. It does NOT propagate
    deterministically (luck dominates every roll), but the raw numbers are visible on cards.
 2. **Rarity** is still the marginal-product placeholder `1/√(∏ pᵢ)`, which overstates rarity for
    correlated lucky combos. Planned upgrade: empirical fortune-score distribution (DESIGN §4.5).
