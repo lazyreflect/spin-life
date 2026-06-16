@@ -66,7 +66,7 @@ Per life (`roll.js → rollLife`) — see the model-architecture notes below for
 5. **Destination wealth = two-component** `max(earned income, inherited-asset floor)`: income = career band (`CAREER_RANK`) + luck, renormalized, clamped to the career's `CAREER_RANGE`; assetFloor = `parentRank^1.4 · transferOf(Gini)` (convex). Both map to $ via the lognormal-Pareto quantile.
 6. **Life events** (`events.js`): a few contextual, country-scaled events fire — shift wealth (may break career bounds: lottery/windfall), cut lifespan (fatal), add story.
 7. **Lifespan:** national life expectancy + wealth + IQ adjustments → mortality sampler (low-LE countries have a tighter upper tail); events may cut it short. Early deaths (<18) skip career/class.
-8. **Class** = OCCUPATION-based (`classOf`), **TOP%** percentiles, **rarity** (marginal + mobility-arc), class arc, deadpan sentence.
+8. **Class** = OCCUPATION-based (`classOf`), **TOP%** percentiles, **rarity** (marginal + mobility-arc), class arc, deadpan sentence. The **mobility Δ is mean-zero**: the parent is given a synthetic occupation drawn from the population's own occupation distribution (`parentOccOf`, calibrated in `makeRoller`), so origin and destination class are scored on one scale (see realism notes).
 
 There are **no locked correlation targets anymore** (the original "calibrated trait model" was
 replaced — see notes). `npm run sim` validates the model by *invariants* + emergent-correlation
@@ -129,6 +129,29 @@ synthetic** (global 0–10 normal, no country data). Names = bundled culture lis
   entrepreneur/executive/politician) AND wealthy, OR dynastic controlling wealth (born top-2%
   AND still wealthy). A merely-rich lottery winner / top professional is "wealthy/upper", NOT
   elite. Realistic class shares (≈10/28/35/16/9/1%); elite ≈1%.
+- **Mean-zero mobility + forced "steep fall" stories (2026-06, realism pass 2).** External
+  review kept flagging two things: (a) big downward class arcs (−30 to −52) with NO event, and
+  (b) idle heirs sitting in a low-status job yet a high wealth band, unexplained. Root cause of
+  (a): class-of-ORIGIN was scored on pure (uniform) parent wealth rank while class-of-DESTINATION
+  is 60% occupation (a pyramid, pop-mean ≈0.40, max 0.82) — so almost everyone "fell" (mean Δ was
+  −6.5; 23% crashed ≤−30). Fix: give the parent a **synthetic occupation** sampled from the
+  population occupation distribution at their wealth percentile (`parentOccOf` in `roll.js`), and
+  score `classOrigin` with it — now origin & destination share one marginal, mean Δ ≈ 0, big
+  crashes ≈ symmetric with big climbs. For (b): `forcedArcEvent` in `events.js` forces an
+  explanatory story on any steep fall (origin−destination standing ≥ 0.18, i.e. Δ ≲ −18) that
+  isn't already explained by a decline/inheritance event, AND **calibrates the wealth** — an idle
+  heir's inherited cushion is drawn partway down toward the job's level (so a domestic worker
+  isn't left in the top wealth band). Stories: "lived off the family money" / "coasted on
+  inherited wealth" (kept it), "watched the family money run dry", "never recovered after the
+  family fell on hard times" (lost it). Upward arcs are NOT forced (the career itself is the
+  story). `npm run sim` now asserts **mean Δ ≈ 0** and **≥98% of ≤−18 arcs carry a story**.
+  `ruin` softened (−0.38→−0.30: a wipeout usually leaves a residue). Event rate ≈ 37%.
+- **Name clusters split (2026-06):** Nigeria pulled out of the Nigeria+Ghana+Caribbean cluster
+  (was emitting Ghanaian "Addo" etc.) into its own Igbo/Yoruba/Hausa list; the Central-Asian
+  Turkic states (Uzbekistan/Turkmenistan/Kyrgyzstan/Kazakhstan) split from the Persian cluster
+  (was emitting "Parisa"/"Amirhossein" in Uzbekistan) into a Turkic list. Remaining cross-border
+  name bleed (e.g. Kenyan "Kamau" in Tanzania, "Silva" in India) is inherent to culture-cluster
+  granularity — fixing every one needs per-country lists (`data/names.json`).
 - **Event probabilities realistic + country-scaled (2026-06):** lottery ~1 in 1,400, serious
   illness ~1 in 14, etc. Adversity (war/famine/illness/accident/crime) scales with country
   `instabilityOf` (low-life-expectancy proxy); opportunity (business/lucky-break) scales with

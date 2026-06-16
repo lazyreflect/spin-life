@@ -63,6 +63,12 @@ const elites = adults.filter((l) => l.classFinal === 'the elite');
 const eliteLeak = elites.filter((l) => !(RULING.has(l.career.id) || l.parentRank >= 0.98)).length;
 const evtRate = L.filter((l) => l.events && l.events.length > 0).length / L.length;
 const eliteRate = elites.length / adults.length;
+// mobility must be roughly mean-zero (origin & destination on one scale) and any
+// steep downward arc must carry an explanatory event (no silent -40 slides)
+const mobMean = mean(col(adults, (l) => l.mobilityDelta));
+const steepDrops = adults.filter((l) => l.mobilityDelta <= -18);
+const steepUnexplained = steepDrops.filter((l) => !(l.events && l.events.length)).length;
+const steepCovered = steepDrops.length ? 1 - steepUnexplained / steepDrops.length : 1;
 // heavy over-qualification (3+ tiers above the job's minimum) should be rare
 const overQual = adults.filter((l) => EDU_RANK[l.education] - EDU_RANK[l.career.minEducation] >= 3).length / adults.length;
 
@@ -91,6 +97,8 @@ console.log(check('class rises with income band', monotonic, `[${bandMean.map((m
 console.log(check('elite = power + wealth/dynasty', eliteLeak === 0, `${eliteLeak} unearned leaks`));
 console.log(check('heavy over-qualification rare', overQual < 0.03, `${(overQual * 100).toFixed(2)}% of adults`));
 console.log(row('mean childRank (≈0.5 uniform)', childMean, 0.50, 0.07));
+console.log(row('mean mobility Δ (≈0)', mobMean, 0, 3));
+console.log(check('steep drops carry a story', steepCovered >= 0.98, `${(steepCovered * 100).toFixed(1)}% of ≤-18 arcs explained`));
 console.log(`  ${'lives with an event'.padEnd(30)} ${(evtRate * 100).toFixed(1)}%`);
 console.log(`  ${'adults in the elite class'.padEnd(30)} ${(eliteRate * 100).toFixed(2)}%`);
 

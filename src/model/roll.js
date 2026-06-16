@@ -55,8 +55,14 @@ export function makeRoller({ countries, params, names, careers }) {
   }
 
   // calibrate the EARNED-income spread once, plus the parent->child jump spread
-  // (for arc rarity), using the full income+asset combination.
+  // (for arc rarity), using the full income+asset combination. Also capture the
+  // population distribution of occupation rank, so a parent can be given a
+  // synthetic occupation drawn from the SAME distribution as children's jobs —
+  // making class-of-origin and class-of-destination share one marginal and
+  // mobility mean-zero (otherwise a uniform parent-rank origin is compared to a
+  // pyramid-shaped destination and almost everyone "falls").
   let mu = 0.5, sd = 0.2, jumpSd = 0.2;
+  const occSorted = new Array(30000);
   { const N = 30000, vals = new Array(N), par = new Array(N), cf = new Array(N), cc = new Array(N), af = new Array(N);
     for (let i = 0; i < N; i++) {
       const c = countries[sampleCumulative(cum, totalBirths)];
@@ -66,6 +72,7 @@ export function makeRoller({ countries, params, names, careers }) {
       const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
       const [lo, hi] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
       par[i] = parentRank; cf[i] = lo; cc[i] = hi; af[i] = assetFloorOf(parentRank, c.wealthGini);
+      occSorted[i] = occRankOf(career.id);
       vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + M.luckSd * randn();
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
@@ -77,7 +84,10 @@ export function makeRoller({ countries, params, names, careers }) {
       j += (childBase - par[i]) ** 2;
     }
     jumpSd = Math.sqrt(j / N);
+    occSorted.sort((a, b) => a - b);
   }
+  // occupation rank a parentRank-percentile person would hold (quantile of the pop)
+  const parentOccOf = (parentRank) => occSorted[clamp(Math.floor(parentRank * occSorted.length), 0, occSorted.length - 1)];
 
   function rollLife() {
     const country = countries[sampleCumulative(cum, totalBirths)];
@@ -100,9 +110,15 @@ export function makeRoller({ countries, params, names, careers }) {
     const assetFloor = assetFloorOf(parentRank, country.wealthGini);
     const childBase = Math.max(incomeRank, assetFloor);
 
+    // parent's synthetic occupation (same distribution as children's jobs), so
+    // origin and destination class are measured on one scale
+    const parentOcc = parentOccOf(parentRank);
+    const originStanding = 0.60 * parentOcc + 0.40 * parentRank;
+
     // life events: shift the outcome (may break career bounds — windfall, war),
-    // cut the lifespan, and give the card a story
-    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career }, country);
+    // cut the lifespan, and give the card a story. originStanding lets the forced
+    // "steep fall" trigger compare like-for-like with the child's standing.
+    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career.id), originStanding }, country);
     const childRank = clamp(childBase + evt.wealthDelta, 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
@@ -151,10 +167,10 @@ export function makeRoller({ countries, params, names, careers }) {
     const ruling = RULING.has(career.id);
     const dynastic = parentRank >= 0.98;
     const occ = occRankOf(career.id);
-    life.classOrigin = classOf(parentRank, parentRank, false, dynastic); // family standing (no parent occupation modeled)
+    life.classOrigin = classOf(parentOcc, parentRank, false, dynastic); // family standing on the same scale as the child's
     life.classFinal = classOf(occ, childRank, ruling, dynastic);
     const finalStanding = 0.60 * occ + 0.40 * childRank;
-    life.mobilityDelta = Math.round((finalStanding - parentRank) * 100);
+    life.mobilityDelta = Math.round((finalStanding - originStanding) * 100);
     life.familyWealthLabel = money(familyWealth);
     life.netWorthLabel = money(netWorth);
     life.sentence = buildSentence({ ...life, country: country.name });
