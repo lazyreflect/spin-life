@@ -36,7 +36,7 @@ export function ageWeights(baseLE, targetLE) {
   const r = clamp(0.003 * (82 - baseLE) + 0.008, 0.006, 0.085);     // infant fraction
   const o = clamp(targetLE + 4.5, 45, 98);                           // modal age
   const aL = clamp(13 + 0.16 * (78 - baseLE), 11, 19);               // left sd
-  const aR = clamp(6.5 + 0.03 * (85 - baseLE), 6, 8);                // right sd (tighter upper tail)
+  const aR = clamp(5.5 + 0.045 * (baseLE - 55), 5, 8);              // right sd: LOW-LE countries get a tighter upper tail (fewer reach extreme old age)
   const u = clamp(4.5 + 0.08 * (72 - baseLE), 3.2, 6.2);             // infant spread
   const w = new Array(131);
   for (let c = 0; c < 131; c++) {
