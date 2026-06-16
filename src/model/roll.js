@@ -75,10 +75,11 @@ export function makeRoller({ countries, params, names, careers }) {
     const baseLE = sex === 'Female' ? country.lifeF : country.lifeM;
     const targetLE = clamp(baseLE + wealthLifeAdj(childRank) + LS.iqLifeYrsPerSd * zIq, 28, 98);
     const age = sampleAge(baseLE, targetLE);
+    const diedYoung = age < 18; // never reached a career / adult class
 
     const life = {
       country: country.name, code: country.code, flag: flagEmoji(country.code), continent: country.continent,
-      sex, zIq, zHeight: zHt, zLooks: zLk,
+      sex, zIq, zHeight: zHt, zLooks: zLk, diedYoung,
       iq, heightCm, heightLabel: heightImperial(heightCm), looks,
       parentRank, childRank, familyWealth, netWorth,
       age, baseLE: Math.round(baseLE),

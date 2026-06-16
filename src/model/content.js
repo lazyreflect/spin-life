@@ -52,6 +52,10 @@ export function rollCareer(life, country, careers) {
     if (life.sex === 'Female') w *= clamp(0.4 + femaleLF, 0.3, 1.3);
     const tilt = 1 + 0.05 * (c.iqTilt * life.zIq + c.looksTilt * life.zLooks + c.heightTilt * life.zHeight);
     w *= clamp(tilt, 0.2, 3);
+    // education match: people gravitate to jobs that use their schooling, so the
+    // heavily over-qualified (e.g. a postgrad barber) are rare. Gap of 0-1 is free.
+    const gap = Math.max(0, tier - eduRank(c.minEducation) - 1);
+    w *= Math.exp(-(gap * gap) / 4);
     if (c.prestige === 'rare') w *= 0.5;
     if (c.prestige === 'legendary') w *= 0.12;
     return w;
@@ -84,6 +88,10 @@ export function wealthClass(rank) {
 const article = (word) => (/^[aeiou]/i.test(word) ? 'an' : 'a');
 const classPhrase = (label) => (label.startsWith('the') ? label : `the ${label}`);
 export function buildSentence(life) {
+  if (life.diedYoung) {
+    const when = life.age < 1 ? 'as an infant' : `at ${life.age}`;
+    return `Born into ${classPhrase(life.classOrigin)} in ${life.flag} ${life.country}, died ${when}.`;
+  }
   const job = (life.career?.title || 'nobody').toLowerCase();
   const work = `became ${article(job)} ${job}`;
   const delta = life.mobilityDelta ?? 0;
