@@ -3,49 +3,59 @@ type Life = any;
 function pct(x: number) {
   return x < 1 ? x.toFixed(2) : x < 10 ? x.toFixed(1) : Math.round(x).toString();
 }
-function Stat({ label, top, value, color }: { label: string; top?: number; value: string; color?: string }) {
+
+function Stat({ label, top, value }: { label: string; top?: number; value: string }) {
+  // `top` = % of the world at or above you. Low = rare/good tail; high = common.
+  const good = top != null && top <= 50;
+  const tag = top == null ? null : good ? `top ${pct(top)}%` : `bottom ${pct(100 - top)}%`;
   return (
     <div className="stat">
-      <div className="stat-head">
-        <span className="stat-label">{label}</span>
-        {top != null && <span className="stat-top">TOP {pct(top)}%</span>}
-      </div>
-      <div className="stat-value" style={color ? { color } : undefined}>{value}</div>
+      <div className="stat-label">{label}</div>
+      <div className="stat-value">{value}</div>
+      {tag && <div className={good ? 'stat-top good' : 'stat-top bad'}>{tag}</div>}
     </div>
   );
 }
 
 export function Card({ life }: { life: Life }) {
-  const arc =
-    life.mobilityDelta > 0 ? `▲ climbed ${life.mobilityDelta} pts` :
-    life.mobilityDelta < 0 ? `▼ fell ${-life.mobilityDelta} pts` : '— held station';
+  const up = life.mobilityDelta > 0;
+  const flat = life.mobilityDelta === 0;
+  const arc = flat ? 'held station' : up ? `▲ climbed ${life.mobilityDelta}` : `▼ fell ${-life.mobilityDelta}`;
   return (
     <div className="card">
-      <div className="card-top">
-        <span className="card-rarity">{life.rarityLabel}</span>
-        <span className="card-sex">{life.sex === 'Female' ? '♀' : '♂'}</span>
-      </div>
-      <div className="card-name">{life.flag} {life.name}</div>
-      <div className="card-sentence">{life.sentence}</div>
-
-      <div className="card-arc">
-        <span>{life.career.emoji} {life.career.title}</span>
-        <span className="muted">· {life.education}</span>
-      </div>
-      <div className="card-arc">
-        <span>{life.classOrigin} → <b>{life.classFinal}</b></span>
-        <span className={life.mobilityDelta >= 0 ? 'up' : 'down'}>{arc}</span>
+      <div className="card-head">
+        <span className="card-rarity">◆ {life.rarityLabel}</span>
+        <span className="card-origin">{life.sex === 'Female' ? '♀' : '♂'} · {life.flag} {life.country}</span>
       </div>
 
-      <div className="stat-grid">
-        <Stat label="COUNTRY" top={life.countryChance} value={`${life.flag} ${life.country}`} />
-        <Stat label="NET WORTH" top={life.pct.money} value={life.netWorthLabel} color="#f5a623" />
-        <Stat label="FAMILY" value={life.familyWealthLabel} />
-        <Stat label="HEIGHT" top={life.pct.height} value={life.heightLabel} color="#51cf66" />
-        <Stat label="IQ" top={life.pct.iq} value={String(life.iq)} color="#4dabf7" />
-        <Stat label="LOOKS" top={life.pct.looks} value={life.looks.toFixed(1)} color="#f06595" />
-        <Stat label="LIVES TO" top={life.pct.life} value={String(life.age)} color="#ff6b6b" />
-      </div>
+      <p className="card-sentence">{life.sentence}</p>
+
+      {life.events && life.events.length > 0 && (
+        <div className="card-events">
+          {life.events.map((e: string, i: number) => <span key={i} className="event-chip">⚡ {e}</span>)}
+        </div>
+      )}
+
+      {life.diedYoung ? (
+        <div className="card-attr">— {life.name}, {life.flag} {life.country}</div>
+      ) : (
+        <>
+          <div className="card-attr">— {life.name} · {life.career.emoji} {life.career.title} · {life.education}</div>
+
+          <div className="card-arc">
+            <span className="arc-route">{life.classOrigin} → <b>{life.classFinal}</b></span>
+            <span className={flat ? 'arc-delta' : up ? 'arc-delta up' : 'arc-delta down'}>{arc}</span>
+          </div>
+
+          <div className="card-strip">
+            <Stat label="Net worth" top={life.pct.money} value={life.netWorthLabel} />
+            <Stat label="IQ" top={life.pct.iq} value={String(life.iq)} />
+            <Stat label="Height" top={life.pct.height} value={life.heightLabel} />
+            <Stat label="Looks" top={life.pct.looks} value={life.looks.toFixed(1)} />
+            <Stat label="Lives to" top={life.pct.life} value={String(life.age)} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

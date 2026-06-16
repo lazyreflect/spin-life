@@ -59,7 +59,7 @@ export function Wheel({ segments, targetIndex, spinKey, durationMs, onSettled, c
       <div
         key={i}
         className="wheel-label"
-        style={{ transform: `rotate(${midDeg}deg) translateY(-98px) rotate(${midDeg > 180 ? 90 : -90}deg)` }}
+        style={{ transform: `rotate(${midDeg}deg) translateY(-112px) rotate(${midDeg > 180 ? 90 : -90}deg)` }}
       >
         <span style={{ transform: midDeg > 180 ? 'rotate(180deg)' : 'none', display: 'inline-block' }}>{text}</span>
       </div>

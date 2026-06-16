@@ -2,6 +2,12 @@
 // Wealth + mortality math ported verbatim from the original spinyour.life bundle.
 import { clamp, normCdf, invNorm } from './stats.js';
 
+// --- IQ ---------------------------------------------------------------------
+// Compress national IQ means toward the global 100: the raw between-country
+// spread is contentious and produces implausible extremes. k<1 shrinks it.
+export const IQ_COMPRESS = 0.55;
+export const adjCountryIq = (countryIq) => 100 + IQ_COMPRESS * (countryIq - 100);
+
 // --- wealth -----------------------------------------------------------------
 export const giniToSigma = (g) => clamp(Math.SQRT2 * invNorm((g / 100 + 1) / 2), 0.18, 1.55);
 export const giniToPareto = (g) => clamp(2.4 - 0.035 * (g - 50), 1.15, 2.6);
@@ -28,9 +34,9 @@ export function wealthSurvival(amount, c) {
 const te = (x, mu, s) => { const o = (x - mu) / s; return Math.exp(-0.5 * o * o) / s; };
 export function ageWeights(baseLE, targetLE) {
   const r = clamp(0.003 * (82 - baseLE) + 0.008, 0.006, 0.085);     // infant fraction
-  const o = clamp(targetLE + 8.5, 45, 105);                          // modal age
+  const o = clamp(targetLE + 4.5, 45, 98);                           // modal age
   const aL = clamp(13 + 0.16 * (78 - baseLE), 11, 19);               // left sd
-  const aR = clamp(8.5 + 0.04 * (85 - baseLE), 7.5, 10.5);           // right sd
+  const aR = clamp(5.5 + 0.045 * (baseLE - 55), 5, 8);              // right sd: LOW-LE countries get a tighter upper tail (fewer reach extreme old age)
   const u = clamp(4.5 + 0.08 * (72 - baseLE), 3.2, 6.2);             // infant spread
   const w = new Array(131);
   for (let c = 0; c < 131; c++) {
@@ -61,7 +67,7 @@ export function moneyTopPercent(amount, countries, totalBirths) {
   return clamp((s / totalBirths) * 100, 0.001, 100);
 }
 export function iqTopPercent(iq, countries, totalBirths) {
-  let s = 0; for (const c of countries) s += c.births * (1 - normCdf((iq - c.iq) / 15));
+  let s = 0; for (const c of countries) s += c.births * (1 - normCdf((iq - adjCountryIq(c.iq)) / 15));
   return clamp((s / totalBirths) * 100, 0.001, 100);
 }
 export function heightTopPercent(cm, sex, countries, totalBirths) {
