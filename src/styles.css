@@ -40,6 +40,8 @@ body {
 .wheel-label span { text-shadow: 0 1px 0 #ffffff66; }
 .wheel-hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 84px; height: 84px; border-radius: 50%; background: #fff; color: #0b1020; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 900; font-size: 13px; line-height: 1.1; white-space: pre-line; z-index: 4; box-shadow: 0 6px 16px #0007; padding: 6px; }
 
+.stage-progress { height: 16px; color: var(--muted); font-weight: 800; font-size: 12px; letter-spacing: 1px; margin-top: 2px; }
+
 .spin-btn { margin: 6px 0 14px; background: linear-gradient(180deg, #5ab0ff, #3d8bfd); color: #fff; border: 0; font-size: 19px; font-weight: 800; padding: 13px 46px; border-radius: 999px; box-shadow: 0 8px 20px #1f6fff55; }
 .spin-btn:disabled { opacity: .75; }
 
