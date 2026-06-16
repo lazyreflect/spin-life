@@ -31,7 +31,9 @@ export function rollEducation(zIq, parentRank, country, randn) {
   const cuts = [-1.1, -0.3, 0.4, 0.9, 1.7];
   let tier = 0;
   for (const c of cuts) if (score > c) tier++;
-  return EDU[tier];
+  // country floor: near-universal enrollment means almost nobody is unschooled
+  const floor = enroll >= 0.9 ? 2 : enroll >= 0.6 ? 1 : 0;
+  return EDU[Math.max(tier, floor)];
 }
 
 export function rollCareer(life, country, careers) {

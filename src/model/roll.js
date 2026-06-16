@@ -2,13 +2,17 @@
 // sim and the Vite app share one source of truth.
 import { clamp, normCdf, cholesky, corrNormals, sampleCumulative, randn } from './stats.js';
 import {
-  wealthQuantile, sampleAge, wealthLifeAdj,
+  wealthQuantile, sampleAge, wealthLifeAdj, adjCountryIq,
   moneyTopPercent, iqTopPercent, heightTopPercent, looksTopPercent, lifeTopPercent,
 } from './distributions.js';
 import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, wealthClass, buildSentence } from './content.js';
 
 const flagEmoji = (code) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+
+// Career income routed into destination wealth (rank-space premium). Replaces
+// the direct trait terms: IQ/family already flow in through education -> career.
+const INCOME_PREMIUM = { low: -0.10, lowmid: -0.05, mid: 0.0, highmid: 0.08, high: 0.16, elite: 0.30 };
 
 export function makeRoller({ countries, params, names, careers }) {
   const totalBirths = countries.reduce((a, c) => a + c.births, 0);
@@ -17,19 +21,30 @@ export function makeRoller({ countries, params, names, careers }) {
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
   const M = params.mobility, LS = params.lifespan;
   const betaOf = (g) => clamp(M.betaBase + M.betaPerGini * (g - 30), M.betaMin, M.betaMax);
+  const incomePrem = (career) => INCOME_PREMIUM[career.incomeBand] ?? 0;
 
-  // calibrate childRaw spread once (mean is 0.5 by symmetry)
-  let sd = 0.2;
+  // roll education + career for a draw (career income drives wealth, so it must
+  // be known before the destination-wealth step)
+  function rollJob(zIq, zLooks, zHt, sex, parentRank, country) {
+    const education = rollEducation(zIq, parentRank, country, randn);
+    const career = rollCareer({ zIq, zLooks, zHeight: zHt, sex, education }, country, careers);
+    return { education, career };
+  }
+
+  // calibrate childRaw mean + spread once (now includes the career-income premium)
+  let mu = 0.5, sd = 0.2;
   { const N = 30000, vals = new Array(N);
     for (let i = 0; i < N; i++) {
       const c = countries[sampleCumulative(cum, totalBirths)];
       const male = Math.random() < params.sexMaleProb;
       const z = corrNormals(male ? L.Male : L.Female);
+      const parentRank = normCdf(z[0]);
       const beta = betaOf(c.wealthGini);
-      vals[i] = beta * normCdf(z[0]) + (1 - beta) * 0.5 + M.wIqIncome * z[1] + M.wLooksIncome * z[3] + M.wHeightIncome * z[2] + M.luckSd * randn();
+      const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
+      vals[i] = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + M.luckSd * randn();
     }
-    let m = 0; for (const v of vals) m += v; m /= N;
-    let s = 0; for (const v of vals) s += (v - m) ** 2;
+    let m = 0; for (const v of vals) m += v; mu = m / N;
+    let s = 0; for (const v of vals) s += (v - mu) ** 2;
     sd = Math.sqrt(s / N);
   }
 
@@ -41,12 +56,15 @@ export function makeRoller({ countries, params, names, careers }) {
 
     const parentRank = normCdf(zFw);
     const beta = betaOf(country.wealthGini);
-    const childRaw = beta * parentRank + (1 - beta) * 0.5 + M.wIqIncome * zIq + M.wLooksIncome * zLk + M.wHeightIncome * zHt + M.luckSd * randn();
-    const childRank = clamp(normCdf((childRaw - 0.5) / sd), 0.0005, 0.9995);
 
-    const iq = Math.round(country.iq + params.iqSd * zIq);
+    const iq = clamp(Math.round(adjCountryIq(country.iq) + params.iqSd * zIq), 55, 160);
     const heightCm = (sex === 'Female' ? country.heightF : country.heightM) + (sex === 'Female' ? params.heightSdF : params.heightSdM) * zHt;
     const looks = clamp(params.looksMean + params.looksSd * zLk, 0.1, 10);
+
+    // education + career first: career income drives destination wealth
+    const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
+    const childRaw = beta * parentRank + (1 - beta) * 0.5 + incomePrem(career) + M.luckSd * randn();
+    const childRank = clamp(normCdf((childRaw - mu) / sd), 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
     const netWorth = wealthQuantile(country.netWorth, country.wealthGini, childRank);
@@ -63,8 +81,8 @@ export function makeRoller({ countries, params, names, careers }) {
       age, baseLE: Math.round(baseLE),
     };
     life.name = pickName(country, sex, names);
-    life.education = rollEducation(zIq, parentRank, country, randn);
-    life.career = rollCareer(life, country, careers);
+    life.education = education;
+    life.career = career;
 
     // percentiles (global TOP%)
     life.pct = {
