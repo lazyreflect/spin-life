@@ -63,12 +63,15 @@ fertility, happiness, health/illness, crime, urban-vs-rural, religion, cause of 
 **migration** (brain-drain: changes effective country mid-life). Each is cheap (a country
 number or two + a formula) but additive flavor — keep out of the default fast spin.
 
-Career data: see **`data/careers.json`** (starter catalog, 45 entries — expand later) and
+Career data: see **`data/careers.json`** (~107 entries, incl. skilled trades, care/health
+mid-tier, logistics, modern services, the informal economy, and not-in-work states) and
 the roll algorithm in §4.6. The country/culture match is **structural, not hand-assigned**:
 a country's employment mix weights which jobs appear, so a poor ag economy surfaces
 farmers/laborers and a rich one surfaces professionals — without us caricaturing any culture.
-Needs ~5 extra country columns (`empAg/empIndustry/empServices, femaleLFP,
-secondaryEnrollment` from World Bank / UNESCO) — **not yet fetched**. Not a 241×N matrix.
+Uses 7 country columns (`empAg/empIndustry/empServices, femaleLFP, secondaryEnrollment`
+from World Bank / UNESCO, plus `vulnEmployment` SL.EMP.VULN.ZS and `unemployment`
+SL.UEM.TOTL.ZS) — **all fetched & merged** (`sim/fetch-labor.mjs` pulls the labor pair).
+Not a 241×N matrix.
 
 ### Cross-cutting rules
 
@@ -134,17 +137,30 @@ Country/culture match is **structural**: the economy picks the menu, not stereot
 1. educationTier ~ f(z_IQ, parentRank, country.secondaryEnrollment, sex)
                    // higher IQ + richer family + higher enrollment -> higher tier
 2. eligible = careers where minEducation <= educationTier AND regions matches country
-3. weight(c) = sectorShare(country, c.sector)        // empAg/empIndustry/empServices
-             * genderTilt(c, sex, country.femaleLFP)
-             * (1 + 0.05*(c.iqTilt*z_IQ + c.looksTilt*z_looks + c.heightTilt*z_height))
+3. base(c) = formal      -> sectorShare(country, c.sector)   // empAg/empIndustry/empServices
+             informal     -> country.vulnEmployment          // vulnerable-employment share
+             homemaker     -> (1 - country.femaleLFP), women  // ~0 for men
+             unemployed    -> country.unemployment
+   weight(c) = base(c)
+             * c.prevalence                                   // how common, given eligibility
+             * genderTilt(sex, country.femaleLFP)             // paid work only
+             * skillDemand(c, z_IQ)                           // jobs only, not not-in-work
+             * overQualPenalty(c, tier)                       // FORMAL jobs only
+             * (1 + traitTilts(c, z_looks, z_height, z_IQ))
 4. pick one career ∝ weight
 5. incomeBand -> contributes to destination wealth (REPLACES the direct §4.3 trait terms;
    route the premium once, through career)
 ```
 Data shape per career (`data/careers.json`): `{id, title, emoji, sector, minEducation,
-iqTilt, looksTilt, heightTilt, incomeBand, prestige, regions}`. `regions` defaults to `["*"]`
-(universal); use continents / culture-cluster ids only for genuinely geographic jobs.
-`prestige` (common→legendary) feeds the rarity/collectible system.
+iqTilt, looksTilt, heightTilt, incomeBand, prestige, prevalence, cohort?, regions}`.
+`regions` defaults to `["*"]` (universal); use continents / culture-cluster ids only for
+genuinely geographic jobs. **`prevalence`** (number) drives selection frequency — the
+single biggest realism lever (a Retail Clerk is ~10× a Doctor at equal eligibility).
+**`prestige`** (common→legendary) is now a PURE collectible label — it no longer throttles
+selection (that was conflating two jobs). **`cohort`** (`informal`/`homemaker`/`unemployed`,
+omitted = formal) swaps the sector-share base for a country-attribute base, so the informal
+economy and not-in-work states scale with real labor data. Catalog is regenerable via
+`sim/gen-careers.mjs` (readable source for the prevalence tuning).
 
 ---
 
@@ -183,11 +199,17 @@ Still open:
    version (§4.5) is the planned upgrade.
 7. **Deferred Full-Life features** — marriage, kids, happiness, health, migration, etc.
 
-Career weighting needs the World Bank employment/enrollment columns — **now fetched and
-merged into `countries.json`** (empAg/empIndustry/empServices, femaleLFP, secondaryEnrollment).
+Career weighting uses the World Bank employment/enrollment columns — **fetched and
+merged into `countries.json`** (empAg/empIndustry/empServices, femaleLFP, secondaryEnrollment),
+plus the labor pair `vulnEmployment` (SL.EMP.VULN.ZS) and `unemployment` (SL.UEM.TOTL.ZS),
+filled for 186/241 countries — the rest fall back to defaults. The informal-economy and
+not-in-work cohorts ride on these: South Africa surfaces "Unemployed", Saudi Arabia
+"Homemaker" #1, Niger the informal survival economy — all emergent from the real data.
 
 ## 7. Data provenance (credit honestly)
 
-World Bank (population, life expectancy, Gini, and later employment/enrollment),
-UBS Global Wealth Databook (net worth), NCD-RisC (height), per-country IQ estimates
-(IQ — with the caveat above), ILO/UNESCO (career, when built). Looks is synthetic.
+World Bank (population, life expectancy, Gini, employment/enrollment, vulnerable-employment
+& unemployment via ILO-modeled estimates), UBS Global Wealth Databook (net worth),
+NCD-RisC (height), per-country IQ estimates (IQ — with the caveat above), UNESCO
+(enrollment). Looks is synthetic. The career *catalog* itself is hand-authored (the
+taxonomy); the country *matching* is data-driven (employment shares + the labor pair).

@@ -1,64 +1,1741 @@
 {
-  "_note": "Global career catalog. Country/culture match is STRUCTURAL: each career is weighted by the country's employment share in its `sector` (empAg/empIndustry/empServices), gated by `minEducation`, and tilted by traits. `regions` is '*' (universal) unless a job is genuinely geographic. Avoid hand-assigning culture->job (caricature); let the economy do it. incomeBand feeds destination wealth. prestige drives collectibles. tilts are small. See DESIGN.md §career.",
+  "_note": "Global career catalog. Country/culture match is STRUCTURAL: each FORMAL career is weighted by the country employment share in its `sector` (empAg/empIndustry/empServices), gated by `minEducation`, scaled by `prevalence` (how common the role is given eligibility), and tilted by traits. Special `cohort`s replace sector weighting with a country attribute: `informal` -> vulnEmployment (vulnerable-employment %), `homemaker` -> (1-femaleLFP), `unemployed` -> unemployment %. `prestige` is now PURELY a collectible label (does not throttle selection — that is `prevalence`). Avoid hand-assigning culture->job (caricature); let the economy do it. See DESIGN.md §career.",
   "_schema": {
-    "id": "kebab", "title": "string", "emoji": "string",
+    "id": "kebab",
+    "title": "string",
+    "emoji": "string",
     "sector": "agriculture|industry|services",
     "minEducation": "none|primary|secondary|vocational|bachelor|postgrad",
-    "iqTilt": "number (per-SD nudge to selection odds)", "looksTilt": "number", "heightTilt": "number",
+    "iqTilt": "number (per-SD nudge to selection odds)",
+    "looksTilt": "number",
+    "heightTilt": "number",
     "incomeBand": "low|lowmid|mid|highmid|high|elite",
-    "prestige": "common|uncommon|rare|legendary",
+    "prestige": "common|uncommon|rare|legendary (collectible label only)",
+    "prevalence": "number (relative commonness given eligibility; drives selection weight)",
+    "cohort": "omit (formal) | 'informal' | 'homemaker' | 'unemployed'",
     "regions": "['*'] or list of continents / culture-cluster ids"
   },
   "careers": [
-    { "id": "subsistence-farmer", "title": "Subsistence Farmer", "emoji": "🌾", "sector": "agriculture", "minEducation": "none", "iqTilt": -0.2, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "low", "prestige": "common", "regions": ["*"] },
-    { "id": "farmer", "title": "Farmer", "emoji": "🚜", "sector": "agriculture", "minEducation": "none", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "herder", "title": "Herder", "emoji": "🐐", "sector": "agriculture", "minEducation": "none", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "low", "prestige": "common", "regions": ["*"] },
-    { "id": "fisher", "title": "Fisher", "emoji": "🎣", "sector": "agriculture", "minEducation": "none", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.1, "incomeBand": "low", "prestige": "common", "regions": ["*"] },
-
-    { "id": "factory-worker", "title": "Factory Worker", "emoji": "🏭", "sector": "industry", "minEducation": "primary", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "miner", "title": "Miner", "emoji": "⛏️", "sector": "industry", "minEducation": "primary", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.1, "incomeBand": "mid", "prestige": "common", "regions": ["*"] },
-    { "id": "construction-worker", "title": "Construction Worker", "emoji": "👷", "sector": "industry", "minEducation": "primary", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.2, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "mechanic", "title": "Mechanic", "emoji": "🔧", "sector": "industry", "minEducation": "vocational", "iqTilt": 0.1, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "common", "regions": ["*"] },
-    { "id": "electrician", "title": "Electrician", "emoji": "💡", "sector": "industry", "minEducation": "vocational", "iqTilt": 0.2, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "common", "regions": ["*"] },
-    { "id": "tailor", "title": "Tailor", "emoji": "🧵", "sector": "industry", "minEducation": "primary", "iqTilt": 0.0, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "truck-driver", "title": "Truck Driver", "emoji": "🚚", "sector": "industry", "minEducation": "secondary", "iqTilt": 0.0, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "common", "regions": ["*"] },
-
-    { "id": "street-vendor", "title": "Street Vendor", "emoji": "🛒", "sector": "services", "minEducation": "none", "iqTilt": 0.0, "looksTilt": 0.1, "heightTilt": 0.0, "incomeBand": "low", "prestige": "common", "regions": ["*"] },
-    { "id": "shopkeeper", "title": "Shopkeeper", "emoji": "🏪", "sector": "services", "minEducation": "primary", "iqTilt": 0.1, "looksTilt": 0.25, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "domestic-worker", "title": "Domestic Worker", "emoji": "🧹", "sector": "services", "minEducation": "none", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "low", "prestige": "common", "regions": ["*"] },
-    { "id": "driver", "title": "Taxi / Rideshare Driver", "emoji": "🚕", "sector": "services", "minEducation": "secondary", "iqTilt": 0.0, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "waiter", "title": "Waiter", "emoji": "🍽️", "sector": "services", "minEducation": "secondary", "iqTilt": 0.0, "looksTilt": 0.35, "heightTilt": 0.1, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "cook", "title": "Cook", "emoji": "🍳", "sector": "services", "minEducation": "vocational", "iqTilt": 0.0, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "common", "regions": ["*"] },
-    { "id": "barber", "title": "Barber / Stylist", "emoji": "💈", "sector": "services", "minEducation": "vocational", "iqTilt": 0.0, "looksTilt": 0.2, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "common", "regions": ["*"] },
-    { "id": "retail-clerk", "title": "Retail Clerk", "emoji": "🧾", "sector": "services", "minEducation": "secondary", "iqTilt": 0.0, "looksTilt": 0.35, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "security-guard", "title": "Security Guard", "emoji": "🛡️", "sector": "services", "minEducation": "secondary", "iqTilt": -0.1, "looksTilt": 0.0, "heightTilt": 0.3, "incomeBand": "lowmid", "prestige": "common", "regions": ["*"] },
-    { "id": "soldier", "title": "Soldier", "emoji": "🎖️", "sector": "services", "minEducation": "secondary", "iqTilt": 0.0, "looksTilt": 0.0, "heightTilt": 0.3, "incomeBand": "mid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "clerk", "title": "Office Clerk", "emoji": "🗂️", "sector": "services", "minEducation": "secondary", "iqTilt": 0.2, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "common", "regions": ["*"] },
-    { "id": "civil-servant", "title": "Civil Servant", "emoji": "🏛️", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.3, "looksTilt": 0.1, "heightTilt": 0.0, "incomeBand": "highmid", "prestige": "uncommon", "regions": ["*"] },
-
-    { "id": "teacher", "title": "Teacher", "emoji": "🍎", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.4, "looksTilt": 0.25, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "nurse", "title": "Nurse", "emoji": "💉", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.4, "looksTilt": 0.2, "heightTilt": 0.0, "incomeBand": "highmid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "accountant", "title": "Accountant", "emoji": "📊", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.6, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "highmid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "journalist", "title": "Journalist", "emoji": "📰", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.5, "looksTilt": 0.35, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "engineer", "title": "Engineer", "emoji": "📐", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.9, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "software-developer", "title": "Software Developer", "emoji": "💻", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.9, "looksTilt": -0.1, "heightTilt": 0.0, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "architect", "title": "Architect", "emoji": "📏", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.8, "looksTilt": 0.1, "heightTilt": 0.0, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "pharmacist", "title": "Pharmacist", "emoji": "💊", "sector": "services", "minEducation": "postgrad", "iqTilt": 0.9, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "banker", "title": "Banker / Financier", "emoji": "🏦", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.8, "looksTilt": 0.2, "heightTilt": 0.1, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "lawyer", "title": "Lawyer", "emoji": "⚖️", "sector": "services", "minEducation": "postgrad", "iqTilt": 1.0, "looksTilt": 0.1, "heightTilt": 0.1, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "doctor", "title": "Doctor", "emoji": "🩺", "sector": "services", "minEducation": "postgrad", "iqTilt": 1.2, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "professor", "title": "Professor", "emoji": "🎓", "sector": "services", "minEducation": "postgrad", "iqTilt": 1.3, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "highmid", "prestige": "rare", "regions": ["*"] },
-    { "id": "scientist", "title": "Scientist", "emoji": "🔬", "sector": "services", "minEducation": "postgrad", "iqTilt": 1.4, "looksTilt": 0.0, "heightTilt": 0.0, "incomeBand": "highmid", "prestige": "rare", "regions": ["*"] },
-
-    { "id": "clergy", "title": "Clergy", "emoji": "⛪", "sector": "services", "minEducation": "secondary", "iqTilt": 0.2, "looksTilt": 0.3, "heightTilt": 0.0, "incomeBand": "mid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "musician", "title": "Musician", "emoji": "🎸", "sector": "services", "minEducation": "secondary", "iqTilt": 0.2, "looksTilt": 0.4, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "artist", "title": "Artist", "emoji": "🎨", "sector": "services", "minEducation": "secondary", "iqTilt": 0.3, "looksTilt": 0.2, "heightTilt": 0.0, "incomeBand": "lowmid", "prestige": "uncommon", "regions": ["*"] },
-    { "id": "athlete", "title": "Pro Athlete", "emoji": "🏆", "sector": "services", "minEducation": "secondary", "iqTilt": 0.0, "looksTilt": 0.5, "heightTilt": 0.8, "incomeBand": "high", "prestige": "legendary", "regions": ["*"] },
-    { "id": "actor", "title": "Actor", "emoji": "🎬", "sector": "services", "minEducation": "secondary", "iqTilt": 0.1, "looksTilt": 1.2, "heightTilt": 0.2, "incomeBand": "high", "prestige": "legendary", "regions": ["*"] },
-    { "id": "pilot", "title": "Airline Pilot", "emoji": "✈️", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.7, "looksTilt": 0.1, "heightTilt": 0.1, "incomeBand": "high", "prestige": "rare", "regions": ["*"] },
-    { "id": "politician", "title": "Politician", "emoji": "🗳️", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.5, "looksTilt": 0.5, "heightTilt": 0.4, "incomeBand": "high", "prestige": "legendary", "regions": ["*"] },
-    { "id": "executive", "title": "CEO / Executive", "emoji": "📈", "sector": "services", "minEducation": "bachelor", "iqTilt": 0.8, "looksTilt": 0.4, "heightTilt": 0.5, "incomeBand": "elite", "prestige": "legendary", "regions": ["*"] },
-    { "id": "entrepreneur", "title": "Founder", "emoji": "🚀", "sector": "services", "minEducation": "secondary", "iqTilt": 0.6, "looksTilt": 0.2, "heightTilt": 0.1, "incomeBand": "elite", "prestige": "legendary", "regions": ["*"] },
-    { "id": "astronaut", "title": "Astronaut", "emoji": "👨‍🚀", "sector": "services", "minEducation": "postgrad", "iqTilt": 1.5, "looksTilt": 0.2, "heightTilt": 0.0, "incomeBand": "highmid", "prestige": "legendary", "regions": ["*"] }
+    {
+      "id": "subsistence-farmer",
+      "title": "Subsistence Farmer",
+      "emoji": "🌾",
+      "sector": "agriculture",
+      "minEducation": "none",
+      "iqTilt": -0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 9,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "farmer",
+      "title": "Farmer",
+      "emoji": "🚜",
+      "sector": "agriculture",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "farm-laborer",
+      "title": "Farm Laborer",
+      "emoji": "🧑‍🌾",
+      "sector": "agriculture",
+      "minEducation": "none",
+      "iqTilt": -0.2,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "plantation-worker",
+      "title": "Plantation Worker",
+      "emoji": "🍃",
+      "sector": "agriculture",
+      "minEducation": "none",
+      "iqTilt": -0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "herder",
+      "title": "Herder",
+      "emoji": "🐐",
+      "sector": "agriculture",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "fisher",
+      "title": "Fisher",
+      "emoji": "🎣",
+      "sector": "agriculture",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "forester",
+      "title": "Forester / Logger",
+      "emoji": "🪵",
+      "sector": "agriculture",
+      "minEducation": "primary",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "agronomist",
+      "title": "Agronomist",
+      "emoji": "🌱",
+      "sector": "agriculture",
+      "minEducation": "bachelor",
+      "iqTilt": 0.4,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 0.6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "veterinarian",
+      "title": "Veterinarian",
+      "emoji": "🐄",
+      "sector": "agriculture",
+      "minEducation": "bachelor",
+      "iqTilt": 0.5,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 0.4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "factory-worker",
+      "title": "Factory Worker",
+      "emoji": "🏭",
+      "sector": "industry",
+      "minEducation": "primary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 7,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "garment-worker",
+      "title": "Garment Worker",
+      "emoji": "🧵",
+      "sector": "industry",
+      "minEducation": "primary",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "construction-worker",
+      "title": "Construction Worker",
+      "emoji": "👷",
+      "sector": "industry",
+      "minEducation": "primary",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "mason",
+      "title": "Mason / Bricklayer",
+      "emoji": "🧱",
+      "sector": "industry",
+      "minEducation": "primary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "carpenter",
+      "title": "Carpenter",
+      "emoji": "🪚",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "mechanic",
+      "title": "Mechanic",
+      "emoji": "🔧",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "electrician",
+      "title": "Electrician",
+      "emoji": "⚡",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "plumber",
+      "title": "Plumber",
+      "emoji": "🔩",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "welder",
+      "title": "Welder",
+      "emoji": "🔥",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 2.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "machinist",
+      "title": "Machinist",
+      "emoji": "⚙️",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "miner",
+      "title": "Miner",
+      "emoji": "⛏️",
+      "sector": "industry",
+      "minEducation": "primary",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "tailor",
+      "title": "Tailor",
+      "emoji": "✂️",
+      "sector": "industry",
+      "minEducation": "primary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "factory-supervisor",
+      "title": "Factory Supervisor",
+      "emoji": "📋",
+      "sector": "industry",
+      "minEducation": "secondary",
+      "iqTilt": 0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "power-plant-operator",
+      "title": "Power Plant Operator",
+      "emoji": "🏗️",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 0.7,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "oil-rig-worker",
+      "title": "Oil Rig Worker",
+      "emoji": "🛢️",
+      "sector": "industry",
+      "minEducation": "vocational",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 0.4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "truck-driver",
+      "title": "Truck Driver",
+      "emoji": "🚚",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "driver",
+      "title": "Taxi / Rideshare Driver",
+      "emoji": "🚕",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "delivery-courier",
+      "title": "Delivery Courier",
+      "emoji": "📦",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "warehouse-worker",
+      "title": "Warehouse Worker",
+      "emoji": "🏬",
+      "sector": "services",
+      "minEducation": "primary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "bus-driver",
+      "title": "Bus Driver",
+      "emoji": "🚌",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 2.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "dock-worker",
+      "title": "Dock Worker",
+      "emoji": "⚓",
+      "sector": "services",
+      "minEducation": "primary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "sailor",
+      "title": "Sailor / Merchant Marine",
+      "emoji": "🚢",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "train-operator",
+      "title": "Train Operator",
+      "emoji": "🚆",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "domestic-worker",
+      "title": "Domestic Worker",
+      "emoji": "🧹",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 7,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "cleaner",
+      "title": "Cleaner / Janitor",
+      "emoji": "🪣",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "street-vendor",
+      "title": "Street Vendor",
+      "emoji": "🛒",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "retail-clerk",
+      "title": "Retail Clerk",
+      "emoji": "🛍️",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 7,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "waiter",
+      "title": "Waiter",
+      "emoji": "🍽️",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0.1,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "shopkeeper",
+      "title": "Shopkeeper",
+      "emoji": "🏪",
+      "sector": "services",
+      "minEducation": "primary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "cook",
+      "title": "Cook",
+      "emoji": "🍳",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "security-guard",
+      "title": "Security Guard",
+      "emoji": "💂",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "barber",
+      "title": "Barber / Stylist",
+      "emoji": "💈",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0,
+      "looksTilt": 0.15,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "hotel-staff",
+      "title": "Hotel Staff",
+      "emoji": "🛎️",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0.1,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "chef",
+      "title": "Chef",
+      "emoji": "👨‍🍳",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 0.6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "office-clerk",
+      "title": "Office Clerk",
+      "emoji": "🗂️",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "call-center-agent",
+      "title": "Call Center Agent",
+      "emoji": "🎧",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "receptionist",
+      "title": "Receptionist",
+      "emoji": "💁",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0.15,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 2.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "sales-rep",
+      "title": "Sales Representative",
+      "emoji": "🤝",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0.15,
+      "heightTilt": 0.05,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "bank-teller",
+      "title": "Bank Teller",
+      "emoji": "💵",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.2,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "bookkeeper",
+      "title": "Bookkeeper",
+      "emoji": "📒",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "it-support",
+      "title": "IT Support",
+      "emoji": "🖥️",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "real-estate-agent",
+      "title": "Real Estate Agent",
+      "emoji": "🏠",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0.2,
+      "heightTilt": 0.05,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "civil-servant",
+      "title": "Civil Servant",
+      "emoji": "🏛️",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "sanitation-worker",
+      "title": "Sanitation Worker",
+      "emoji": "🚮",
+      "sector": "services",
+      "minEducation": "primary",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "postal-worker",
+      "title": "Postal Worker",
+      "emoji": "📮",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "police-officer",
+      "title": "Police Officer",
+      "emoji": "👮",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.15,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 2.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "firefighter",
+      "title": "Firefighter",
+      "emoji": "🚒",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.15,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "soldier",
+      "title": "Soldier",
+      "emoji": "🎖️",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "military-officer",
+      "title": "Military Officer",
+      "emoji": "🪖",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0.1,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 0.6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "teacher",
+      "title": "Teacher",
+      "emoji": "🧑‍🏫",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "teaching-assistant",
+      "title": "Teaching Assistant",
+      "emoji": "✏️",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "caregiver",
+      "title": "Caregiver / Elder Care",
+      "emoji": "🧑‍🦽",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "childcare-worker",
+      "title": "Childcare Worker",
+      "emoji": "🧸",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 2.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "community-health-worker",
+      "title": "Community Health Worker",
+      "emoji": "🩺",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "nurse",
+      "title": "Nurse",
+      "emoji": "👩‍⚕️",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.4,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "midwife",
+      "title": "Midwife",
+      "emoji": "🤱",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "paramedic",
+      "title": "Paramedic",
+      "emoji": "🚑",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "pharmacy-tech",
+      "title": "Pharmacy Technician",
+      "emoji": "💊",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "common",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "lab-technician",
+      "title": "Lab Technician",
+      "emoji": "🔬",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.4,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 1.2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "dental-hygienist",
+      "title": "Dental Hygienist",
+      "emoji": "🦷",
+      "sector": "services",
+      "minEducation": "vocational",
+      "iqTilt": 0.3,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 0.6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "social-worker",
+      "title": "Social Worker",
+      "emoji": "🫂",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.3,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "accountant",
+      "title": "Accountant",
+      "emoji": "🧮",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.4,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "journalist",
+      "title": "Journalist",
+      "emoji": "📰",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.4,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 1.2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "data-analyst",
+      "title": "Data Analyst",
+      "emoji": "📊",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.5,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "rare",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "engineer",
+      "title": "Engineer",
+      "emoji": "🛠️",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.6,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "software-developer",
+      "title": "Software Developer",
+      "emoji": "💻",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.6,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "architect",
+      "title": "Architect",
+      "emoji": "📐",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.5,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "management-consultant",
+      "title": "Management Consultant",
+      "emoji": "📈",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.5,
+      "looksTilt": 0.1,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "banker",
+      "title": "Banker / Financier",
+      "emoji": "🏦",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.4,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.8,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "pharmacist",
+      "title": "Pharmacist",
+      "emoji": "⚗️",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.5,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.6,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "psychologist",
+      "title": "Psychologist",
+      "emoji": "🧠",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.5,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "uncommon",
+      "prevalence": 0.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "lawyer",
+      "title": "Lawyer",
+      "emoji": "⚖️",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.5,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.8,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "doctor",
+      "title": "Doctor",
+      "emoji": "🩻",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.6,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.7,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "dentist",
+      "title": "Dentist",
+      "emoji": "🦷",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.5,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "professor",
+      "title": "Professor",
+      "emoji": "🎓",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.7,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "rare",
+      "prevalence": 0.4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "scientist",
+      "title": "Scientist",
+      "emoji": "🔭",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.7,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "highmid",
+      "prestige": "rare",
+      "prevalence": 0.4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "pilot",
+      "title": "Airline Pilot",
+      "emoji": "✈️",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.3,
+      "looksTilt": 0.05,
+      "heightTilt": 0.05,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.3,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "diplomat",
+      "title": "Diplomat",
+      "emoji": "🎩",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.4,
+      "looksTilt": 0.1,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "judge",
+      "title": "Judge",
+      "emoji": "👨‍⚖️",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.5,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "high",
+      "prestige": "rare",
+      "prevalence": 0.15,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "musician",
+      "title": "Musician",
+      "emoji": "🎸",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0.1,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "uncommon",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "artist",
+      "title": "Artist",
+      "emoji": "🎨",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "lowmid",
+      "prestige": "uncommon",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "clergy",
+      "title": "Clergy",
+      "emoji": "⛪",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "uncommon",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "content-creator",
+      "title": "Content Creator",
+      "emoji": "📱",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.1,
+      "looksTilt": 0.3,
+      "heightTilt": 0,
+      "incomeBand": "mid",
+      "prestige": "rare",
+      "prevalence": 0.5,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "actor",
+      "title": "Actor",
+      "emoji": "🎬",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0.5,
+      "heightTilt": 0.05,
+      "incomeBand": "high",
+      "prestige": "legendary",
+      "prevalence": 0.2,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "athlete",
+      "title": "Pro Athlete",
+      "emoji": "🏅",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0,
+      "looksTilt": 0.1,
+      "heightTilt": 0.3,
+      "incomeBand": "high",
+      "prestige": "legendary",
+      "prevalence": 0.15,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "entrepreneur",
+      "title": "Founder",
+      "emoji": "🚀",
+      "sector": "services",
+      "minEducation": "secondary",
+      "iqTilt": 0.4,
+      "looksTilt": 0.05,
+      "heightTilt": 0,
+      "incomeBand": "elite",
+      "prestige": "legendary",
+      "prevalence": 0.4,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "politician",
+      "title": "Politician",
+      "emoji": "🗳️",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.2,
+      "looksTilt": 0.1,
+      "heightTilt": 0.05,
+      "incomeBand": "high",
+      "prestige": "legendary",
+      "prevalence": 0.15,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "executive",
+      "title": "CEO / Executive",
+      "emoji": "💼",
+      "sector": "services",
+      "minEducation": "bachelor",
+      "iqTilt": 0.4,
+      "looksTilt": 0.1,
+      "heightTilt": 0.05,
+      "incomeBand": "elite",
+      "prestige": "legendary",
+      "prevalence": 0.12,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "astronaut",
+      "title": "Astronaut",
+      "emoji": "👨‍🚀",
+      "sector": "services",
+      "minEducation": "postgrad",
+      "iqTilt": 0.7,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "highmid",
+      "prestige": "legendary",
+      "prevalence": 0.05,
+      "regions": [
+        "*"
+      ]
+    },
+    {
+      "id": "day-laborer",
+      "title": "Day Laborer",
+      "emoji": "🧰",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 7,
+      "regions": [
+        "*"
+      ],
+      "cohort": "informal"
+    },
+    {
+      "id": "informal-trader",
+      "title": "Informal Trader",
+      "emoji": "🧺",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 6,
+      "regions": [
+        "*"
+      ],
+      "cohort": "informal"
+    },
+    {
+      "id": "unpaid-family-worker",
+      "title": "Unpaid Family Worker",
+      "emoji": "👨‍👩‍👧",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 5,
+      "regions": [
+        "*"
+      ],
+      "cohort": "informal"
+    },
+    {
+      "id": "waste-picker",
+      "title": "Waste Picker",
+      "emoji": "♻️",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": -0.2,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ],
+      "cohort": "informal"
+    },
+    {
+      "id": "rickshaw-puller",
+      "title": "Rickshaw Puller",
+      "emoji": "🛺",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 2,
+      "regions": [
+        "*"
+      ],
+      "cohort": "informal"
+    },
+    {
+      "id": "artisanal-miner",
+      "title": "Artisanal Miner",
+      "emoji": "🪨",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": -0.1,
+      "looksTilt": 0,
+      "heightTilt": 0.05,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 1.5,
+      "regions": [
+        "*"
+      ],
+      "cohort": "informal"
+    },
+    {
+      "id": "sex-worker",
+      "title": "Sex Worker",
+      "emoji": "🌃",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": 0,
+      "looksTilt": 0.2,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "uncommon",
+      "prevalence": 1,
+      "regions": [
+        "*"
+      ],
+      "cohort": "informal"
+    },
+    {
+      "id": "homemaker",
+      "title": "Homemaker",
+      "emoji": "🏠",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 6,
+      "regions": [
+        "*"
+      ],
+      "cohort": "homemaker"
+    },
+    {
+      "id": "unemployed",
+      "title": "Unemployed",
+      "emoji": "🔍",
+      "sector": "services",
+      "minEducation": "none",
+      "iqTilt": 0,
+      "looksTilt": 0,
+      "heightTilt": 0,
+      "incomeBand": "low",
+      "prestige": "common",
+      "prevalence": 5,
+      "regions": [
+        "*"
+      ],
+      "cohort": "unemployed"
+    }
   ]
 }

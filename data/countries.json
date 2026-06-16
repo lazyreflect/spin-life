@@ -15,7 +15,9 @@
     "empIndustry": 25.8,
     "empServices": 32.6,
     "femaleLFP": 32.4,
-    "secondaryEnrollment": 79.6
+    "secondaryEnrollment": 79.6,
+    "vulnEmployment": 72.8,
+    "unemployment": 4.2
   },
   {
     "code": "CN",
@@ -33,7 +35,9 @@
     "empIndustry": 31.8,
     "empServices": 46.5,
     "femaleLFP": 59.1,
-    "secondaryEnrollment": 92.3
+    "secondaryEnrollment": 92.3,
+    "vulnEmployment": 34.2,
+    "unemployment": 4.7
   },
   {
     "code": "NG",
@@ -51,7 +55,9 @@
     "empIndustry": 17,
     "empServices": 49.5,
     "femaleLFP": 80.7,
-    "secondaryEnrollment": 46.9
+    "secondaryEnrollment": 46.9,
+    "vulnEmployment": 67,
+    "unemployment": 3.1
   },
   {
     "code": "PK",
@@ -69,7 +75,9 @@
     "empIndustry": 25.3,
     "empServices": 38.5,
     "femaleLFP": 24,
-    "secondaryEnrollment": 48.3
+    "secondaryEnrollment": 48.3,
+    "vulnEmployment": 55.9,
+    "unemployment": 5.2
   },
   {
     "code": "ID",
@@ -87,7 +95,9 @@
     "empIndustry": 22.5,
     "empServices": 50.2,
     "femaleLFP": 53.7,
-    "secondaryEnrollment": 97.2
+    "secondaryEnrollment": 97.2,
+    "vulnEmployment": 50.7,
+    "unemployment": 3.3
   },
   {
     "code": "CD",
@@ -105,7 +115,9 @@
     "empIndustry": 8,
     "empServices": 33.5,
     "femaleLFP": 61.8,
-    "secondaryEnrollment": 55.5
+    "secondaryEnrollment": 55.5,
+    "vulnEmployment": 82.1,
+    "unemployment": 4.5
   },
   {
     "code": "ET",
@@ -123,7 +135,9 @@
     "empIndustry": 6.4,
     "empServices": 33.4,
     "femaleLFP": 58.5,
-    "secondaryEnrollment": 33.9
+    "secondaryEnrollment": 33.9,
+    "vulnEmployment": 84.8,
+    "unemployment": 3.4
   },
   {
     "code": "US",
@@ -141,7 +155,9 @@
     "empIndustry": 18.9,
     "empServices": 79.6,
     "femaleLFP": 56.3,
-    "secondaryEnrollment": 97.5
+    "secondaryEnrollment": 97.5,
+    "vulnEmployment": 3.8,
+    "unemployment": 3.6
   },
   {
     "code": "BD",
@@ -159,7 +175,9 @@
     "empIndustry": 18,
     "empServices": 37.7,
     "femaleLFP": 38.6,
-    "secondaryEnrollment": 64.3
+    "secondaryEnrollment": 64.3,
+    "vulnEmployment": 58.2,
+    "unemployment": 3.4
   },
   {
     "code": "BR",
@@ -177,7 +195,9 @@
     "empIndustry": 20.2,
     "empServices": 72.2,
     "femaleLFP": 53.4,
-    "secondaryEnrollment": 104.1
+    "secondaryEnrollment": 104.1,
+    "vulnEmployment": 27,
+    "unemployment": 7.9
   },
   {
     "code": "EG",
@@ -195,7 +215,9 @@
     "empIndustry": 29.4,
     "empServices": 53.1,
     "femaleLFP": 18.5,
-    "secondaryEnrollment": 84.8
+    "secondaryEnrollment": 84.8,
+    "vulnEmployment": 24.3,
+    "unemployment": 6.8
   },
   {
     "code": "TZ",
@@ -213,7 +235,9 @@
     "empIndustry": 8.1,
     "empServices": 27.3,
     "femaleLFP": 80.3,
-    "secondaryEnrollment": 28.2
+    "secondaryEnrollment": 28.2,
+    "vulnEmployment": 84,
+    "unemployment": 1.6
   },
   {
     "code": "MX",
@@ -231,7 +255,9 @@
     "empIndustry": 24.5,
     "empServices": 64.1,
     "femaleLFP": 47.5,
-    "secondaryEnrollment": 103.1
+    "secondaryEnrollment": 103.1,
+    "vulnEmployment": 26.1,
+    "unemployment": 2.8
   },
   {
     "code": "PH",
@@ -249,7 +275,9 @@
     "empIndustry": 20,
     "empServices": 59.5,
     "femaleLFP": 50.5,
-    "secondaryEnrollment": 85.3
+    "secondaryEnrollment": 85.3,
+    "vulnEmployment": 34.3,
+    "unemployment": 2.2
   },
   {
     "code": "UG",
@@ -267,7 +295,9 @@
     "empIndustry": 7.3,
     "empServices": 27.9,
     "femaleLFP": 75.6,
-    "secondaryEnrollment": 24.1
+    "secondaryEnrollment": 24.1,
+    "vulnEmployment": 74.8,
+    "unemployment": 2.8
   },
   {
     "code": "SD",
@@ -285,7 +315,9 @@
     "empIndustry": 14,
     "empServices": 46.2,
     "femaleLFP": 14.5,
-    "secondaryEnrollment": 43.5
+    "secondaryEnrollment": 43.5,
+    "vulnEmployment": 39.7,
+    "unemployment": 7.5
   },
   {
     "code": "KE",
@@ -303,7 +335,9 @@
     "empIndustry": 12.5,
     "empServices": 41.7,
     "femaleLFP": 63,
-    "secondaryEnrollment": 84.3
+    "secondaryEnrollment": 84.3,
+    "vulnEmployment": 64.3,
+    "unemployment": 5.4
   },
   {
     "code": "AF",
@@ -321,7 +355,9 @@
     "empIndustry": 18.9,
     "empServices": 29.5,
     "femaleLFP": 5.1,
-    "secondaryEnrollment": 59.6
+    "secondaryEnrollment": 59.6,
+    "vulnEmployment": 81.5,
+    "unemployment": 14
   },
   {
     "code": "AO",
@@ -339,7 +375,9 @@
     "empIndustry": 7.2,
     "empServices": 40.9,
     "femaleLFP": 72.2,
-    "secondaryEnrollment": 51.5
+    "secondaryEnrollment": 51.5,
+    "vulnEmployment": 66.3,
+    "unemployment": 14.1
   },
   {
     "code": "YE",
@@ -357,7 +395,9 @@
     "empIndustry": 11.1,
     "empServices": 57.3,
     "femaleLFP": 4.7,
-    "secondaryEnrollment": 43.7
+    "secondaryEnrollment": 43.7,
+    "vulnEmployment": 45.4,
+    "unemployment": 16.9
   },
   {
     "code": "VN",
@@ -375,7 +415,9 @@
     "empIndustry": 34.8,
     "empServices": 40.1,
     "femaleLFP": 68.6,
-    "secondaryEnrollment": 93.4
+    "secondaryEnrollment": 93.4,
+    "vulnEmployment": 52.3,
+    "unemployment": 1.6
   },
   {
     "code": "MZ",
@@ -393,7 +435,9 @@
     "empIndustry": 6.4,
     "empServices": 20.6,
     "femaleLFP": 77.1,
-    "secondaryEnrollment": 37.2
+    "secondaryEnrollment": 37.2,
+    "vulnEmployment": 84,
+    "unemployment": 6.7
   },
   {
     "code": "RU",
@@ -411,7 +455,9 @@
     "empIndustry": 25.8,
     "empServices": 69.1,
     "femaleLFP": 54.5,
-    "secondaryEnrollment": 92.5
+    "secondaryEnrollment": 92.5,
+    "vulnEmployment": 5.2,
+    "unemployment": 3.1
   },
   {
     "code": "ZA",
@@ -429,7 +475,9 @@
     "empIndustry": 20.8,
     "empServices": 73.8,
     "femaleLFP": 49.9,
-    "secondaryEnrollment": 104.1
+    "secondaryEnrollment": 104.1,
+    "vulnEmployment": 10.9,
+    "unemployment": 32.1
   },
   {
     "code": "IQ",
@@ -447,7 +495,9 @@
     "empIndustry": 26.5,
     "empServices": 65.3,
     "femaleLFP": 10.9,
-    "secondaryEnrollment": 50.6
+    "secondaryEnrollment": 50.6,
+    "vulnEmployment": 27.1,
+    "unemployment": 15.2
   },
   {
     "code": "IR",
@@ -465,7 +515,9 @@
     "empIndustry": 34.7,
     "empServices": 51.7,
     "femaleLFP": 14,
-    "secondaryEnrollment": 85.1
+    "secondaryEnrollment": 85.1,
+    "vulnEmployment": 40,
+    "unemployment": 8.1
   },
   {
     "code": "NE",
@@ -483,7 +535,9 @@
     "empIndustry": 9.3,
     "empServices": 17.7,
     "femaleLFP": 72.8,
-    "secondaryEnrollment": 19.9
+    "secondaryEnrollment": 19.9,
+    "vulnEmployment": 84.2,
+    "unemployment": 0.4
   },
   {
     "code": "MG",
@@ -501,7 +555,9 @@
     "empIndustry": 9.9,
     "empServices": 20.9,
     "femaleLFP": 82.9,
-    "secondaryEnrollment": 34.1
+    "secondaryEnrollment": 34.1,
+    "vulnEmployment": 84.8,
+    "unemployment": 3
   },
   {
     "code": "CI",
@@ -519,7 +575,9 @@
     "empIndustry": 14.3,
     "empServices": 40.3,
     "femaleLFP": 59.5,
-    "secondaryEnrollment": 65.3
+    "secondaryEnrollment": 65.3,
+    "vulnEmployment": 70.1,
+    "unemployment": 2.3
   },
   {
     "code": "CM",
@@ -537,7 +595,9 @@
     "empIndustry": 14.6,
     "empServices": 43.5,
     "femaleLFP": 56.6,
-    "secondaryEnrollment": 44.8
+    "secondaryEnrollment": 44.8,
+    "vulnEmployment": 68,
+    "unemployment": 3.6
   },
   {
     "code": "ML",
@@ -555,7 +615,9 @@
     "empIndustry": 8.6,
     "empServices": 28.4,
     "femaleLFP": 52.8,
-    "secondaryEnrollment": 38.9
+    "secondaryEnrollment": 38.9,
+    "vulnEmployment": 76.4,
+    "unemployment": 2.9
   },
   {
     "code": "TR",
@@ -573,7 +635,9 @@
     "empIndustry": 27.3,
     "empServices": 58.5,
     "femaleLFP": 37.1,
-    "secondaryEnrollment": 118.4
+    "secondaryEnrollment": 118.4,
+    "vulnEmployment": 23.9,
+    "unemployment": 9.4
   },
   {
     "code": "UZ",
@@ -591,7 +655,9 @@
     "empIndustry": 24.6,
     "empServices": 50.2,
     "femaleLFP": 41.2,
-    "secondaryEnrollment": 98.1
+    "secondaryEnrollment": 98.1,
+    "vulnEmployment": 33.7,
+    "unemployment": 4.4
   },
   {
     "code": "MM",
@@ -609,7 +675,9 @@
     "empIndustry": 18.2,
     "empServices": 36.9,
     "femaleLFP": 40.9,
-    "secondaryEnrollment": 77
+    "secondaryEnrollment": 77,
+    "vulnEmployment": 62.8,
+    "unemployment": 3
   },
   {
     "code": "GH",
@@ -627,7 +695,9 @@
     "empIndustry": 18.3,
     "empServices": 47.2,
     "femaleLFP": 55.3,
-    "secondaryEnrollment": 75.7
+    "secondaryEnrollment": 75.7,
+    "vulnEmployment": 60.7,
+    "unemployment": 2.8
   },
   {
     "code": "DZ",
@@ -645,7 +715,9 @@
     "empIndustry": 32.3,
     "empServices": 58.2,
     "femaleLFP": 14.1,
-    "secondaryEnrollment": 105.2
+    "secondaryEnrollment": 105.2,
+    "vulnEmployment": 25.9,
+    "unemployment": 11.6
   },
   {
     "code": "TD",
@@ -663,7 +735,9 @@
     "empIndustry": 8.5,
     "empServices": 19.8,
     "femaleLFP": 47.3,
-    "secondaryEnrollment": 23.5
+    "secondaryEnrollment": 23.5,
+    "vulnEmployment": 90.1,
+    "unemployment": 1.1
   },
   {
     "code": "SO",
@@ -681,7 +755,9 @@
     "empIndustry": 17.8,
     "empServices": 52.2,
     "femaleLFP": 20.7,
-    "secondaryEnrollment": 3.3
+    "secondaryEnrollment": 3.3,
+    "vulnEmployment": 46.1,
+    "unemployment": 19
   },
   {
     "code": "BF",
@@ -699,7 +775,9 @@
     "empIndustry": 16.7,
     "empServices": 31.6,
     "femaleLFP": 64.1,
-    "secondaryEnrollment": 30
+    "secondaryEnrollment": 30,
+    "vulnEmployment": 80.8,
+    "unemployment": 3.6
   },
   {
     "code": "JP",
@@ -717,7 +795,9 @@
     "empIndustry": 23.2,
     "empServices": 74,
     "femaleLFP": 55.9,
-    "secondaryEnrollment": 101.5
+    "secondaryEnrollment": 101.5,
+    "vulnEmployment": 7.9,
+    "unemployment": 2.6
   },
   {
     "code": "CO",
@@ -735,7 +815,9 @@
     "empIndustry": 20,
     "empServices": 65.8,
     "femaleLFP": 51.6,
-    "secondaryEnrollment": 101.6
+    "secondaryEnrollment": 101.6,
+    "vulnEmployment": 43.8,
+    "unemployment": 9.6
   },
   {
     "code": "ZM",
@@ -753,7 +835,9 @@
     "empIndustry": 10.3,
     "empServices": 35.2,
     "femaleLFP": 56.4,
-    "secondaryEnrollment": 56.8
+    "secondaryEnrollment": 56.8,
+    "vulnEmployment": 70.7,
+    "unemployment": 5.9
   },
   {
     "code": "GB",
@@ -771,7 +855,9 @@
     "empIndustry": 15.9,
     "empServices": 83.2,
     "femaleLFP": 57.3,
-    "secondaryEnrollment": 112.1
+    "secondaryEnrollment": 112.1,
+    "vulnEmployment": 11.9,
+    "unemployment": 4
   },
   {
     "code": "DE",
@@ -789,7 +875,9 @@
     "empIndustry": 26,
     "empServices": 72.9,
     "femaleLFP": 55.3,
-    "secondaryEnrollment": 100.2
+    "secondaryEnrollment": 100.2,
+    "vulnEmployment": 4.4,
+    "unemployment": 3.1
   },
   {
     "code": "MW",
@@ -807,7 +895,9 @@
     "empIndustry": 7.3,
     "empServices": 27.7,
     "femaleLFP": 58.2,
-    "secondaryEnrollment": 36.6
+    "secondaryEnrollment": 36.6,
+    "vulnEmployment": 60,
+    "unemployment": 5
   },
   {
     "code": "FR",
@@ -825,7 +915,9 @@
     "empIndustry": 19.3,
     "empServices": 78.4,
     "femaleLFP": 51.5,
-    "secondaryEnrollment": 103.8
+    "secondaryEnrollment": 103.8,
+    "vulnEmployment": 8.1,
+    "unemployment": 7.3
   },
   {
     "code": "MA",
@@ -843,7 +935,9 @@
     "empIndustry": 23.8,
     "empServices": 48.3,
     "femaleLFP": 19.7,
-    "secondaryEnrollment": 90
+    "secondaryEnrollment": 90,
+    "vulnEmployment": 36.2,
+    "unemployment": 8.9
   },
   {
     "code": "SA",
@@ -861,7 +955,9 @@
     "empIndustry": 23.1,
     "empServices": 74.4,
     "femaleLFP": 33.6,
-    "secondaryEnrollment": 110.7
+    "secondaryEnrollment": 110.7,
+    "vulnEmployment": 1.6,
+    "unemployment": 4
   },
   {
     "code": "TH",
@@ -879,7 +975,9 @@
     "empIndustry": 22.2,
     "empServices": 49.2,
     "femaleLFP": 59,
-    "secondaryEnrollment": 92.1
+    "secondaryEnrollment": 92.1,
+    "vulnEmployment": 49.7,
+    "unemployment": 0.7
   },
   {
     "code": "SY",
@@ -897,7 +995,9 @@
     "empIndustry": 25.2,
     "empServices": 58.5,
     "femaleLFP": 12.7,
-    "secondaryEnrollment": 38.7
+    "secondaryEnrollment": 38.7,
+    "vulnEmployment": 38.8,
+    "unemployment": 13.3
   },
   {
     "code": "NP",
@@ -915,7 +1015,9 @@
     "empIndustry": 31.3,
     "empServices": 45.8,
     "femaleLFP": 27.5,
-    "secondaryEnrollment": 90.4
+    "secondaryEnrollment": 90.4,
+    "vulnEmployment": 77.5,
+    "unemployment": 10.4
   },
   {
     "code": "SN",
@@ -933,7 +1035,9 @@
     "empIndustry": 22.5,
     "empServices": 47.9,
     "femaleLFP": 38.2,
-    "secondaryEnrollment": 44.1
+    "secondaryEnrollment": 44.1,
+    "vulnEmployment": 63.6,
+    "unemployment": 2.8
   },
   {
     "code": "PE",
@@ -951,7 +1055,9 @@
     "empIndustry": 16.8,
     "empServices": 60.1,
     "femaleLFP": 65,
-    "secondaryEnrollment": 108.3
+    "secondaryEnrollment": 108.3,
+    "vulnEmployment": 48.6,
+    "unemployment": 4.9
   },
   {
     "code": "AR",
@@ -969,7 +1075,9 @@
     "empIndustry": 21.2,
     "empServices": 71.8,
     "femaleLFP": 52.5,
-    "secondaryEnrollment": 105.6
+    "secondaryEnrollment": 105.6,
+    "vulnEmployment": 22.4,
+    "unemployment": 6.1
   },
   {
     "code": "ZW",
@@ -987,7 +1095,9 @@
     "empIndustry": 11.5,
     "empServices": 34.2,
     "femaleLFP": 62.2,
-    "secondaryEnrollment": 52.4
+    "secondaryEnrollment": 52.4,
+    "vulnEmployment": 68.4,
+    "unemployment": 9.3
   },
   {
     "code": "GN",
@@ -1005,7 +1115,9 @@
     "empIndustry": 14.2,
     "empServices": 38.5,
     "femaleLFP": 42.6,
-    "secondaryEnrollment": 38.6
+    "secondaryEnrollment": 38.6,
+    "vulnEmployment": 79.7,
+    "unemployment": 5.1
   },
   {
     "code": "BJ",
@@ -1023,7 +1135,9 @@
     "empIndustry": 18.3,
     "empServices": 41.4,
     "femaleLFP": 75.2,
-    "secondaryEnrollment": 43.6
+    "secondaryEnrollment": 43.6,
+    "vulnEmployment": 79.2,
+    "unemployment": 1.6
   },
   {
     "code": "BI",
@@ -1041,7 +1155,9 @@
     "empIndustry": 3.1,
     "empServices": 11.6,
     "femaleLFP": 79.5,
-    "secondaryEnrollment": 23.1
+    "secondaryEnrollment": 23.1,
+    "vulnEmployment": 83.8,
+    "unemployment": 0.9
   },
   {
     "code": "MY",
@@ -1059,7 +1175,9 @@
     "empIndustry": 26,
     "empServices": 64.8,
     "femaleLFP": 51.6,
-    "secondaryEnrollment": 80.3
+    "secondaryEnrollment": 80.3,
+    "vulnEmployment": 22.1,
+    "unemployment": 3.9
   },
   {
     "code": "VE",
@@ -1077,7 +1195,9 @@
     "empIndustry": 16.8,
     "empServices": 74.3,
     "femaleLFP": 37.1,
-    "secondaryEnrollment": 97.8
+    "secondaryEnrollment": 97.8,
+    "vulnEmployment": 37,
+    "unemployment": 5.4
   },
   {
     "code": "KZ",
@@ -1095,7 +1215,9 @@
     "empIndustry": 19.9,
     "empServices": 68.8,
     "femaleLFP": 62.6,
-    "secondaryEnrollment": 97.6
+    "secondaryEnrollment": 97.6,
+    "vulnEmployment": 25,
+    "unemployment": 4.8
   },
   {
     "code": "RW",
@@ -1113,7 +1235,9 @@
     "empIndustry": 18.4,
     "empServices": 46.5,
     "femaleLFP": 57.3,
-    "secondaryEnrollment": 48.8
+    "secondaryEnrollment": 48.8,
+    "vulnEmployment": 40.2,
+    "unemployment": 12.4
   },
   {
     "code": "GT",
@@ -1131,7 +1255,9 @@
     "empIndustry": 22.7,
     "empServices": 48.2,
     "femaleLFP": 38.3,
-    "secondaryEnrollment": 49.6
+    "secondaryEnrollment": 49.6,
+    "vulnEmployment": 36.6,
+    "unemployment": 2.3
   },
   {
     "code": "IT",
@@ -1149,7 +1275,9 @@
     "empIndustry": 26.4,
     "empServices": 70.3,
     "femaleLFP": 40.8,
-    "secondaryEnrollment": 100.7
+    "secondaryEnrollment": 100.7,
+    "vulnEmployment": 14.5,
+    "unemployment": 7.6
   },
   {
     "code": "CA",
@@ -1167,7 +1295,9 @@
     "empIndustry": 18.7,
     "empServices": 80.2,
     "femaleLFP": 60.2,
-    "secondaryEnrollment": 104.3
+    "secondaryEnrollment": 104.3,
+    "vulnEmployment": 9.5,
+    "unemployment": 5.4
   },
   {
     "code": "KH",
@@ -1185,7 +1315,9 @@
     "empIndustry": 28.9,
     "empServices": 37.7,
     "femaleLFP": 77.4,
-    "secondaryEnrollment": 58.8
+    "secondaryEnrollment": 58.8,
+    "vulnEmployment": 52.9,
+    "unemployment": 0.3
   },
   {
     "code": "SS",
@@ -1203,7 +1335,9 @@
     "empIndustry": 1.7,
     "empServices": 34.6,
     "femaleLFP": 70.4,
-    "secondaryEnrollment": 122.1
+    "secondaryEnrollment": 122.1,
+    "vulnEmployment": 80.3,
+    "unemployment": 12.4
   },
   {
     "code": "KP",
@@ -1221,7 +1355,9 @@
     "empIndustry": 22.4,
     "empServices": 23.5,
     "femaleLFP": 77.7,
-    "secondaryEnrollment": 94.3
+    "secondaryEnrollment": 94.3,
+    "vulnEmployment": 56.9,
+    "unemployment": 3.5
   },
   {
     "code": "ES",
@@ -1239,7 +1375,9 @@
     "empIndustry": 19.9,
     "empServices": 76.7,
     "femaleLFP": 52.8,
-    "secondaryEnrollment": 118.5
+    "secondaryEnrollment": 118.5,
+    "vulnEmployment": 10.4,
+    "unemployment": 12.2
   },
   {
     "code": "TG",
@@ -1257,7 +1395,9 @@
     "empIndustry": 18.2,
     "empServices": 44.2,
     "femaleLFP": 56.6,
-    "secondaryEnrollment": 63.4
+    "secondaryEnrollment": 63.4,
+    "vulnEmployment": 75.7,
+    "unemployment": 1.9
   },
   {
     "code": "AU",
@@ -1275,7 +1415,9 @@
     "empIndustry": 19.3,
     "empServices": 78.5,
     "femaleLFP": 62.5,
-    "secondaryEnrollment": 131.9
+    "secondaryEnrollment": 131.9,
+    "vulnEmployment": 9.3,
+    "unemployment": 3.7
   },
   {
     "code": "EC",
@@ -1293,7 +1435,9 @@
     "empIndustry": 16.6,
     "empServices": 50.9,
     "femaleLFP": 52.4,
-    "secondaryEnrollment": 92.8
+    "secondaryEnrollment": 92.8,
+    "vulnEmployment": 48.6,
+    "unemployment": 3.5
   },
   {
     "code": "TJ",
@@ -1311,7 +1455,9 @@
     "empIndustry": 17.7,
     "empServices": 39.1,
     "femaleLFP": 21.9,
-    "secondaryEnrollment": 86.9
+    "secondaryEnrollment": 86.9,
+    "vulnEmployment": 28.5,
+    "unemployment": 7
   },
   {
     "code": "BO",
@@ -1329,7 +1475,9 @@
     "empIndustry": 19.8,
     "empServices": 55.5,
     "femaleLFP": 72.9,
-    "secondaryEnrollment": 90.5
+    "secondaryEnrollment": 90.5,
+    "vulnEmployment": 63.1,
+    "unemployment": 3
   },
   {
     "code": "SL",
@@ -1347,7 +1495,9 @@
     "empIndustry": 11.5,
     "empServices": 44,
     "femaleLFP": 51.6,
-    "secondaryEnrollment": 86.9
+    "secondaryEnrollment": 86.9,
+    "vulnEmployment": 86.5,
+    "unemployment": 3.1
   },
   {
     "code": "HT",
@@ -1365,7 +1515,9 @@
     "empIndustry": 8.8,
     "empServices": 44.6,
     "femaleLFP": 58.3,
-    "secondaryEnrollment": 17.2
+    "secondaryEnrollment": 17.2,
+    "vulnEmployment": 75.9,
+    "unemployment": 14.5
   },
   {
     "code": "PG",
@@ -1383,7 +1535,9 @@
     "empIndustry": 7.9,
     "empServices": 55.2,
     "femaleLFP": 50.8,
-    "secondaryEnrollment": 52.1
+    "secondaryEnrollment": 52.1,
+    "vulnEmployment": 71.5,
+    "unemployment": 2.6
   },
   {
     "code": "PL",
@@ -1401,7 +1555,9 @@
     "empIndustry": 30,
     "empServices": 63.8,
     "femaleLFP": 51.6,
-    "secondaryEnrollment": 107.9
+    "secondaryEnrollment": 107.9,
+    "vulnEmployment": 16.6,
+    "unemployment": 2.7
   },
   {
     "code": "CF",
@@ -1419,7 +1575,9 @@
     "empIndustry": 13.4,
     "empServices": 20.5,
     "femaleLFP": 65.5,
-    "secondaryEnrollment": 15.8
+    "secondaryEnrollment": 15.8,
+    "vulnEmployment": 79.6,
+    "unemployment": 6.2
   },
   {
     "code": "KR",
@@ -1437,7 +1595,9 @@
     "empIndustry": 23.4,
     "empServices": 71.5,
     "femaleLFP": 56.8,
-    "secondaryEnrollment": 96.3
+    "secondaryEnrollment": 96.3,
+    "vulnEmployment": 18.2,
+    "unemployment": 2.7
   },
   {
     "code": "JO",
@@ -1455,7 +1615,9 @@
     "empIndustry": 16.1,
     "empServices": 80.8,
     "femaleLFP": 16,
-    "secondaryEnrollment": 91.8
+    "secondaryEnrollment": 91.8,
+    "vulnEmployment": 8.2,
+    "unemployment": 16.6
   },
   {
     "code": "HN",
@@ -1473,7 +1635,9 @@
     "empIndustry": 21.6,
     "empServices": 56,
     "femaleLFP": 39.6,
-    "secondaryEnrollment": 51.8
+    "secondaryEnrollment": 51.8,
+    "vulnEmployment": 34.4,
+    "unemployment": 6.1
   },
   {
     "code": "LK",
@@ -1491,7 +1655,9 @@
     "empIndustry": 26.3,
     "empServices": 47.8,
     "femaleLFP": 31,
-    "secondaryEnrollment": 88
+    "secondaryEnrollment": 88,
+    "vulnEmployment": 39.3,
+    "unemployment": 4.5
   },
   {
     "code": "UA",
@@ -1509,7 +1675,9 @@
     "empIndustry": 25.2,
     "empServices": 60.7,
     "femaleLFP": 47.7,
-    "secondaryEnrollment": 86.2
+    "secondaryEnrollment": 86.2,
+    "vulnEmployment": 19,
+    "unemployment": 9.8
   },
   {
     "code": "DO",
@@ -1527,7 +1695,9 @@
     "empIndustry": 19,
     "empServices": 74,
     "femaleLFP": 53.7,
-    "secondaryEnrollment": 76.4
+    "secondaryEnrollment": 76.4,
+    "vulnEmployment": 38.3,
+    "unemployment": 5.6
   },
   {
     "code": "CG",
@@ -1545,7 +1715,9 @@
     "empIndustry": 19.5,
     "empServices": 44.2,
     "femaleLFP": 65.6,
-    "secondaryEnrollment": 50.5
+    "secondaryEnrollment": 50.5,
+    "vulnEmployment": 76.1,
+    "unemployment": 19.9
   },
   {
     "code": "IL",
@@ -1563,7 +1735,9 @@
     "empIndustry": 15.1,
     "empServices": 84.1,
     "femaleLFP": 62.3,
-    "secondaryEnrollment": 98.5
+    "secondaryEnrollment": 98.5,
+    "vulnEmployment": 7.9,
+    "unemployment": 3.4
   },
   {
     "code": "MR",
@@ -1581,7 +1755,9 @@
     "empIndustry": 15,
     "empServices": 52.9,
     "femaleLFP": 26.2,
-    "secondaryEnrollment": 36
+    "secondaryEnrollment": 36,
+    "vulnEmployment": 53.8,
+    "unemployment": 10.4
   },
   {
     "code": "CL",
@@ -1599,7 +1775,9 @@
     "empIndustry": 21.5,
     "empServices": 72.4,
     "femaleLFP": 52.9,
-    "secondaryEnrollment": 105.6
+    "secondaryEnrollment": 105.6,
+    "vulnEmployment": 21.5,
+    "unemployment": 9
   },
   {
     "code": "LR",
@@ -1617,7 +1795,9 @@
     "empIndustry": 8.3,
     "empServices": 50.6,
     "femaleLFP": 72,
-    "secondaryEnrollment": 37.7
+    "secondaryEnrollment": 37.7,
+    "vulnEmployment": 77.4,
+    "unemployment": 2.9
   },
   {
     "code": "NL",
@@ -1635,7 +1815,9 @@
     "empIndustry": 13.8,
     "empServices": 84.5,
     "femaleLFP": 62.7,
-    "secondaryEnrollment": 137.5
+    "secondaryEnrollment": 137.5,
+    "vulnEmployment": 13.5,
+    "unemployment": 3.5
   },
   {
     "code": "TN",
@@ -1653,7 +1835,9 @@
     "empIndustry": 33.3,
     "empServices": 54.2,
     "femaleLFP": 26.5,
-    "secondaryEnrollment": 90.3
+    "secondaryEnrollment": 90.3,
+    "vulnEmployment": 18.1,
+    "unemployment": 15.1
   },
   {
     "code": "LA",
@@ -1671,7 +1855,9 @@
     "empIndustry": 7.4,
     "empServices": 24,
     "femaleLFP": 61.6,
-    "secondaryEnrollment": 50.5
+    "secondaryEnrollment": 50.5,
+    "vulnEmployment": 76.9,
+    "unemployment": 1.2
   },
   {
     "code": "TM",
@@ -1689,7 +1875,9 @@
     "empIndustry": 28.6,
     "empServices": 49.5,
     "femaleLFP": 38.2,
-    "secondaryEnrollment": 94.6
+    "secondaryEnrollment": 94.6,
+    "vulnEmployment": 28.6,
+    "unemployment": 4
   },
   {
     "code": "RO",
@@ -1707,7 +1895,9 @@
     "empIndustry": 32.6,
     "empServices": 56.5,
     "femaleLFP": 41.8,
-    "secondaryEnrollment": 81.6
+    "secondaryEnrollment": 81.6,
+    "vulnEmployment": 13.3,
+    "unemployment": 5.6
   },
   {
     "code": "KG",
@@ -1725,7 +1915,9 @@
     "empIndustry": 26.8,
     "empServices": 57.8,
     "femaleLFP": 44.1,
-    "secondaryEnrollment": 91.7
+    "secondaryEnrollment": 91.7,
+    "vulnEmployment": 29.9,
+    "unemployment": 3.5
   },
   {
     "code": "PS",
@@ -1743,7 +1935,9 @@
     "empIndustry": 29.9,
     "empServices": 63.8,
     "femaleLFP": 18.9,
-    "secondaryEnrollment": 89.1
+    "secondaryEnrollment": 89.1,
+    "vulnEmployment": 18.4,
+    "unemployment": 24.4
   },
   {
     "code": "PY",
@@ -1761,7 +1955,9 @@
     "empIndustry": 19,
     "empServices": 65,
     "femaleLFP": 59,
-    "secondaryEnrollment": 79.1
+    "secondaryEnrollment": 79.1,
+    "vulnEmployment": 36.2,
+    "unemployment": 5.8
   },
   {
     "code": "TW",
@@ -1802,7 +1998,9 @@
     "empIndustry": 16.9,
     "empServices": 52.6,
     "femaleLFP": 51.3,
-    "secondaryEnrollment": 70.2
+    "secondaryEnrollment": 70.2,
+    "vulnEmployment": 39.3,
+    "unemployment": 4.7
   },
   {
     "code": "LY",
@@ -1820,7 +2018,9 @@
     "empIndustry": 18.6,
     "empServices": 71.4,
     "femaleLFP": 33,
-    "secondaryEnrollment": 97.6
+    "secondaryEnrollment": 97.6,
+    "vulnEmployment": 22.3,
+    "unemployment": 18.7
   },
   {
     "code": "BE",
@@ -1838,7 +2038,9 @@
     "empIndustry": 19.2,
     "empServices": 79.8,
     "femaleLFP": 49.8,
-    "secondaryEnrollment": 143
+    "secondaryEnrollment": 143,
+    "vulnEmployment": 11.2,
+    "unemployment": 5.5
   },
   {
     "code": "AE",
@@ -1856,7 +2058,9 @@
     "empIndustry": 30.6,
     "empServices": 68,
     "femaleLFP": 53,
-    "secondaryEnrollment": 102.1
+    "secondaryEnrollment": 102.1,
+    "vulnEmployment": 1.6,
+    "unemployment": 2.2
   },
   {
     "code": "AZ",
@@ -1874,7 +2078,9 @@
     "empIndustry": 15.5,
     "empServices": 50.3,
     "femaleLFP": 60.8,
-    "secondaryEnrollment": 91.1
+    "secondaryEnrollment": 91.1,
+    "vulnEmployment": 54.2,
+    "unemployment": 5.6
   },
   {
     "code": "ER",
@@ -1892,7 +2098,9 @@
     "empIndustry": 12.7,
     "empServices": 31.8,
     "femaleLFP": 72.8,
-    "secondaryEnrollment": 44
+    "secondaryEnrollment": 44,
+    "vulnEmployment": 48.3,
+    "unemployment": 5.9
   },
   {
     "code": "SV",
@@ -1910,7 +2118,9 @@
     "empIndustry": 23.1,
     "empServices": 63,
     "femaleLFP": 49.1,
-    "secondaryEnrollment": 62.1
+    "secondaryEnrollment": 62.1,
+    "vulnEmployment": 31.5,
+    "unemployment": 3
   },
   {
     "code": "SE",
@@ -1928,7 +2138,9 @@
     "empIndustry": 16.8,
     "empServices": 81.4,
     "femaleLFP": 61.5,
-    "secondaryEnrollment": 132
+    "secondaryEnrollment": 132,
+    "vulnEmployment": 7,
+    "unemployment": 7.6
   },
   {
     "code": "CU",
@@ -1946,7 +2158,9 @@
     "empIndustry": 16.9,
     "empServices": 67.6,
     "femaleLFP": 40,
-    "secondaryEnrollment": 91.7
+    "secondaryEnrollment": 91.7,
+    "vulnEmployment": 19.4,
+    "unemployment": 1.7
   },
   {
     "code": "LB",
@@ -1964,7 +2178,9 @@
     "empIndustry": 20.1,
     "empServices": 76.4,
     "femaleLFP": 22.2,
-    "secondaryEnrollment": 63.8
+    "secondaryEnrollment": 63.8,
+    "vulnEmployment": 19.4,
+    "unemployment": 11
   },
   {
     "code": "OM",
@@ -1982,7 +2198,9 @@
     "empIndustry": 39.4,
     "empServices": 54.7,
     "femaleLFP": 30,
-    "secondaryEnrollment": 95.1
+    "secondaryEnrollment": 95.1,
+    "vulnEmployment": 3.8,
+    "unemployment": 3.2
   },
   {
     "code": "PT",
@@ -2000,7 +2218,9 @@
     "empIndustry": 24.6,
     "empServices": 72.6,
     "femaleLFP": 54.6,
-    "secondaryEnrollment": 120.3
+    "secondaryEnrollment": 120.3,
+    "vulnEmployment": 10.2,
+    "unemployment": 6.5
   },
   {
     "code": "CZ",
@@ -2018,7 +2238,9 @@
     "empIndustry": 34.9,
     "empServices": 62.4,
     "femaleLFP": 53.5,
-    "secondaryEnrollment": 97.6
+    "secondaryEnrollment": 97.6,
+    "vulnEmployment": 14,
+    "unemployment": 2.6
   },
   {
     "code": "GM",
@@ -2036,7 +2258,9 @@
     "empIndustry": 18.8,
     "empServices": 53.6,
     "femaleLFP": 45.5,
-    "secondaryEnrollment": 107
+    "secondaryEnrollment": 107,
+    "vulnEmployment": 64.1,
+    "unemployment": 6.5
   },
   {
     "code": "NA",
@@ -2054,7 +2278,9 @@
     "empIndustry": 16.5,
     "empServices": 61.2,
     "femaleLFP": 54.9,
-    "secondaryEnrollment": 82
+    "secondaryEnrollment": 82,
+    "vulnEmployment": 30.5,
+    "unemployment": 19.2
   },
   {
     "code": "HU",
@@ -2072,7 +2298,9 @@
     "empIndustry": 30.5,
     "empServices": 65.4,
     "femaleLFP": 54.3,
-    "secondaryEnrollment": 107.4
+    "secondaryEnrollment": 107.4,
+    "vulnEmployment": 8.2,
+    "unemployment": 4.1
   },
   {
     "code": "CH",
@@ -2090,7 +2318,9 @@
     "empIndustry": 19.6,
     "empServices": 78.2,
     "femaleLFP": 62.2,
-    "secondaryEnrollment": 101.4
+    "secondaryEnrollment": 101.4,
+    "vulnEmployment": 9.7,
+    "unemployment": 4
   },
   {
     "code": "AT",
@@ -2108,7 +2338,9 @@
     "empIndustry": 24.6,
     "empServices": 72.6,
     "femaleLFP": 55.1,
-    "secondaryEnrollment": 100.6
+    "secondaryEnrollment": 100.6,
+    "vulnEmployment": 7.9,
+    "unemployment": 5.3
   },
   {
     "code": "PA",
@@ -2126,7 +2358,9 @@
     "empIndustry": 17,
     "empServices": 67,
     "femaleLFP": 54.9,
-    "secondaryEnrollment": 76.6
+    "secondaryEnrollment": 76.6,
+    "vulnEmployment": 36.1,
+    "unemployment": 6.5
   },
   {
     "code": "GA",
@@ -2144,7 +2378,9 @@
     "empIndustry": 18.9,
     "empServices": 52.2,
     "femaleLFP": 41.6,
-    "secondaryEnrollment": 70.3
+    "secondaryEnrollment": 70.3,
+    "vulnEmployment": 29.9,
+    "unemployment": 20.2
   },
   {
     "code": "GR",
@@ -2162,7 +2398,9 @@
     "empIndustry": 16.3,
     "empServices": 73,
     "femaleLFP": 44.7,
-    "secondaryEnrollment": 105.2
+    "secondaryEnrollment": 105.2,
+    "vulnEmployment": 23.7,
+    "unemployment": 11
   },
   {
     "code": "GW",
@@ -2180,7 +2418,9 @@
     "empIndustry": 9.7,
     "empServices": 29.2,
     "femaleLFP": 60.3,
-    "secondaryEnrollment": 34.4
+    "secondaryEnrollment": 34.4,
+    "vulnEmployment": 75.4,
+    "unemployment": 2.6
   },
   {
     "code": "BY",
@@ -2198,7 +2438,9 @@
     "empIndustry": 31.1,
     "empServices": 59.4,
     "femaleLFP": 56.8,
-    "secondaryEnrollment": 94.8
+    "secondaryEnrollment": 94.8,
+    "vulnEmployment": 6.6,
+    "unemployment": 3.5
   },
   {
     "code": "BW",
@@ -2216,7 +2458,9 @@
     "empIndustry": 15.8,
     "empServices": 66.2,
     "femaleLFP": 63.7,
-    "secondaryEnrollment": 70.6
+    "secondaryEnrollment": 70.6,
+    "vulnEmployment": 25.8,
+    "unemployment": 23.4
   },
   {
     "code": "RS",
@@ -2234,7 +2478,9 @@
     "empIndustry": 27.1,
     "empServices": 54.9,
     "femaleLFP": 52.6,
-    "secondaryEnrollment": 89.8
+    "secondaryEnrollment": 89.8,
+    "vulnEmployment": 24,
+    "unemployment": 8.3
   },
   {
     "code": "MN",
@@ -2252,7 +2498,9 @@
     "empIndustry": 23.1,
     "empServices": 49.9,
     "femaleLFP": 51.5,
-    "secondaryEnrollment": 96.8
+    "secondaryEnrollment": 96.8,
+    "vulnEmployment": 39.3,
+    "unemployment": 5.2
   },
   {
     "code": "NZ",
@@ -2270,7 +2518,9 @@
     "empIndustry": 19.9,
     "empServices": 74.7,
     "femaleLFP": 66.1,
-    "secondaryEnrollment": 114.2
+    "secondaryEnrollment": 114.2,
+    "vulnEmployment": 13.1,
+    "unemployment": 3.7
   },
   {
     "code": "DK",
@@ -2288,7 +2538,9 @@
     "empIndustry": 18.8,
     "empServices": 79.6,
     "femaleLFP": 60.8,
-    "secondaryEnrollment": 125.6
+    "secondaryEnrollment": 125.6,
+    "vulnEmployment": 5.7,
+    "unemployment": 5.1
   },
   {
     "code": "GQ",
@@ -2306,7 +2558,9 @@
     "empIndustry": 9.9,
     "empServices": 34.7,
     "femaleLFP": 52.6,
-    "secondaryEnrollment": 17.8
+    "secondaryEnrollment": 17.8,
+    "vulnEmployment": 22.6,
+    "unemployment": 8.2
   },
   {
     "code": "LS",
@@ -2324,7 +2578,9 @@
     "empIndustry": 33,
     "empServices": 36.1,
     "femaleLFP": 48.1,
-    "secondaryEnrollment": 59.4
+    "secondaryEnrollment": 59.4,
+    "vulnEmployment": 32.9,
+    "unemployment": 16.3
   },
   {
     "code": "NO",
@@ -2342,7 +2598,9 @@
     "empIndustry": 17.8,
     "empServices": 79.7,
     "femaleLFP": 62.1,
-    "secondaryEnrollment": 116.3
+    "secondaryEnrollment": 116.3,
+    "vulnEmployment": 4.3,
+    "unemployment": 3.6
   },
   {
     "code": "IE",
@@ -2360,7 +2618,9 @@
     "empIndustry": 18.2,
     "empServices": 77.9,
     "femaleLFP": 59.8,
-    "secondaryEnrollment": 130.6
+    "secondaryEnrollment": 130.6,
+    "vulnEmployment": 10.3,
+    "unemployment": 4.2
   },
   {
     "code": "BG",
@@ -2378,7 +2638,9 @@
     "empIndustry": 27.9,
     "empServices": 67.4,
     "femaleLFP": 50.4,
-    "secondaryEnrollment": 94.8
+    "secondaryEnrollment": 94.8,
+    "vulnEmployment": 7.2,
+    "unemployment": 4.3
   },
   {
     "code": "CR",
@@ -2396,7 +2658,9 @@
     "empIndustry": 18.5,
     "empServices": 70,
     "femaleLFP": 46,
-    "secondaryEnrollment": 121.8
+    "secondaryEnrollment": 121.8,
+    "vulnEmployment": 23.8,
+    "unemployment": 8.3
   },
   {
     "code": "KW",
@@ -2414,7 +2678,9 @@
     "empIndustry": 24.6,
     "empServices": 73.5,
     "femaleLFP": 47.2,
-    "secondaryEnrollment": 95.4
+    "secondaryEnrollment": 95.4,
+    "vulnEmployment": 2.2,
+    "unemployment": 2.1
   },
   {
     "code": "SK",
@@ -2432,7 +2698,9 @@
     "empIndustry": 34.5,
     "empServices": 63.3,
     "femaleLFP": 55.1,
-    "secondaryEnrollment": 93.2
+    "secondaryEnrollment": 93.2,
+    "vulnEmployment": 12.4,
+    "unemployment": 5.8
   },
   {
     "code": "SG",
@@ -2450,7 +2718,9 @@
     "empIndustry": 14,
     "empServices": 85.9,
     "femaleLFP": 63.6,
-    "secondaryEnrollment": 103.1
+    "secondaryEnrollment": 103.1,
+    "vulnEmployment": 9.1,
+    "unemployment": 3.4
   },
   {
     "code": "FI",
@@ -2468,7 +2738,9 @@
     "empIndustry": 20.8,
     "empServices": 75.7,
     "femaleLFP": 56.5,
-    "secondaryEnrollment": 142.4
+    "secondaryEnrollment": 142.4,
+    "vulnEmployment": 9.8,
+    "unemployment": 7.1
   },
   {
     "code": "GE",
@@ -2486,7 +2758,9 @@
     "empIndustry": 16.6,
     "empServices": 49.5,
     "femaleLFP": 56.7,
-    "secondaryEnrollment": 101
+    "secondaryEnrollment": 101,
+    "vulnEmployment": 43.6,
+    "unemployment": 11.5
   },
   {
     "code": "HK",
@@ -2504,7 +2778,9 @@
     "empIndustry": 14,
     "empServices": 85.8,
     "femaleLFP": 51.8,
-    "secondaryEnrollment": 107.2
+    "secondaryEnrollment": 107.2,
+    "vulnEmployment": 6.2,
+    "unemployment": 2.9
   },
   {
     "code": "AM",
@@ -2522,7 +2798,9 @@
     "empIndustry": 21.3,
     "empServices": 51.7,
     "femaleLFP": 51.1,
-    "secondaryEnrollment": 90.9
+    "secondaryEnrollment": 90.9,
+    "vulnEmployment": 34,
+    "unemployment": 12.4
   },
   {
     "code": "UY",
@@ -2540,7 +2818,9 @@
     "empIndustry": 18.8,
     "empServices": 73.1,
     "femaleLFP": 57.3,
-    "secondaryEnrollment": 119.1
+    "secondaryEnrollment": 119.1,
+    "vulnEmployment": 24.6,
+    "unemployment": 8.4
   },
   {
     "code": "JM",
@@ -2558,7 +2838,9 @@
     "empIndustry": 17.1,
     "empServices": 69,
     "femaleLFP": 63,
-    "secondaryEnrollment": 84.5
+    "secondaryEnrollment": 84.5,
+    "vulnEmployment": 31.7,
+    "unemployment": 3
   },
   {
     "code": "HR",
@@ -2576,7 +2858,9 @@
     "empIndustry": 26.4,
     "empServices": 69.3,
     "femaleLFP": 47.4,
-    "secondaryEnrollment": 105
+    "secondaryEnrollment": 105,
+    "vulnEmployment": 7.2,
+    "unemployment": 6.1
   },
   {
     "code": "TL",
@@ -2594,7 +2878,9 @@
     "empIndustry": 3.8,
     "empServices": 50.2,
     "femaleLFP": 61.7,
-    "secondaryEnrollment": 84.7
+    "secondaryEnrollment": 84.7,
+    "vulnEmployment": 58.8,
+    "unemployment": 1.5
   },
   {
     "code": "SZ",
@@ -2612,7 +2898,9 @@
     "empIndustry": 26.7,
     "empServices": 58.8,
     "femaleLFP": 48.5,
-    "secondaryEnrollment": 82
+    "secondaryEnrollment": 82,
+    "vulnEmployment": 28.7,
+    "unemployment": 34.6
   },
   {
     "code": "QA",
@@ -2630,7 +2918,9 @@
     "empIndustry": 38,
     "empServices": 60.4,
     "femaleLFP": 61.9,
-    "secondaryEnrollment": 99.6
+    "secondaryEnrollment": 99.6,
+    "vulnEmployment": 0.4,
+    "unemployment": 0.1
   },
   {
     "code": "MD",
@@ -2648,7 +2938,9 @@
     "empIndustry": 12.6,
     "empServices": 36.9,
     "femaleLFP": 72.3,
-    "secondaryEnrollment": 99.3
+    "secondaryEnrollment": 99.3,
+    "vulnEmployment": 58.5,
+    "unemployment": 1.6
   },
   {
     "code": "KM",
@@ -2666,7 +2958,9 @@
     "empIndustry": 14.8,
     "empServices": 51.6,
     "femaleLFP": 47.6,
-    "secondaryEnrollment": 54.8
+    "secondaryEnrollment": 54.8,
+    "vulnEmployment": 57,
+    "unemployment": 3.8
   },
   {
     "code": "DJ",
@@ -2685,7 +2979,9 @@
     "empServices": 92.1,
     "femaleLFP": 19.4,
     "secondaryEnrollment": 56.8,
-    "secondaryEnrollment_est": true
+    "secondaryEnrollment_est": true,
+    "vulnEmployment": 30.4,
+    "unemployment": 26.1
   },
   {
     "code": "BA",
@@ -2703,7 +2999,9 @@
     "empIndustry": 30.6,
     "empServices": 52.7,
     "femaleLFP": 39.2,
-    "secondaryEnrollment": 87.9
+    "secondaryEnrollment": 87.9,
+    "vulnEmployment": 18.8,
+    "unemployment": 10.7
   },
   {
     "code": "AL",
@@ -2721,7 +3019,9 @@
     "empIndustry": 22,
     "empServices": 47.2,
     "femaleLFP": 58.6,
-    "secondaryEnrollment": 108.4
+    "secondaryEnrollment": 108.4,
+    "vulnEmployment": 46.7,
+    "unemployment": 10.7
   },
   {
     "code": "SB",
@@ -2739,7 +3039,9 @@
     "empIndustry": 7.6,
     "empServices": 50,
     "femaleLFP": 82.3,
-    "secondaryEnrollment": 49
+    "secondaryEnrollment": 49,
+    "vulnEmployment": 68.9,
+    "unemployment": 1.4
   },
   {
     "code": "BH",
@@ -2757,7 +3059,9 @@
     "empIndustry": 34.9,
     "empServices": 64.3,
     "femaleLFP": 42.3,
-    "secondaryEnrollment": 98.8
+    "secondaryEnrollment": 98.8,
+    "vulnEmployment": 0.9,
+    "unemployment": 1
   },
   {
     "code": "LT",
@@ -2775,7 +3079,9 @@
     "empIndustry": 25.9,
     "empServices": 69.4,
     "femaleLFP": 57.7,
-    "secondaryEnrollment": 104.9
+    "secondaryEnrollment": 104.9,
+    "vulnEmployment": 10.8,
+    "unemployment": 6.8
   },
   {
     "code": "XK",
@@ -2816,7 +3122,9 @@
     "empIndustry": 14.7,
     "empServices": 84.2,
     "femaleLFP": 36.9,
-    "secondaryEnrollment": 81.5
+    "secondaryEnrollment": 81.5,
+    "vulnEmployment": 10.4,
+    "unemployment": 5.7
   },
   {
     "code": "SI",
@@ -2834,7 +3142,9 @@
     "empIndustry": 32,
     "empServices": 64.3,
     "femaleLFP": 52.3,
-    "secondaryEnrollment": 107.6
+    "secondaryEnrollment": 107.6,
+    "vulnEmployment": 11,
+    "unemployment": 3.7
   },
   {
     "code": "FJ",
@@ -2852,7 +3162,9 @@
     "empIndustry": 12.7,
     "empServices": 51.7,
     "femaleLFP": 38.5,
-    "secondaryEnrollment": 98.1
+    "secondaryEnrollment": 98.1,
+    "vulnEmployment": 33.4,
+    "unemployment": 5.3
   },
   {
     "code": "GY",
@@ -2870,7 +3182,9 @@
     "empIndustry": 31.1,
     "empServices": 56.7,
     "femaleLFP": 47.4,
-    "secondaryEnrollment": 91.4
+    "secondaryEnrollment": 91.4,
+    "vulnEmployment": 26.7,
+    "unemployment": 11.9
   },
   {
     "code": "MK",
@@ -2888,7 +3202,9 @@
     "empIndustry": 30.6,
     "empServices": 60.9,
     "femaleLFP": 42.7,
-    "secondaryEnrollment": 90.1
+    "secondaryEnrollment": 90.1,
+    "vulnEmployment": 9.9,
+    "unemployment": 13.2
   },
   {
     "code": "TT",
@@ -2906,7 +3222,9 @@
     "empIndustry": 24.2,
     "empServices": 71.3,
     "femaleLFP": 47.8,
-    "secondaryEnrollment": 95.7
+    "secondaryEnrollment": 95.7,
+    "vulnEmployment": 21.1,
+    "unemployment": 3.4
   },
   {
     "code": "CY",
@@ -2924,7 +3242,9 @@
     "empIndustry": 16.3,
     "empServices": 81.5,
     "femaleLFP": 61.2,
-    "secondaryEnrollment": 106.7
+    "secondaryEnrollment": 106.7,
+    "vulnEmployment": 8.9,
+    "unemployment": 5.8
   },
   {
     "code": "LV",
@@ -2942,7 +3262,9 @@
     "empIndustry": 21.8,
     "empServices": 71.5,
     "femaleLFP": 55.2,
-    "secondaryEnrollment": 101.3
+    "secondaryEnrollment": 101.3,
+    "vulnEmployment": 8.3,
+    "unemployment": 6.5
   },
   {
     "code": "MU",
@@ -2960,7 +3282,9 @@
     "empIndustry": 20.6,
     "empServices": 74.7,
     "femaleLFP": 47.5,
-    "secondaryEnrollment": 90.7
+    "secondaryEnrollment": 90.7,
+    "vulnEmployment": 15.6,
+    "unemployment": 5.6
   },
   {
     "code": "RE",
@@ -3001,7 +3325,9 @@
     "empIndustry": 26.1,
     "empServices": 66.9,
     "femaleLFP": 44.9,
-    "secondaryEnrollment": 76.1
+    "secondaryEnrollment": 76.1,
+    "vulnEmployment": 18.9,
+    "unemployment": 7.7
   },
   {
     "code": "EH",
@@ -3065,7 +3391,9 @@
     "empIndustry": 15.9,
     "empServices": 41.8,
     "femaleLFP": 56.7,
-    "secondaryEnrollment": 86.2
+    "secondaryEnrollment": 86.2,
+    "vulnEmployment": 69.7,
+    "unemployment": 3.1
   },
   {
     "code": "EE",
@@ -3083,7 +3411,9 @@
     "empIndustry": 26,
     "empServices": 71,
     "femaleLFP": 61,
-    "secondaryEnrollment": 108.5
+    "secondaryEnrollment": 108.5,
+    "vulnEmployment": 7,
+    "unemployment": 6.4
   },
   {
     "code": "VU",
@@ -3101,7 +3431,9 @@
     "empIndustry": 10,
     "empServices": 45.4,
     "femaleLFP": 53.3,
-    "secondaryEnrollment": 134.7
+    "secondaryEnrollment": 134.7,
+    "vulnEmployment": 58,
+    "unemployment": 5
   },
   {
     "code": "BZ",
@@ -3119,7 +3451,9 @@
     "empIndustry": 15.3,
     "empServices": 68.6,
     "femaleLFP": 46.5,
-    "secondaryEnrollment": 86.5
+    "secondaryEnrollment": 86.5,
+    "vulnEmployment": 30.2,
+    "unemployment": 8.3
   },
   {
     "code": "ME",
@@ -3137,7 +3471,9 @@
     "empIndustry": 18.2,
     "empServices": 77.6,
     "femaleLFP": 51.2,
-    "secondaryEnrollment": 93.9
+    "secondaryEnrollment": 93.9,
+    "vulnEmployment": 14.9,
+    "unemployment": 13.1
   },
   {
     "code": "ST",
@@ -3155,7 +3491,9 @@
     "empIndustry": 22.5,
     "empServices": 65.4,
     "femaleLFP": 22.7,
-    "secondaryEnrollment": 90.4
+    "secondaryEnrollment": 90.4,
+    "vulnEmployment": 35.1,
+    "unemployment": 9
   },
   {
     "code": "LU",
@@ -3173,7 +3511,9 @@
     "empIndustry": 7.6,
     "empServices": 91.5,
     "femaleLFP": 57.5,
-    "secondaryEnrollment": 108.6
+    "secondaryEnrollment": 108.6,
+    "vulnEmployment": 6.9,
+    "unemployment": 5.2
   },
   {
     "code": "CV",
@@ -3191,7 +3531,9 @@
     "empIndustry": 23.1,
     "empServices": 67.7,
     "femaleLFP": 50.5,
-    "secondaryEnrollment": 96.4
+    "secondaryEnrollment": 96.4,
+    "vulnEmployment": 35.1,
+    "unemployment": 11.9
   },
   {
     "code": "BN",
@@ -3209,7 +3551,9 @@
     "empIndustry": 20.4,
     "empServices": 78.4,
     "femaleLFP": 54.4,
-    "secondaryEnrollment": 91.8
+    "secondaryEnrollment": 91.8,
+    "vulnEmployment": 4.7,
+    "unemployment": 5.3
   },
   {
     "code": "MV",
@@ -3227,7 +3571,9 @@
     "empIndustry": 16.9,
     "empServices": 71.8,
     "femaleLFP": 40.7,
-    "secondaryEnrollment": 79.4
+    "secondaryEnrollment": 79.4,
+    "vulnEmployment": 17.5,
+    "unemployment": 4
   },
   {
     "code": "WS",
@@ -3245,7 +3591,9 @@
     "empIndustry": 15.9,
     "empServices": 57.2,
     "femaleLFP": 30.7,
-    "secondaryEnrollment": 87.4
+    "secondaryEnrollment": 87.4,
+    "vulnEmployment": 42,
+    "unemployment": 4.9
   },
   {
     "code": "IS",
@@ -3263,7 +3611,9 @@
     "empIndustry": 18.2,
     "empServices": 78.2,
     "femaleLFP": 70,
-    "secondaryEnrollment": 108.9
+    "secondaryEnrollment": 108.9,
+    "vulnEmployment": 10.3,
+    "unemployment": 3.5
   },
   {
     "code": "MT",
@@ -3281,7 +3631,9 @@
     "empIndustry": 17.7,
     "empServices": 81.4,
     "femaleLFP": 55.8,
-    "secondaryEnrollment": 103
+    "secondaryEnrollment": 103,
+    "vulnEmployment": 10.3,
+    "unemployment": 3.5
   },
   {
     "code": "NC",
@@ -3299,7 +3651,9 @@
     "empIndustry": 20.6,
     "empServices": 77.6,
     "femaleLFP": 51.1,
-    "secondaryEnrollment": 94
+    "secondaryEnrollment": 94,
+    "vulnEmployment": 13.9,
+    "unemployment": 10.9
   },
   {
     "code": "BS",
@@ -3317,7 +3671,9 @@
     "empIndustry": 14.8,
     "empServices": 84.4,
     "femaleLFP": 70.7,
-    "secondaryEnrollment": 79.5
+    "secondaryEnrollment": 79.5,
+    "vulnEmployment": 16.1,
+    "unemployment": 8.6
   },
   {
     "code": "MO",
@@ -3335,7 +3691,9 @@
     "empIndustry": 11,
     "empServices": 88.6,
     "femaleLFP": 63.1,
-    "secondaryEnrollment": 94.7
+    "secondaryEnrollment": 94.7,
+    "vulnEmployment": 3.9,
+    "unemployment": 2.2
   },
   {
     "code": "GP",
@@ -3421,7 +3779,9 @@
     "empIndustry": 14.3,
     "empServices": 83.8,
     "femaleLFP": 46.6,
-    "secondaryEnrollment": 74.8
+    "secondaryEnrollment": 74.8,
+    "vulnEmployment": 15.1,
+    "unemployment": 11.6
   },
   {
     "code": "GU",
@@ -3440,7 +3800,9 @@
     "empServices": 79.1,
     "femaleLFP": 56.5,
     "secondaryEnrollment": 92.1,
-    "secondaryEnrollment_est": true
+    "secondaryEnrollment_est": true,
+    "vulnEmployment": 12,
+    "unemployment": 5.3
   },
   {
     "code": "TO",
@@ -3458,7 +3820,9 @@
     "empIndustry": 23.3,
     "empServices": 53.1,
     "femaleLFP": 42.3,
-    "secondaryEnrollment": 92.4
+    "secondaryEnrollment": 92.4,
+    "vulnEmployment": 34,
+    "unemployment": 1.7
   },
   {
     "code": "BB",
@@ -3476,7 +3840,9 @@
     "empIndustry": 16.2,
     "empServices": 82.6,
     "femaleLFP": 61,
-    "secondaryEnrollment": 104.4
+    "secondaryEnrollment": 104.4,
+    "vulnEmployment": 19.3,
+    "unemployment": 6.5
   },
   {
     "code": "FM",
@@ -3516,7 +3882,9 @@
     "empIndustry": 16.2,
     "empServices": 76.3,
     "femaleLFP": 62,
-    "secondaryEnrollment": 87.9
+    "secondaryEnrollment": 87.9,
+    "vulnEmployment": 23.9,
+    "unemployment": 12.1
   },
   {
     "code": "GD",
@@ -3600,7 +3968,9 @@
     "empIndustry": 21.1,
     "empServices": 69.8,
     "femaleLFP": 59.2,
-    "secondaryEnrollment": 124.9
+    "secondaryEnrollment": 124.9,
+    "vulnEmployment": 22.2,
+    "unemployment": 18.3
   },
   {
     "code": "VI",
@@ -3618,7 +3988,9 @@
     "empIndustry": 16.6,
     "empServices": 81.8,
     "femaleLFP": 52.8,
-    "secondaryEnrollment": 121.7
+    "secondaryEnrollment": 121.7,
+    "vulnEmployment": 5.5,
+    "unemployment": 11.4
   },
   {
     "code": "CW",

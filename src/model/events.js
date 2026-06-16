@@ -11,7 +11,7 @@ const lifeAvg = (c) => (c.lifeM + c.lifeF) / 2;
 export const instabilityOf = (c) => clamp((74 - lifeAvg(c)) / 30, 0, 1);
 
 const SUB_TOP = new Set(['low', 'lowmid', 'mid']);
-const STATUS = new Set(['politician', 'banker', 'executive', 'civil-servant', 'clergy', 'lawyer']);
+const STATUS = new Set(['politician', 'banker', 'executive', 'civil-servant', 'clergy', 'lawyer', 'judge', 'diplomat']);
 
 // w = wealth-rank delta, age = years delta, fatalP = chance the event kills early.
 // child: can also befall someone who dies before adulthood. prob(ctx, instability).
