@@ -26,7 +26,10 @@ const eduRank = (e) => EDU.indexOf(e);
 // education attainment from IQ, family wealth, country enrollment, sex
 export function rollEducation(zIq, parentRank, country, randn) {
   const enroll = (country.secondaryEnrollment ?? 70) / 100; // ~0..1.3
-  let score = 0.85 * zIq + 1.6 * (parentRank - 0.5) + 1.4 * (enroll - 0.75) + 0.9 * randn();
+  // IQ now leads attainment (high IQ -> more schooling -> access to high-ceiling
+  // careers; low IQ -> less schooling -> capped careers), with family + country
+  // enrollment still strong secondary factors.
+  let score = 1.25 * zIq + 1.5 * (parentRank - 0.5) + 1.3 * (enroll - 0.75) + 0.8 * randn();
   // map score -> tier index 0..5
   const cuts = [-1.1, -0.3, 0.4, 0.9, 1.7];
   let tier = 0;
