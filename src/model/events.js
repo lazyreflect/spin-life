@@ -24,9 +24,9 @@ export const EVENTS = [
   { id: 'scandal',  text: 'fell from grace in a scandal',      prob: (x) => (STATUS.has(x.career.id) ? 0.07 : 0.008),          w: -0.28 },
   { id: 'windfall', text: 'came into an inheritance',          prob: (x) => 0.05 * (0.5 + x.parentRank),                       w: 0.28 },
   { id: 'lottery',  text: 'won the lottery',                   prob: () => 0.012,                                              w: 0.45 },
-  { id: 'business', text: 'built a thriving business',         prob: (x) => (SUB_TOP.has(x.career.incomeBand) ? 0.07 : 0.02),  w: 0.33 },
+  { id: 'business', text: 'built a thriving business',         prob: (x) => (SUB_TOP.has(x.career.incomeBand) ? 0.07 : 0.02) * clamp(0.55 + 0.5 * x.zIq, 0.08, 1.8), w: 0.33 },
   { id: 'married',  text: 'married into wealth',               prob: () => 0.045,                                              w: 0.22 },
-  { id: 'bigbreak', text: 'caught a once-in-a-lifetime break', prob: (x) => (SUB_TOP.has(x.career.incomeBand) ? 0.02 : 0.05),  w: 0.18 },
+  { id: 'bigbreak', text: 'caught a lucky break', prob: (x) => (SUB_TOP.has(x.career.incomeBand) ? 0.02 : 0.05) * clamp(0.55 + 0.5 * x.zIq, 0.08, 1.8), w: 0.18 },
   { id: 'emigrate', text: 'emigrated for a better life',       prob: (x, i) => 0.07 * i * clamp(0.5 + 0.35 * x.zIq, 0, 1.6),   w: 0.20, age: 3 },
 ];
 

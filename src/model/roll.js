@@ -25,7 +25,7 @@ const W_CAREER = 0.55; // career's share of the destination-wealth signal
 // (high) or business ownership (elite) — a salaried highmid role (nurse,
 // accountant, civil servant, scientist) tops out at "upper", never elite.
 const CAREER_RANGE = {
-  low: [0.00, 0.45], lowmid: [0.02, 0.58], mid: [0.10, 0.72],
+  low: [0.00, 0.45], lowmid: [0.02, 0.58], mid: [0.10, 0.66],
   highmid: [0.35, 0.82], high: [0.55, 0.96], elite: [0.70, 1.0],
 };
 
@@ -35,8 +35,10 @@ export function makeRoller({ countries, params, names, careers }) {
   for (const c of countries) { t += c.births; cum.push(t); }
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
   const M = params.mobility, LS = params.lifespan;
-  // Great Gatsby: inheritance persists more in high-inequality countries
-  const inheritWeight = (g) => clamp(0.15 + 0.005 * (g - 30), 0.12, 0.35);
+  // Great Gatsby: inheritance persists more in high-inequality countries. Acts as
+  // a realistic cushion (inherited assets keep an underachieving heir comfortable —
+  // up to their career's ceiling, which still bars a modest job from true elite).
+  const inheritWeight = (g) => clamp(0.22 + 0.006 * (g - 30), 0.18, 0.42);
   const careerRank = (career) => CAREER_RANK[career.incomeBand] ?? 0.5;
 
   // roll education + career for a draw (career income drives wealth, so it must
@@ -76,7 +78,7 @@ export function makeRoller({ countries, params, names, careers }) {
     const parentRank = normCdf(zFw);
     const wI = inheritWeight(country.wealthGini);
 
-    const iq = clamp(Math.round(adjCountryIq(country.iq) + params.iqSd * zIq), 55, 160);
+    const iq = clamp(Math.round(adjCountryIq(country.iq) + params.iqSd * zIq), 60, 160);
     const heightCm = (sex === 'Female' ? country.heightF : country.heightM) + (sex === 'Female' ? params.heightSdF : params.heightSdM) * zHt;
     const looks = clamp(params.looksMean + params.looksSd * zLk, 0.1, 10);
 
