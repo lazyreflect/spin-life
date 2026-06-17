@@ -25,7 +25,7 @@ const eduRank = (e) => EDU.indexOf(e);
 
 // education attainment from IQ, family wealth, country enrollment, sex
 export function rollEducation(zIq, parentRank, country, rng = Math.random) {
-  const enroll = (country.secondaryEnrollment ?? 70) / 100; // ~0..1.3
+  const enroll = country.secondaryEnrollment / 100; // ~0..1.3 (imputed in load.js)
   // IQ now leads attainment (high IQ -> more schooling -> access to high-ceiling
   // careers; low IQ -> less schooling -> capped careers), with family + country
   // enrollment still strong secondary factors.
@@ -42,15 +42,16 @@ export function rollEducation(zIq, parentRank, country, rng = Math.random) {
 export function rollCareer(life, country, careers, rng = Math.random) {
   const tier = eduRank(life.education);
   const sectorShare = (sector) => {
-    if (sector === 'agriculture') return (country.empAg ?? 25) / 100;
-    if (sector === 'industry') return (country.empIndustry ?? 25) / 100;
-    return (country.empServices ?? 50) / 100;
+    if (sector === 'agriculture') return country.empAg / 100;
+    if (sector === 'industry') return country.empIndustry / 100;
+    return country.empServices / 100;
   };
-  const femaleLF = (country.femaleLFP ?? 55) / 100;
+  const femaleLF = country.femaleLFP / 100;
   // informal & non-employment "menu shares" come from their own country attributes
-  // (real World Bank columns) instead of the sector employment split.
-  const informality = clamp((country.vulnEmployment ?? 30) / 100, 0.02, 0.95);
-  const unemp = clamp((country.unemployment ?? 6) / 100, 0.01, 0.5);
+  // (real World Bank columns; imputed in load.js where absent) instead of the
+  // sector employment split.
+  const informality = clamp(country.vulnEmployment / 100, 0.02, 0.95);
+  const unemp = clamp(country.unemployment / 100, 0.01, 0.5);
   const eligible = careers.filter((c) => eduRank(c.minEducation) <= tier && (c.regions.includes('*') || c.regions.includes(country.continent)));
   const pool = eligible.length ? eligible : careers.filter((c) => eduRank(c.minEducation) <= tier);
   if (!pool.length) return careers.find((c) => c.id === 'subsistence-farmer') || careers[0];

@@ -7,6 +7,7 @@ import {
 } from './distributions.js';
 import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, classOf, occRankOf, RULING, buildSentence } from './content.js';
 import { rollEvents } from './events.js';
+import { normalizeCountries, validateInputs } from './load.js';
 
 const flagEmoji = (code) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
@@ -29,7 +30,11 @@ const CAREER_RANGE = {
   highmid: [0.40, 0.82], high: [0.58, 0.96], elite: [0.72, 1.0],
 };
 
-export function makeRoller({ countries, params, names, careers, seed }) {
+export function makeRoller({ countries: rawCountries, params, names, careers, seed, imputation }) {
+  // Load boundary: impute missing country data ONCE and fail loud on bad input,
+  // so the model below reads complete, validated data with no `??` fallbacks.
+  const countries = normalizeCountries(rawCountries, imputation || {});
+  validateInputs({ countries, careers });
   // One instance RNG drives the whole population. Seed it explicitly for
   // reproducible runs (sim, golden snapshots, shared permalinks); otherwise draw
   // a one-time random seed so the live app still varies each session. Calibration

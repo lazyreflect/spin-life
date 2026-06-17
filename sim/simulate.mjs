@@ -19,7 +19,7 @@ const SEED = 0x5eed; // fixed root seed -> deterministic population
 const roller = makeRoller({
   countries: load('countries.json'), params: load('model-params.json'),
   names: load('names.json'), careers: load('careers.json').careers,
-  seed: SEED,
+  imputation: load('imputation.json'), seed: SEED,
 });
 const N = +(process.argv[2] || 40000);
 

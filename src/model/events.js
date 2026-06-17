@@ -39,7 +39,7 @@ const TRADER = new Set(['informal-trader', 'street-vendor', 'shopkeeper', 'cook'
 // netWorth is absolute USD (catalog ~ p10 2k / p50 25k / p90 250k); map to a
 // low-wealth factor in [0,1] on a log scale (rich -> 0, poor -> 1).
 const lowWealthFactor = (c) => {
-  const nw = Math.max(c.netWorth ?? 25000, 500);
+  const nw = Math.max(c.netWorth, 500);
   return clamp((Math.log10(60000) - Math.log10(nw)) / (Math.log10(60000) - Math.log10(2000)), 0, 1);
 };
 
@@ -48,9 +48,10 @@ const lowWealthFactor = (c) => {
 // vulnerable-employment share (real data) with the person's cohort/income band.
 // Null-safe: 55 countries lack vulnEmployment — fall back to instability+wealth.
 export function precarity(ctx, country) {
-  let cCountry;
-  if (country.vulnEmployment != null) cCountry = clamp(country.vulnEmployment / 100, 0, 1);
-  else cCountry = clamp(0.15 + 0.85 * instabilityOf(country), 0, 1); // fallback
+  // vulnEmployment is always present post-load (load.js imputes it from
+  // life-expectancy instability where the column is absent — the same estimate
+  // this function used to compute inline as a fallback).
+  let cCountry = clamp(country.vulnEmployment / 100, 0, 1);
   cCountry = clamp(0.7 * cCountry + 0.3 * lowWealthFactor(country), 0, 1);
   const cohort = ctx.career.cohort;
   const band = ctx.career.incomeBand;
@@ -151,7 +152,7 @@ export const EVENTS = [
   { id: 'bigbreak',  text: 'caught a lucky break',          prob: (x, i) => 0.02 * (0.6 + 0.7 * (1 - i)) * clamp(0.5 + 0.5 * x.zIq, 0.06, 1.8), w: 0.18 },
   { id: 'lottery',   text: 'won the lottery',               prob: () => 0.0008,                                   w: 0.90, exemptHeadroom: true },
   // scholarship — lifts a poor, bright kid where there is a school system to climb
-  { id: 'scholarship', text: 'won a life-changing scholarship', bandIn: SUB_TOP, prob: (x) => 0.04 * clamp(0.4 + 0.6 * x.zIq, 0, 1.6) * (1 - x.parentRank) * clamp((x.country.secondaryEnrollment ?? 70) / 100, 0.2, 1), w: 0.18 },
+  { id: 'scholarship', text: 'won a life-changing scholarship', bandIn: SUB_TOP, prob: (x) => 0.04 * clamp(0.4 + 0.6 * x.zIq, 0, 1.6) * (1 - x.parentRank) * clamp(x.country.secondaryEnrollment / 100, 0.2, 1), w: 0.18 },
   // promotion / made partner — only for the formally employed, mid-band and up
   { id: 'promotion', text: 'rose to the top of the field',  bandIn: MID_UP, formalOnly: true, prob: (x) => 0.05 * clamp(0.5 + 0.5 * x.zIq, 0.1, 1.6), w: 0.16 },
   // sports breakout — height-tilted, very rare unless already an athlete
@@ -173,8 +174,8 @@ export const EVENTS = [
     prob: (x) => {
       const consistent = x.career.cohort === 'homemaker' || x.career.cohort === 'informal' || LOW_BAND.has(x.career.incomeBand);
       if (!consistent) return 0;
-      const enroll = x.country.secondaryEnrollment ?? 100;
-      const lfp = x.country.femaleLFP ?? 60;
+      const enroll = x.country.secondaryEnrollment;
+      const lfp = x.country.femaleLFP;
       const struct = clamp((75 - enroll) / 75, 0, 1) * clamp((55 - lfp) / 55, 0, 1);
       return 0.7 * struct;
     },
