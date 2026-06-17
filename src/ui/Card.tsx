@@ -1,114 +1,139 @@
-import { useEffect, useState } from 'react';
-import { beatDelays, COUNTUP_MS, eventPill, statChipBg, statTag } from './verdict';
+import { DecelReel } from './DecelReel';
+import { useReveal } from './useReveal';
+import {
+  reelStrip, fmtImperial, LOOKS_RANGE, CAREERS, REELDUR,
+  statRamp, statTag, eduPhrase, eventPill, fmtMoney,
+} from './verdict';
 
-const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-const eduLabel = (e: string) => (e === 'none' ? 'No school' : cap(e));
-const FOIL_FROM = 90; // luckPct at/above which the header shimmers (EPIC+)
+const INK = '#16130f';
+const HOLD_HEADER = '#23201a';
 
-// count 0 → target over COUNTUP_MS (ease-out), starting after `delaySec`
-function useCountUp(target: number, delaySec: number, key: unknown) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    setN(0);
-    let raf = 0, t0 = 0;
-    const tick = (now: number) => {
-      if (!t0) t0 = now;
-      const p = Math.min(1, (now - t0) / COUNTUP_MS);
-      setN(Math.round(target * (1 - Math.pow(1 - p, 2))));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    const to = setTimeout(() => { raf = requestAnimationFrame(tick); }, delaySec * 1000);
-    return () => { clearTimeout(to); cancelAnimationFrame(raf); };
-  }, [key]);
-  return n;
+// the three stat reels, built from the life's per-country reel ranges
+function statReels(life: any) {
+  const r = life.reelRange;
+  return [
+    { key: 'height', label: 'Height', value: life.heightLabel, top: life.pct.height, dur: REELDUR.height,
+      items: reelStrip(r.htLoCm, r.htHiCm, fmtImperial, life.heightLabel) },
+    { key: 'looks', label: 'Looks', value: life.looks.toFixed(1), top: life.pct.looks, dur: REELDUR.looks,
+      items: reelStrip(LOOKS_RANGE[0], LOOKS_RANGE[1], (v) => v.toFixed(1), life.looks.toFixed(1)) },
+    { key: 'iq', label: 'IQ', value: String(life.iq), top: life.pct.iq, dur: REELDUR.iq,
+      items: reelStrip(r.iqLo, r.iqHi, (v) => String(Math.round(v)), String(life.iq)) },
+  ];
 }
 
 export function Card({ life }: { life: any }) {
-  const v = life.verdict;
-  const color = v.color;
+  const rv = useReveal(life);
   const alive = !life.diedYoung;
-  const events: any[] = life.events || [];
-  const d = beatDelays(events.length);
-  const luckShown = useCountUp(Math.round(life.luckPct), d.luck, life);
+  const v = life.verdict;
+  const tierColor = v.color;
 
-  const delta = life.mobilityDelta || 0;
-  const up = delta > 0, flat = delta === 0;
-  const arc = !alive || flat ? 'held' : up ? `▲${delta}` : `▼${-delta}`;
-  const arcColor = !alive || flat ? '#6a6258' : up ? '#0b7a3a' : '#c2410c';
+  const reels = alive ? statReels(life) : [];
+  const lockByKey: Record<string, boolean> = { height: rv.lockHeight, looks: rv.lockLooks, iq: rv.lockIq };
 
-  const stats = !alive ? [] : [
-    { label: 'Final $', value: life.netWorthLabel, top: life.pct.money },
-    { label: 'IQ', value: String(life.iq), top: life.pct.iq },
-    { label: 'Height', value: life.heightLabel, top: life.pct.height },
-    { label: 'Looks', value: life.looks.toFixed(1), top: life.pct.looks },
-    { label: 'Age', value: String(life.age), top: life.pct.life },
-  ];
+  const careerTitle = alive ? `${life.career.emoji} ${life.career.title}` : `lived ${life.age} ${life.age === 1 ? 'year' : 'years'}`;
+  const careerItems = (() => { let a: string[] = []; for (let i = 0; i < 5; i++) a = a.concat(CAREERS); a.push(careerTitle); return a; })();
+
+  const swing = life.netWorth - life.netWorthBase;
+  const showDelta = rv.showMoney && Math.abs(swing) > 1 && (rv.moneyPhase === 'swing' || rv.moneyPhase === 'done');
+  const events = life.events || [];
+
+  // death finale: age leads as a hero number; the legacy clause (age-free) sits
+  // beside it. LOST AT (with 💀) when an event cut life short; DIED AT otherwise.
+  const fatal = !!life.fatalCause;
+  const endLead = fatal || life.diedYoung ? 'LOST AT' : 'DIED AT';
 
   return (
-    <div className="card" style={{ borderColor: color }}>
-      <div className="card-head" style={{ background: color }}>
-        {life.luckPct >= FOIL_FROM && <div className="card-foil" />}
-        <span className="card-tier">{v.name}</span>
-        <span className="card-rarity">◆ {life.rarityLabel}</span>
+    <div className="card" onClick={rv.skip} style={{ borderColor: rv.verdict ? tierColor : INK }}>
+      <div className={'card-head' + (rv.verdict ? ' ignite' : '')} style={{ background: rv.verdict ? tierColor : HOLD_HEADER }}>
+        {rv.verdict && life.luckPct >= 90 && <div className="card-foil" />}
+        {rv.verdict ? (
+          <>
+            <div className="card-head-main">
+              <span className="card-tier">{v.name}</span>
+              <span className="card-luck">luckier than {rv.luckShown}% of births</span>
+            </div>
+            <span className="card-rarity">◆ {life.rarityLabel}</span>
+          </>
+        ) : (
+          <span className="card-tallying">tallying your luck…</span>
+        )}
       </div>
 
       <div className="card-body">
+        {/* portrait — BORN opening folded into the subtitle */}
         <div className="card-portrait">
           <div className="portrait-flag">{life.flag}</div>
           <div className="portrait-meta">
             <div className="portrait-name">{life.name}</div>
-            <div className="portrait-role">
-              {alive ? `${life.career.emoji} ${life.career.title} · ${eduLabel(life.education)}`
-                     : `lived ${life.age} ${life.age === 1 ? 'year' : 'years'}`}
-            </div>
+            <div className="portrait-opening">{life.opening}</div>
           </div>
-        </div>
-
-        <div className="beat" style={{ animationDelay: `${d.born}s` }}>
-          <span className="beat-pill" style={{ background: '#16130f' }}>BORN</span>
-          <span className="beat-text">{life.opening}</span>
-        </div>
-
-        {events.map((e, i) => {
-          const p = eventPill(e.kind);
-          return (
-            <div className="beat" key={i} style={{ animationDelay: `${d.event(i)}s` }}>
-              <span className="beat-pill" style={{ background: p.bg }}>{p.fx}</span>
-              <span className="beat-text">{e.text}</span>
-            </div>
-          );
-        })}
-
-        <div className="beat" style={{ animationDelay: `${d.died}s` }}>
-          <span className="beat-pill" style={{ background: '#16130f' }}>DIED</span>
-          <span className="beat-text">{life.fatalCause ? '💀 ' : ''}{life.ending}</span>
-        </div>
-
-        <div className="luck-box" style={{ background: color + '1f', animationDelay: `${d.luck}s` }}>
-          <div className="luck-row">
-            <span className="luck-label">Luckier than</span>
-            <span className="luck-pct" style={{ color }}>{luckShown}<span className="luck-sign">%</span></span>
-          </div>
-          <div className="luck-sub">of all births on earth</div>
-          <div className="luck-bar"><div className="luck-fill" style={{ width: `${life.luckPct}%`, background: color, animationDelay: `${d.luck}s` }} /></div>
         </div>
 
         {alive && (
-          <>
-            <div className="stat-strip" style={{ animationDelay: `${d.stats}s` }}>
-              {stats.map((s) => (
-                <div className="stat-chip" key={s.label} style={{ background: statChipBg(s.top) }}>
-                  <div className="stat-label">{s.label}</div>
-                  <div className="stat-value">{s.value}</div>
-                  <div className="stat-tag">{statTag(s.top)}</div>
+          <div className="stat-reels">
+            {reels.map((r) => {
+              const locked = lockByKey[r.key];
+              const ramp = statRamp(r.top);
+              return (
+                <div className={'stat-reel' + (locked ? ' locked' : '')} key={r.key} style={{ background: locked ? ramp.bg : '#fff5e0' }}>
+                  <div className="stat-reel-label">{r.label}</div>
+                  <DecelReel items={r.items} go={rv.reelGo} locked={locked} durationSec={r.dur} value={r.value} color={ramp.fg} />
+                  <div className="stat-reel-tag" style={{ color: ramp.fg }}>{locked ? statTag(r.top) : ''}</div>
                 </div>
-              ))}
+              );
+            })}
+          </div>
+        )}
+
+        {alive && rv.showCareer && (
+          <div className={'outcome-panel' + (rv.lockCareer ? ' locked' : '')}>
+            <div className="outcome-edu">{eduPhrase(life.education)}</div>
+            <DecelReel items={careerItems} go={rv.careerGo} locked={rv.lockCareer} durationSec={REELDUR.career} value={careerTitle} color={INK} big />
+          </div>
+        )}
+
+        {rv.showEvents && events.length > 0 && (
+          <div className="card-events">
+            {events.map((e: any, i: number) => {
+              const p = eventPill(e.kind);
+              return (
+                <div className="beat" key={i} style={{ animationDelay: `${0.24 * i}s` }}>
+                  <span className="beat-pill" style={{ background: p.bg }}>{p.fx}</span>
+                  <span className="beat-text">{e.text}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {rv.showDied && (
+          <div className="finale">
+            <div className="finale-rule" />
+            <div className="finale-row">
+              <div className="finale-age">
+                <div className="finale-lead">{endLead}</div>
+                <div className="finale-num">{life.age}</div>
+              </div>
+              <div className="finale-legacy">{fatal ? '💀 ' : ''}{life.legacy}</div>
             </div>
-            <div className="card-arc">
-              <span>{life.classOriginShort} → {life.classFinalShort}</span>
-              <span className="arc-delta" style={{ color: arcColor }}>{arc}</span>
+          </div>
+        )}
+
+        {rv.showMoney && alive && (
+          <div className="money-panel" style={{ boxShadow: `6px 6px 0 ${rv.verdict ? tierColor : INK}` }}>
+            <div className="money-top">
+              <span className="money-label">Final net worth</span>
+              {rv.moneyPhase === 'done' && <span className="money-tag">{statTag(life.pct.money)}</span>}
             </div>
-          </>
+            <div className="money-row">
+              <span className="money-value">{fmtMoney(rv.cuWorth)}</span>
+              {showDelta && (
+                <span className="money-delta" style={{ background: swing >= 0 ? '#7be0a3' : '#ff9f87' }}>
+                  {swing >= 0 ? '+' : '−'}{fmtMoney(Math.abs(swing))} <span className="money-delta-sub">LUCK</span>
+                </span>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </div>
