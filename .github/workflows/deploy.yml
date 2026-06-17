@@ -15,7 +15,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Model gate: the sim runs from a fixed seed and exits non-zero if any
+  # invariant breaks. Deploy is blocked unless the model passes.
+  sim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run sim
+
   build:
+    needs: sim
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

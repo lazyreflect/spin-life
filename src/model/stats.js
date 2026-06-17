@@ -1,13 +1,34 @@
-// Core math: RNG, normal CDF/inverse, Cholesky, weighted sampling.
+// Core math: seedable RNG, normal CDF/inverse, Cholesky, weighted sampling.
 export const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 
-let _spare = null;
-export function randn() {
-  if (_spare !== null) { const s = _spare; _spare = null; return s; }
+// --- seedable RNG -----------------------------------------------------------
+// mulberry32: a fast, well-distributed 32-bit PRNG. makeRng(seed) returns a
+// function () => [0,1). All samplers below take an `rng` so a whole population —
+// or a single shareable life — is reproducible from one seed. (Defaults to
+// Math.random only so legacy/unseeded call sites keep working.)
+export function makeRng(seed) {
+  let a = (seed >>> 0) || 1;
+  return function rng() {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+// fold an arbitrary string (e.g. a shared permalink seed) into a 32-bit int
+export function hashSeed(str) {
+  let h = 2166136261 >>> 0;
+  const s = `${str}`;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+
+// standard normal via Box-Muller. Stateless (no cross-call spare) so it is
+// deterministic per rng instance and safe to interleave between seeds.
+export function randn(rng = Math.random) {
   let u, v, s;
-  do { u = Math.random() * 2 - 1; v = Math.random() * 2 - 1; s = u * u + v * v; } while (s === 0 || s >= 1);
-  const f = Math.sqrt(-2 * Math.log(s) / s);
-  _spare = v * f; return u * f;
+  do { u = rng() * 2 - 1; v = rng() * 2 - 1; s = u * u + v * v; } while (s === 0 || s >= 1);
+  return u * Math.sqrt(-2 * Math.log(s) / s);
 }
 
 export function erf(x) {
@@ -42,22 +63,22 @@ export function cholesky(A) {
   }
   return L;
 }
-export function corrNormals(L) {
-  const n = L.length, out = new Array(n).fill(0), x = Array.from({ length: n }, randn);
+export function corrNormals(L, rng = Math.random) {
+  const n = L.length, out = new Array(n).fill(0), x = Array.from({ length: n }, () => randn(rng));
   for (let i = 0; i < n; i++) for (let k = 0; k <= i; k++) out[i] += L[i][k] * x[k];
   return out;
 }
 
 // pick index from cumulative-weight array (binary search)
-export function sampleCumulative(cum, total) {
-  const r = Math.random() * total;
+export function sampleCumulative(cum, total, rng = Math.random) {
+  const r = rng() * total;
   let lo = 0, hi = cum.length - 1;
   while (lo < hi) { const mid = (lo + hi) >> 1; if (cum[mid] < r) lo = mid + 1; else hi = mid; }
   return lo;
 }
-export function sampleWeights(weights) {
+export function sampleWeights(weights, rng = Math.random) {
   let total = 0; for (const w of weights) total += w;
-  let r = Math.random() * total;
+  let r = rng() * total;
   for (let i = 0; i < weights.length; i++) { r -= weights[i]; if (r <= 0) return i; }
   return weights.length - 1;
 }

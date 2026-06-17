@@ -1,5 +1,5 @@
 // Names (culture clusters), career (education -> occupation), and formatting.
-import { clamp, normCdf, sampleWeights } from './stats.js';
+import { clamp, normCdf, sampleWeights, randn } from './stats.js';
 
 // --- names ------------------------------------------------------------------
 const norm = (s) => `${s ?? ''}`.trim().toLowerCase();
@@ -8,14 +8,14 @@ const CONTINENT_REP = {
   Europe: 'united kingdom', 'North America': 'united states',
   'South America': 'brazil', Oceania: 'australia', Antarctica: 'united states',
 };
-export function pickName(country, sex, nameGroups) {
+export function pickName(country, sex, nameGroups, rng = Math.random) {
   const n = norm(country.name);
   let g = nameGroups.find((x) => x.countries.some((c) => norm(c) === n));
   if (!g) { const rep = CONTINENT_REP[country.continent]; g = nameGroups.find((x) => x.countries.some((c) => norm(c) === rep)); }
   if (!g) g = nameGroups[0];
   const firsts = sex === 'Female' ? g.female_first_names : g.male_first_names;
-  const first = firsts[Math.floor(Math.random() * firsts.length)] || 'Alex';
-  const last = g.last_names[Math.floor(Math.random() * g.last_names.length)] || 'Doe';
+  const first = firsts[Math.floor(rng() * firsts.length)] || 'Alex';
+  const last = g.last_names[Math.floor(rng() * g.last_names.length)] || 'Doe';
   return `${first} ${last}`;
 }
 
@@ -24,12 +24,12 @@ const EDU = ['none', 'primary', 'secondary', 'vocational', 'bachelor', 'postgrad
 const eduRank = (e) => EDU.indexOf(e);
 
 // education attainment from IQ, family wealth, country enrollment, sex
-export function rollEducation(zIq, parentRank, country, randn) {
+export function rollEducation(zIq, parentRank, country, rng = Math.random) {
   const enroll = (country.secondaryEnrollment ?? 70) / 100; // ~0..1.3
   // IQ now leads attainment (high IQ -> more schooling -> access to high-ceiling
   // careers; low IQ -> less schooling -> capped careers), with family + country
   // enrollment still strong secondary factors.
-  let score = 1.25 * zIq + 1.5 * (parentRank - 0.5) + 1.3 * (enroll - 0.75) + 0.8 * randn();
+  let score = 1.25 * zIq + 1.5 * (parentRank - 0.5) + 1.3 * (enroll - 0.75) + 0.8 * randn(rng);
   // map score -> tier index 0..5
   const cuts = [-1.1, -0.3, 0.4, 0.9, 1.7];
   let tier = 0;
@@ -39,7 +39,7 @@ export function rollEducation(zIq, parentRank, country, randn) {
   return EDU[Math.max(tier, floor)];
 }
 
-export function rollCareer(life, country, careers) {
+export function rollCareer(life, country, careers, rng = Math.random) {
   const tier = eduRank(life.education);
   const sectorShare = (sector) => {
     if (sector === 'agriculture') return (country.empAg ?? 25) / 100;
@@ -101,7 +101,7 @@ export function rollCareer(life, country, careers) {
     w *= clamp(tilt, 0.1, 4);
     return w;
   });
-  const idx = sampleWeights(weights);
+  const idx = sampleWeights(weights, rng);
   // conditional selection probability P(career | country, education, traits) — a
   // Software Developer is mundane in Bangalore, rare in Niger. Fed into life rarity.
   const sum = weights.reduce((a, x) => a + x, 0) || 1;
