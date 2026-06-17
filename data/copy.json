@@ -1,0 +1,122 @@
+{
+  "_schema": {
+    "_doc": "Card copy banks for the three beats (BORN · DIED). Pure data — enrich this file with more clauses in ANY session and the generator (src/model/copy.js) picks them up with no code change. Selection is a deterministic hash of the life (shareable lives reproduce), with an optional sliding-window de-dup at display time (src/model/copy.js `recent`). Aim: large banks per cell so play feels fresh at volume (the stateless pick can't beat the birthday bound — big banks + de-dup do).",
+    "tokens": {
+      "{flag}": "country flag emoji", "{country}": "country name",
+      "{phrase}": "the chosen origin phrase (BORN frame only)",
+      "{age}": "age at death", "{cause}": "fatal cause noun (lowercase)", "{Cause}": "fatal cause, capitalized",
+      "{they}": "he/she", "{them}": "him/her", "{their}": "his/her",
+      "{classesUp}": "'a class' / 'two classes' / … (climb size)",
+      "{originClass}": "noun for the class they were born into ('poverty', 'working class', …)"
+    },
+    "guards": {
+      "_doc": "A clause may be a plain string, or an object {text, when}. `when` filters the clause out when it doesn't fit the life. Combine freely.",
+      "when.dir": "'up' | 'down' | 'flat' — required mobility direction",
+      "when.minClimb": "integer — require at least N class-bands climbed (use with {classesUp})",
+      "when.originLow": "true — only for lives born lower/working class (use with {originClass})"
+    },
+    "born": {
+      "self": "On an origin phrase: true means the phrase ALREADY names the place ({flag} {country}), so it pairs with bornFrames.self (no trailing 'in {country}')."
+    },
+    "keys": {
+      "origin": "by class band: lower | working | middle | upper | elite (upper-mid collapses to upper)",
+      "diedOpeners": "by tier mood: warm (BLESSED+) | neutral (MID) | grim (ROUGH/FAIL)",
+      "diedTails": "by tier band: top (LEGENDARY/MYTHIC) | good (BLESSED/EPIC) | mid (MID) | low (ROUGH/FAIL)",
+      "fatal": "death caused by an event (cause folds in)",
+      "cutShort": "died young of natural causes: infant (age ≤ 1) | child (age 2–17)"
+    }
+  },
+
+  "bornFrames": {
+    "default": [
+      "Born {phrase} in {flag} {country}.",
+      "Born {phrase}, {flag} {country}.",
+      "In {flag} {country}, born {phrase}.",
+      "{flag} {country}. Born {phrase}."
+    ],
+    "self": [
+      "Born {phrase}.",
+      "Born {phrase} — the hand they were dealt.",
+      "{phrase}, from day one."
+    ]
+  },
+
+  "origin": {
+    "lower": ["dirt-poor", "with nothing", "into poverty", "on the bottom rung", "into hardship", "a broke kid", "into a hard start", "with the odds stacked against them"],
+    "working": ["a working-class kid", "working-class", "to a working family", "blue-collar", "scraping by", "to a hard-working family", "to people who worked for every cent"],
+    "middle": ["comfortably", "solidly middle-class", "to a middle-class family", "with a roof and enough", "neither rich nor poor", "to an ordinary, steady home"],
+    "upper": ["into money", "well-off", "with a head start", "into comfort and connections", "to a prosperous family", "with doors already open"],
+    "elite": [
+      { "text": "into the {flag} {country} elite", "self": true },
+      { "text": "to one of {flag} {country}'s ruling families", "self": true },
+      { "text": "into old money" },
+      { "text": "into serious wealth and power" },
+      { "text": "with the world handed to them" }
+    ]
+  },
+
+  "diedOpeners": {
+    "warm": ["Gone at", "Passed at", "Died at", "Bowed out at", "Saw out the years to"],
+    "neutral": ["Gone at", "Died at", "Passed at", "Reached"],
+    "grim": ["Dead at", "Gone at", "Died at"]
+  },
+
+  "diedTails": {
+    "top": [
+      "a legend remembered long after",
+      "a name people still know",
+      "old money to the very last day",
+      "the kind of life they build statues for",
+      "richer than most see in ten lifetimes",
+      "a life that rewrote what was possible",
+      "untouchable, start to finish",
+      { "text": "and the climb itself became the legend", "when": { "dir": "up" } }
+    ],
+    "good": [
+      { "text": "{classesUp} above where {they} started", "when": { "minClimb": 1 } },
+      { "text": "a good few rungs up from {their} start", "when": { "dir": "up" } },
+      { "text": "better than the start, by a real measure", "when": { "dir": "up" } },
+      { "text": "further than anyone expected of {their} start", "when": { "dir": "up" } },
+      "a steady, decent life",
+      "a comfortable life, well-earned",
+      "more than enough, and no regrets"
+    ],
+    "mid": [
+      "an ordinary life, start to finish",
+      "neither up nor down",
+      "a quiet life that asked for little",
+      "no triumphs, no disasters",
+      "right about where {they} began",
+      "a life like most lives"
+    ],
+    "low": [
+      { "text": "never climbing out of the {originClass}", "when": { "originLow": true } },
+      { "text": "the {originClass} that raised {them}, to the very end", "when": { "originLow": true } },
+      { "text": "everything {their} family had, gone", "when": { "dir": "down" } },
+      "no further along than {their} first day",
+      "the same hard road, start to finish",
+      "no door ever opened for {them}",
+      "the world never gave an inch"
+    ]
+  },
+
+  "fatal": [
+    "Lost to {cause} — gone at just {age}.",
+    "{Cause} took {them} — gone at just {age}.",
+    "{cause}, and that was the end — at just {age}.",
+    "Taken by {cause} — just {age}."
+  ],
+
+  "cutShort": {
+    "infant": [
+      "Gone as an infant — a life barely begun.",
+      "Lost in infancy, before it could start."
+    ],
+    "child": [
+      "Gone at just {age} — a life barely begun.",
+      "Taken at {age}, before it could start.",
+      "Just {age} years, and then gone.",
+      "Gone far too soon — only {age}."
+    ]
+  }
+}

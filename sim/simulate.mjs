@@ -96,7 +96,7 @@ const overQual = adults.filter((l) => !l.career.cohort && EDU_RANK[l.education] 
 
 // per-event fire-rate table (report only — feeds future per-event gates)
 const evtCounts = {};
-for (const l of L) for (const t of (l.events || [])) evtCounts[t] = (evtCounts[t] || 0) + 1;
+for (const l of L) for (const e of (l.events || [])) evtCounts[e.text] = (evtCounts[e.text] || 0) + 1;
 
 const cond = (f) => { const a = adults.filter(f).map((l) => l.childRank); return a.length ? mean(a) : NaN; };
 const richDumb = cond((l) => l.parentRank > 0.9 && l.zIq < -1.5);

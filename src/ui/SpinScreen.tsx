@@ -1,101 +1,76 @@
 import { useEffect, useRef, useState } from 'react';
-import { Wheel, type Seg } from './Wheel';
+import { Reels } from './Reels';
 import { Card } from './Card';
-import { roller, CONTINENTS } from '../data';
-import { desirabilityColor } from './desirability';
-import { REVEAL_ORDER, buildStage, type StageView } from './revealStages';
+import { classIcon } from './verdict';
+import { roller } from '../data';
 
-type Phase = 'idle' | 'spinning' | 'landed' | 'reveal';
+type Phase = 'idle' | 'spinning' | 'reveal';
 
-// pause showing the landed value before the next wheel starts
-const HOLD_MS = 600;
-
-// populated wheel shown before the first spin
-const IDLE_SEGS: Seg[] = CONTINENTS.map((c) => ({ label: c.name, frac: c.frac, color: desirabilityColor(c.desir) }));
+// reel lock + reveal timings (ms) from the prototype
+const LOCKS = [720, 1080, 1440];
+const REVEAL_AT = 1780;
 
 export function SpinScreen({
-  spins, onSpend, onLife,
-}: { spins: number; onSpend: () => void; onLife: (life: any) => void }) {
+  pulls, onSpend, onRefill, onKeep, isKept,
+}: {
+  pulls: number;
+  onSpend: () => void;
+  onRefill: () => void;
+  onKeep: (life: any) => void;
+  isKept: (life: any) => boolean;
+}) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [life, setLife] = useState<any>(null);
-  const [stageIdx, setStageIdx] = useState(0);
-  const [view, setView] = useState<StageView | null>(null);
-  const [center, setCenter] = useState('SPIN\nYOUR\nLIFE');
-  const [spinKey, setSpinKey] = useState(0);
-  const pending = useRef<any>(null);
-  const holdTimer = useRef<ReturnType<typeof setTimeout>>();
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [stopped, setStopped] = useState(0);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  useEffect(() => () => clearTimeout(holdTimer.current), []);
+  const clear = () => { timers.current.forEach(clearTimeout); timers.current = []; };
+  useEffect(() => clear, []);
 
-  useEffect(() => {
-    if (phase === 'reveal') {
-      const t = setTimeout(() => cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
-      return () => clearTimeout(t);
-    }
-  }, [phase]);
-
-  function startStage(idx: number, L: any) {
-    const v = buildStage(REVEAL_ORDER[idx], L);
-    setStageIdx(idx);
-    setView(v);
-    setCenter(v.title);
-    setPhase('spinning');
-    setSpinKey((k) => k + 1);
-  }
-
-  function spin() {
-    if (phase === 'spinning' || phase === 'landed') return;
-    if (spins <= 0) return;
+  function pull() {
+    if (phase === 'spinning') return;
+    if (pulls <= 0) { onRefill(); return; }
     onSpend();
     const L = roller.rollLife();
-    pending.current = L;
-    setLife(null);
-    startStage(0, L);
+    setLife(L); setStopped(0); setPhase('spinning');
+    clear();
+    LOCKS.forEach((ms, i) => timers.current.push(setTimeout(() => setStopped(i + 1), ms)));
+    timers.current.push(setTimeout(() => setPhase('reveal'), REVEAL_AT));
   }
 
-  // wheel finished its transition
-  function onSettled() {
-    const L = pending.current;
-    if (!L || !view) return;
-    // show the value that was landed on, then advance
-    setCenter(view.result);
-    setPhase('landed');
-    holdTimer.current = setTimeout(() => {
-      if (stageIdx + 1 < REVEAL_ORDER.length) {
-        startStage(stageIdx + 1, L);
-      } else {
-        setLife(L);
-        setPhase('reveal');
-        onLife(L);
-      }
-    }, HOLD_MS);
-  }
-
-  const busy = phase === 'spinning' || phase === 'landed';
-  const segments: Seg[] = view ? view.segments : IDLE_SEGS;
+  const reveal = phase === 'reveal';
+  const spinning = phase === 'spinning';
+  const landed: [string, string, string] = life
+    ? [life.flag, classIcon(life.classOriginShort), life.diedYoung ? '🕯️' : (life.career?.emoji || '🎲')]
+    : ['🌍', '🏠', '💼'];
+  const kept = reveal && life ? isKept(life) : false;
 
   return (
-    <div className="screen spin-screen">
-      <div className="spins-pill">{spins} spins</div>
-      <Wheel
-        segments={segments}
-        targetIndex={view ? view.targetIndex : null}
-        spinKey={spinKey}
-        durationMs={view ? view.durationMs : 2000}
-        onSettled={onSettled}
-        centerLabel={center}
-      />
-      <div className="stage-progress">
-        {(busy || phase === 'reveal') && REVEAL_ORDER.map((_, i) => (
-          <span key={i} className={'dot' + (i < stageIdx || phase === 'reveal' ? ' done' : i === stageIdx ? ' active' : '')} />
-        ))}
-      </div>
-      <button className="spin-btn" onClick={spin} disabled={busy || spins <= 0}>
-        {busy ? 'Spinning…' : phase === 'reveal' ? 'Again?' : spins <= 0 ? 'Out of spins' : 'Spin'}
-      </button>
-      {phase === 'reveal' && life && <div ref={cardRef} style={{ width: '100%' }}><Card life={life} /></div>}
-      {phase === 'idle' && <p className="hint">Spin to be born into a random life.</p>}
+    <div className="spin-screen">
+      <div className="spin-banner">★ SPIN YOUR LIFE ★</div>
+
+      {!reveal ? (
+        <div className="spin-stage">
+          <Reels phase={phase} stopped={stopped} landed={landed} />
+          <div className="pulls-pill">{pulls > 0 ? `${pulls} pulls left` : 'out of pulls'}</div>
+        </div>
+      ) : (
+        <div className="reveal-stage" key={life?.name + life?.age + life?.netWorth}>
+          <Card life={life} />
+          <div className="reveal-actions">
+            <button className="btn btn-keep" onClick={() => !kept && onKeep(life)} disabled={kept}>
+              {kept ? '✓ IN MY LIVES' : '＋ KEEP IT'}
+            </button>
+            <button className="btn btn-pull-again" onClick={pull}>PULL AGAIN ↻</button>
+          </div>
+        </div>
+      )}
+
+      {!reveal && (
+        <button className="btn btn-pull" onClick={pull} disabled={spinning}>
+          {spinning ? '· · ·' : pulls <= 0 ? 'REFILL +100' : 'PULL!'}
+        </button>
+      )}
     </div>
   );
 }

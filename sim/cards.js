@@ -12,8 +12,10 @@ const names = load('names.json');
 const careers = load('careers.json').careers;
 const bands = load('bands.json').bands;
 const imputation = load('imputation.json');
+const luckCdf = load('luckCdf.json');
+const copy = load('copy.json');
 
-const roller = makeRoller({ countries, params, names, careers, bands, imputation });
+const roller = makeRoller({ countries, params, names, careers, bands, imputation, luckCdf, copy });
 const n = +(process.argv[2] || 10);
 
 const pct = (x) => (x < 1 ? x.toFixed(2) : x < 10 ? x.toFixed(1) : Math.round(x)) + '%';
@@ -22,8 +24,11 @@ const arrow = (d) => (d > 0 ? `▲ climbed ${d}` : d < 0 ? `▼ fell ${-d}` : '�
 for (let i = 0; i < n; i++) {
   const L = roller.rollLife();
   console.log('\n' + '─'.repeat(64));
-  console.log(`${L.flag}  ${L.name}   (${L.sex})   ${L.rarityLabel}`);
-  console.log(L.sentence);
+  const tier = L.verdict ? `${L.verdict.name}  ·  luckier than ${L.luckPct.toFixed(0)}%` : '';
+  console.log(`${L.flag}  ${L.name}   (${L.sex})   ${L.rarityLabel}   ${tier}`);
+  console.log(`  BORN   ${L.opening}`);
+  for (const e of L.events) console.log(`  ${e.kind === 'good' ? 'GOOD' : 'BAD '}   ${e.text}`);
+  console.log(`  DIED   ${L.fatalCause ? '💀 ' : ''}${L.ending}`);
   console.log('');
   console.log(`  Country   ${L.country} (${L.countryChance < 1 ? L.countryChance.toFixed(2) : L.countryChance.toFixed(1)}% of births)`);
   console.log(`  Career    ${L.career.emoji} ${L.career.title}   [${L.education}, ${L.career.prestige}]`);

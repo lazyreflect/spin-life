@@ -176,6 +176,17 @@ export const EVENTS = [
   },
 ];
 
+// Cause nouns for the DIED line when an event proves fatal ("💀 Lost to {cause}").
+// Distinct from the event's narration `text` ("lived through a famine") so the
+// death line reads as a cause, not a survived-then-died contradiction. Gender-
+// neutral. Only fatal-capable events (those with a fatalP) need an entry.
+const FATAL_CAUSE = {
+  illness: 'a serious illness', war: 'the war', famine: 'a famine',
+  accident: 'a terrible accident', addiction: 'addiction', disability: 'an injury',
+  workinjury: 'a workplace accident', mentalill: 'a long illness', pandemic: 'a pandemic',
+  maternal: 'childbirth', disaster: 'a natural disaster', exploited: 'violence',
+};
+
 // events whose presence already explains a fall — built from the `decline` flag.
 const DECLINE_IDS = new Set(EVENTS.filter((e) => e.decline).map((e) => e.id));
 // Varied, specific causes for a forced downward arc, chosen by how much wealth
@@ -203,14 +214,14 @@ function forcedArcEvent(ctx, childPost, keep, rand, inst = 0) {
   if (keep.some((e) => DECLINE_IDS.has(e.id))) return null; // already explained
   // in volatile countries, a big fall is often an external shock (war/economy/graft)
   if (inst > 0.45 && gap >= 0.20 && rand() < 0.6) {
-    return { id: 'arc-fall', text: pick(FALL_UNSTABLE, rand), w: -clamp(0.10 + 0.30 * (gap - 0.20), 0.06, 0.24), child: false };
+    return { id: 'arc-fall', kind: 'neutral', text: pick(FALL_UNSTABLE, rand), w: -clamp(0.10 + 0.30 * (gap - 0.20), 0.06, 0.24), child: false };
   }
   if (childPost >= 0.55) {
     if (keep.some((e) => e.id === 'windfall' || e.id === 'married')) return null; // inheritance tells it
     const pull = clamp(0.35 * (childPost - occ), 0.04, 0.20);
     // "kept" phrasing only if they END comfortable after the drawdown; otherwise
     // they ran it down (so "coasted" never pairs with a working-class outcome)
-    return { id: 'arc-fall', text: pick(childPost - pull >= 0.55 ? FALL_KEPT : FALL_DRAWN, rand), w: -pull, child: false };
+    return { id: 'arc-fall', kind: 'neutral', text: pick(childPost - pull >= 0.55 ? FALL_KEPT : FALL_DRAWN, rand), w: -pull, child: false };
   }
   if (childPost >= 0.38) return { id: 'arc-fall', text: pick(FALL_MODERATE, rand), w: -0.06, child: false };
   return { id: 'arc-fall', text: pick(FALL_DEEP, rand), w: 0, child: false };
@@ -290,15 +301,25 @@ export function rollEvents(ctx, country, rand = Math.random, bands) {
 
   // resolve lifespan effects (fatalP also scales with precarity for sensitive
   // events) and build the card-facing event list. `child` is preserved for the
-  // died-young filter in roll.js.
-  let ageDelta = 0, fatal = false;
+  // died-young filter in roll.js. `kind` (good|bad|fatal) drives the card's pill
+  // color; the one event that actually proved fatal is marked 'fatal' (so the UI
+  // drops it from the pills) and its cause noun is surfaced for the DIED line.
+  let ageDelta = 0, fatal = false, fatalCause = null;
   const events = [];
   for (const s of finalKeep) {
     const e = s.e;
     ageDelta += e.age || 0;
     const fp = e.fatalP ? clamp(e.fatalP * (e.precaritySensitive ? (1 + 0.7 * x.prec) : 1), 0, 0.95) : 0;
-    if (fp && rand() < fp) fatal = true;
-    events.push({ text: val(e.text, x, rand), child: !!e.child });
+    let isFatal = false;
+    if (fp && !fatal && rand() < fp) {
+      fatal = true; isFatal = true;
+      fatalCause = FATAL_CAUSE[e.id] || 'a serious illness';
+    }
+    // pill kind: a fatal roll wins; otherwise the event may declare its own kind
+    // (the forced down-arc declares 'neutral' — it NARRATES the visible ▼ arc, it
+    // isn't luck), else it's good/bad by the sign of its wealth effect.
+    const kind = isFatal ? 'fatal' : (e.kind || (s.w > 0 ? 'good' : 'bad'));
+    events.push({ text: val(e.text, x, rand), child: !!e.child, kind });
   }
-  return { wealthDelta, ageDelta, fatal, events };
+  return { wealthDelta, ageDelta, fatal, fatalCause, events };
 }

@@ -5,9 +5,11 @@ import {
   wealthQuantile, sampleAge, wealthLifeAdj, adjCountryIq,
   moneyTopPercent, iqTopPercent, heightTopPercent, looksTopPercent, lifeTopPercent,
 } from './distributions.js';
-import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, classOf, occRankOf, RULING, buildSentence } from './content.js';
+import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, classOf, occRankOf, RULING } from './content.js';
 import { rollEvents } from './events.js';
 import { normalizeCountries, validateInputs } from './load.js';
+import { fortuneScore, percentileOf, tierOf, shortClass } from './score.js';
+import { buildBeats } from './copy.js';
 
 const flagEmoji = (code) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
@@ -22,7 +24,7 @@ const flagEmoji = (code) =>
 // professional cannot end up destitute; elite wealth needs a top-tier/owner band.
 const W_CAREER = 0.55; // career's share of the destination-wealth signal
 
-export function makeRoller({ countries: rawCountries, params, names, careers, bands, seed, imputation }) {
+export function makeRoller({ countries: rawCountries, params, names, careers, bands, seed, imputation, luckCdf, copy }) {
   // Load boundary: impute missing country data ONCE and fail loud on bad input,
   // so the model below reads complete, validated data with no `??` fallbacks.
   const countries = normalizeCountries(rawCountries, imputation || {});
@@ -145,15 +147,26 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     if (evt.fatal) age = clamp(Math.round(16 + rng() * (age - 16)), 15, age);
     else age = clamp(Math.round(age + evt.ageDelta), 1, 110);
     const diedYoung = age < 18; // never reached a career / adult class
-    // suppress adult-life events (marriage, business…) for those who died young
-    const eventTexts = (diedYoung ? evt.events.filter((e) => e.child) : evt.events).map((e) => e.text);
+    // A fatal event only "cuts short" — folding into the 💀 DIED line — when it
+    // killed well before the country's life expectancy. A fatal illness at 81 is
+    // an old death, not a tragedy: the event stays an ordinary bad-luck pill and
+    // DIED gets the normal tier-scaled payoff.
+    const cutShort = evt.fatal && age < baseLE - 12;
+    // suppress adult-life events (marriage, business…) for those who died young;
+    // drop the fatal event from the pills only when it cut life short (its cause
+    // folds into DIED); otherwise show it as a plain bad-luck pill.
+    const shownEvents = (diedYoung ? evt.events.filter((e) => e.child) : evt.events)
+      .filter((e) => !(cutShort && e.kind === 'fatal'))
+      .map((e) => ({ text: e.text, kind: e.kind === 'fatal' ? 'bad' : e.kind }));
 
     const life = {
       country: country.name, code: country.code, flag: flagEmoji(country.code), continent: country.continent,
       sex, zIq, zHeight: zHt, zLooks: zLk, diedYoung,
       iq, heightCm, heightLabel: heightImperial(heightCm), looks,
       parentRank, childRank, familyWealth, netWorth,
-      age, baseLE: Math.round(baseLE), events: eventTexts,
+      age, baseLE: Math.round(baseLE), events: shownEvents,
+      eventSwing: evt.wealthDelta,        // net luck (rank space) → Fortune score
+      fatalCause: cutShort ? evt.fatalCause : null, // set only when death was premature
     };
     life.name = pickName(country, sex, names, rng);
     life.seed = seed ?? null;
@@ -199,9 +212,38 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     life.mobilityDelta = Math.round((finalStanding - originStanding) * 100);
     life.familyWealthLabel = money(familyWealth);
     life.netWorthLabel = money(netWorth);
-    life.sentence = buildSentence({ ...life, country: country.name });
+
+    // short class labels for the card's arc (model emits "upper-middle class" etc.)
+    life.classOriginShort = shortClass(life.classOrigin);
+    life.classFinalShort = shortClass(life.classFinal);
+
+    // Fortune score → percentile → verdict tier. fortuneScore is pure (no asset);
+    // the percentile + tier need the precomputed CDF (data/luckCdf.json), injected
+    // like all other data. Absent (e.g. during CDF generation), the score still
+    // attaches and the DIED tail falls back to its neutral band.
+    life.fortune = fortuneScore(life);
+    if (luckCdf) {
+      life.luckPct = percentileOf(life.fortune, luckCdf);
+      const t = tierOf(life.luckPct);
+      life.verdict = { pct: life.luckPct, tier: t.short, name: t.name, color: t.color, key: t.key, band: t.band, mood: t.mood };
+    }
+
+    // three-beat card copy (BORN · DIED); event pills come from life.events.
+    // Copy banks are optional — sims that only need numbers can skip them.
+    if (copy) {
+      const beats = buildBeats(copy, life);
+      life.beats = beats;
+      life.opening = beats.opening;
+      life.ending = beats.ending;
+    }
     return life;
   }
 
-  return { rollLife, totalBirths, countries };
+  // Re-render a life's beats with a sliding-window de-dup set (clause texts shown
+  // recently this session) so a grinding session stays fresh — the DISPLAY layer
+  // for freshness (b). The canonical life.beats (no `recent`) stays stable for
+  // storage and sharing; this only varies what's shown live.
+  const renderBeats = (life, recent) => (copy ? buildBeats(copy, life, { recent }) : life.beats);
+
+  return { rollLife, renderBeats, totalBirths, countries };
 }
