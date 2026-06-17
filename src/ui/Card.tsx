@@ -37,10 +37,12 @@ export function Card({ life }: { life: any }) {
   const showDelta = rv.showMoney && Math.abs(swing) > 1 && (rv.moneyPhase === 'swing' || rv.moneyPhase === 'done');
   const events = life.events || [];
 
-  // death finale: age leads as a hero number; the legacy clause (age-free) sits
-  // beside it. LOST AT (with 💀) when an event cut life short; DIED AT otherwise.
+  // death finale shows ONLY when a life was cut short — a fatal event or a child
+  // death — where the age IS the story (DIED AT, with 💀). Ordinary adult lives
+  // hide the death age at the founding reveal (Destiny model, LINEAGE.md §4.0):
+  // they end on Net worth, and the age resurfaces only at retirement.
   const fatal = !!life.fatalCause;
-  const endLead = fatal || life.diedYoung ? 'LOST AT' : 'DIED AT';
+  const tragic = fatal || life.diedYoung;
 
   return (
     <div className="card" onClick={rv.skip} style={{ borderColor: rv.verdict ? tierColor : INK }}>
@@ -106,12 +108,12 @@ export function Card({ life }: { life: any }) {
           </div>
         )}
 
-        {rv.showDied && (
+        {rv.showDied && tragic && (
           <div className="finale">
             <div className="finale-rule" />
             <div className="finale-row">
               <div className="finale-age">
-                <div className="finale-lead">{endLead}</div>
+                <div className="finale-lead">DIED AT</div>
                 <div className="finale-num">{life.age}</div>
               </div>
               <div className="finale-legacy">{fatal ? '💀 ' : ''}{life.legacy}</div>
@@ -122,7 +124,7 @@ export function Card({ life }: { life: any }) {
         {rv.showMoney && alive && (
           <div className="money-panel" style={{ boxShadow: `6px 6px 0 ${rv.verdict ? tierColor : INK}` }}>
             <div className="money-top">
-              <span className="money-label">Final net worth</span>
+              <span className="money-label">Net worth</span>
               {rv.moneyPhase === 'done' && <span className="money-tag">{statTag(life.pct.money)}</span>}
             </div>
             <div className="money-row">
