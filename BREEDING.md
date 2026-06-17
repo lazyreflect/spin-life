@@ -11,7 +11,11 @@ Working idea: cards (generated lives) can be **traded**, and a **male + female
 card can produce a family** of child cards. This doc covers how a market might
 work, how breeding might work, what players would seek in a "partner," and —
 most importantly — **the concrete ways the current codebase resists all of
-this** (§6, the readiness issues), with file references.
+this** (§6, the readiness issues), with file references. **§9 covers the voice
+and theme** — the one place this doc lands a firm recommendation, because the
+wording carries real risk next to a heritable-IQ mechanic. (Note: §3 still uses
+the blunt term "breeding" for the *mechanic*; per §9 the player-facing *voice*
+should be the family register, not livestock.)
 
 ---
 
@@ -294,3 +298,66 @@ events.js reconciliation are the real work.
 - Fertility model: lifespan-window vs fixed foal-cap vs escalating cooldown (§2.3)?
 - Do dead cards remain tradable as pedigree (§2.3)?
 - Separate "bred" verdict scale, or fold bred cards into one recalibrated CDF (§B)?
+
+---
+
+## 9. Terminology & theme  (the one firm recommendation)
+
+Unlike the rest of this doc (a menu), this is a recommendation — because the
+wording is *risk*, not taste. The mechanic tracks heritable IQ/height/looks (and
+DESIGN.md already flags per-country IQ as the "shakiest, most contentious"
+input). Livestock language — *breeding stock / dam / litter / bloodline* — on top
+of heritable-IQ-by-country reads as a eugenics simulator, not a birth-lottery
+toy. Reframing the voice is harm-reduction, not politeness.
+
+### 9.1 Voice: plain, not warm
+Adopt the family register, but resist saccharine. The game's actual voice is
+deadpan and dark (it cheerfully reports death in a famine at 7). Greeting-card
+warmth clashes with that *harder* than the cold language did. Aim for **plain
+human language said flatly** — *mother, father, children, family* — which is
+already on-brand: *"Born to two parents who never met. Four children. Died at
+81; none came to the funeral."* Goal = **plain, not warm.**
+
+Endorsed mapping (from the design discussion):
+
+| Avoid (livestock) | Use (plain family) |
+|---|---|
+| breeding / to breed | starting a family / having children |
+| a male + female card | two parent cards / a couple |
+| stud / dam / breeding stock | parent (mother / father) |
+| litter (of N) | children / a generation / siblings |
+| breeding value | legacy potential / what they pass on |
+| pedigree | lineage / heritage / ancestry |
+| foal-cap / fertility cap | family size limit |
+| inbreeding | closely-related pairings |
+| partner-seeking | **partner** (already warm — keep) |
+
+Caveat: "couple / two parents" is warm, but the genetics layer is still
+sex-gated (needs M+F). Decide whether the *social* framing may decouple from the
+biological one (donor/adoption) — small, but the word writes a check the model
+doesn't yet cash (§6-D, §6-F).
+
+### 9.2 Theme: three altitudes, not one word — and kill one
+*Family*, *lineage*, *dynasty* are not rival names for one slot; they do three
+different jobs and should stack. *Bloodline* should be cut outright.
+
+| Word | Connotation | Job |
+|---|---|---|
+| **Family** | intimate, horizontal, one generation | the **voice** (moment-to-moment) |
+| **Lineage** | neutral, vertical, descent, a tree | the **structure** (data model, §6-A/H) |
+| **Dynasty** | aspirational, power, sustained success | the **chase** (the rare trophy) |
+| **Bloodline** | blood/genetic *purity*, aristocracy | ❌ **cut** — most eugenics-coded, worst possible next to heritable IQ |
+
+**The deeper call (on-theme dynasty):** if *dynasty* becomes a power fantasy
+(accumulate → ascend → win), it fights the game's soul — the birth lottery and
+the cruelty of social mobility, where most lives *don't* ascend and the irony is
+the point. It's also the pay-to-win failure mode (§5). So frame dynasty as **the
+thing you reach for and usually lose:** regression to the mean drags elite kids
+back toward average, and a famine / currency collapse (already in events.js) can
+erase three generations in one card. **A collapsing dynasty is more on-brand
+than a triumphant one** — the climb is a legend precisely because it almost never
+holds. That keeps breeding inside the existing dark-comic mobility worldview
+instead of becoming a wealth-accumulation sim.
+
+One line: **plain "family" voice (not warm), "lineage" for structure, "dynasty"
+as the doomed aspiration, "bloodline" never.**
