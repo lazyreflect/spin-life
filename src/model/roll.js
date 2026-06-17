@@ -1,6 +1,6 @@
 // Roll a single random life. Dependency-injected with data so both the Node
 // sim and the Vite app share one source of truth.
-import { clamp, normCdf, cholesky, corrNormals, sampleCumulative, randn, makeRng, hashSeed } from './stats.js';
+import { clamp, normCdf, invNorm, cholesky, corrNormals, sampleCumulative, randn, makeRng, hashSeed } from './stats.js';
 import {
   wealthQuantile, sampleAge, wealthLifeAdj, adjCountryIq,
   moneyTopPercent, iqTopPercent, heightTopPercent, looksTopPercent, lifeTopPercent,
@@ -176,7 +176,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     // folds into DIED); otherwise show it as a plain bad-luck pill.
     const shownEvents = (diedYoung ? evt.events.filter((e) => e.child) : evt.events)
       .filter((e) => !(cutShort && e.kind === 'fatal'))
-      .map((e) => ({ text: e.text, kind: e.kind === 'fatal' ? 'bad' : e.kind }));
+      .map((e) => ({ id: e.id, text: e.text, kind: e.kind === 'fatal' ? 'bad' : e.kind }));
 
     const life = {
       country: country.name, code: country.code, flag: flagEmoji(country.code), continent: country.continent,
@@ -277,11 +277,17 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
   // (each parent relative to their own sex). Same-country → zero shift (identity).
   function reframeParentZ(parent, childCountry) {
     const pc = countries.find((c) => c.code === parent.code) || childCountry;
+    // a card kept before zFw was stored lacks it — reconstruct from the rank it
+    // generated (parentRank = normCdf(zFw)); default any other missing latent to 0.
+    const zFw = Number.isFinite(parent.zFw) ? parent.zFw : invNorm(clamp(parent.parentRank ?? 0.5, 1e-4, 1 - 1e-4));
+    const zIq = Number.isFinite(parent.zIq) ? parent.zIq : 0;
+    const zHt = Number.isFinite(parent.zHeight) ? parent.zHeight : 0;
+    const zLk = Number.isFinite(parent.zLooks) ? parent.zLooks : 0;
     const iqShift = (adjCountryIq(pc.iq) - adjCountryIq(childCountry.iq)) / params.iqSd;
     const hMeanP = parent.sex === 'Female' ? pc.heightF : pc.heightM;
     const hMeanC = parent.sex === 'Female' ? childCountry.heightF : childCountry.heightM;
     const hSd = parent.sex === 'Female' ? params.heightSdF : params.heightSdM;
-    return [parent.zFw, parent.zIq + iqShift, parent.zHeight + (hMeanP - hMeanC) / hSd, parent.zLooks];
+    return [zFw, zIq + iqShift, zHt + (hMeanP - hMeanC) / hSd, zLk];
   }
 
   // rollChild(father, mother, opts?) — compose a child from two kept parent cards.

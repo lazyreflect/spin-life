@@ -319,7 +319,7 @@ export function rollEvents(ctx, country, rand = Math.random, bands) {
     // (the forced down-arc declares 'neutral' — it NARRATES the visible ▼ arc, it
     // isn't luck), else it's good/bad by the sign of its wealth effect.
     const kind = isFatal ? 'fatal' : (e.kind || (s.w > 0 ? 'good' : 'bad'));
-    events.push({ text: val(e.text, x, rand), child: !!e.child, kind });
+    events.push({ id: e.id, text: val(e.text, x, rand), child: !!e.child, kind });
   }
   return { wealthDelta, ageDelta, fatal, fatalCause, events };
 }

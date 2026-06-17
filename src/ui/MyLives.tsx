@@ -7,7 +7,7 @@ import { Card } from './Card';
 // My Lives — the collection album, plus the lineage loop: select two eligible
 // parents (one mother, one father) and start a family. The child reveals with the
 // same card, then can be kept (it carries its own id / parentIds / generation).
-export function MyLives({ lives, onKeep }: { lives: any[]; onKeep: (L: any) => void }) {
+export function MyLives({ lives, onKeep, onPair }: { lives: any[]; onKeep: (L: any) => void; onPair: (a: string, b: string) => void }) {
   const [selected, setSelected] = useState<string[]>([]); // up to two parent ids
   const [child, setChild] = useState<any>(null);
 
@@ -29,6 +29,7 @@ export function MyLives({ lives, onKeep }: { lives: any[]; onKeep: (L: any) => v
   const startFamily = () => {
     const father = parents[0].sex === 'Male' ? parents[0] : parents[1];
     const mother = parents[0].sex === 'Female' ? parents[0] : parents[1];
+    onPair(father.id, mother.id); // the marriage is now real
     const c = roller.rollChild(father, mother);
     c.id = crypto.randomUUID();
     setChild(c);
