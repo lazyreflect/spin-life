@@ -14,7 +14,18 @@ cross-country environment, marriage links, and shadow-family-event reconciliatio
 are all in. Nothing is deployed-blocking; sim/tsc/build are green.
 
 Read **LINEAGE.md** first — §3 is the locked decisions, §4 is the model, §7 is the
-build checklist (what's done vs next).
+build checklist. **Then read §10 — the v2 direction — because it changes the plan.**
+
+> ⚠️ **DIRECTION SHIFT (read §10 of LINEAGE.md).** The playable pairing UI was built
+> and **felt flat** — deliberate parent-selection turned the *fate + story* joy of
+> the spin into *management*. A round of population sims found the fix: a **small
+> clan (~10–20), the app pairs couples randomly (fate, not admin), litters by
+> country TFR, and you fight extinction + inbreeding by spinning fresh blood** —
+> which makes the spin the *lifeblood* of breeding. **The product is the story**
+> (a child's saga against its real parents). **The next build is NOT more
+> mechanics — it's the litter-reveal + saga-copy prototype to prove the stories
+> are fun to read.** Everything below ("what's built") still stands; the *direction
+> for what's next* is §10.
 
 ## What's built (all on `main`)
 
@@ -72,23 +83,32 @@ npm run dev     # or the preview tooling
   after reload — wait for mount, keep evals short, prefer a screenshot to confirm.
 - The reveal `Card` animates via `useReveal`; clicking the card skips to the end.
 
-## Next tasks (priority order)
+## Next tasks (priority order — per the §10 v2 direction)
 
-1. **Inbreeding consequences** — *designed in LINEAGE.md §4.8, user said build it.*
-   Kinship `F` from `parentIds` (parent×child/full-sib 0.25, half/uncle/grandparent
-   0.125, cousins 0.0625); F-scaled mean depression on fitness traits + elevated
-   mortality + **tail variance** (the Charles II); **hard-block parent×child & full
-   sibs** in `pairBlock`; "closely related" warning in the pairing bar. Compute F in
-   the UI layer (has the `lives` graph), pass `opts.inbreeding = F` to `rollChild`.
-2. **Litter** — a pairing makes ONE child today; LINEAGE.md wants a family of N
-   (independent draws). Needs a product call on count/feel.
-3. **Phase 3 — verdict trajectory** — drop the vestigial "luckier than X% of births"
-   line (still in `Card.tsx` head); the *replacement* is a UX call (the tier name +
-   rarity already carry the verdict). Dynasty net-worth trajectory + anti-compounding
-   damping need a dynasty/tree surface to be meaningful.
-4. **Lineage / tree view** — see a card's ancestry & descendants; surface
-   `generation`/`parentIds`/`partnerIds` which are stored but unshown.
-5. **Phase 6 validation** — fold bred-generation invariants into the sim.
+1. **Saga copy + litter reveal — THE prototype, do this first.** Wire a bred
+   child's copy to its **real parents and generational arc** ("born to Niran, a day
+   laborer who died with nothing… rose no further; gone at 4"), and reveal a
+   **litter** (siblings diverge → free drama). This is the honest bet — *the writing
+   is the product*; prove the stories are fun to read before building loop plumbing.
+   Extend `copy.json` banks + `buildBeats`; a child's origin is its *real parents*,
+   so `mobilityDelta` / `classOrigin→classFinal` give "rose above / repeated / line
+   ended" for free.
+2. **Real per-country TFR** (World Bank) to replace the hot `empAg` proxy (§10.3),
+   then re-run the small-clan sims so growth/shrink/extinction are accurate.
+3. **The v2 loop** (§10.2): small clan (~10–20), **app pairs couples randomly**
+   (fate, not the current manual selection), litters by TFR, **spin fresh blood**
+   vs inbreeding/extinction, curate who advances. Replaces the manual pairing UI.
+4. **Inbreeding consequences** (§4.8) — now the *core antagonist* at clan scale.
+   Kinship `F` from `parentIds`; F-scaled depression + mortality + tail variance;
+   hard-block parent×child & full sibs; warn on close kin. Pass `opts.inbreeding=F`
+   to `rollChild`.
+5. **`emigrate` relocates descendants** (§4.4/§10) — the earned escape lever; tag a
+   character `emigratedTo` and use it as their children's environment country.
+6. Deferred: Phase 3 verdict line, lineage/tree view, Phase 6 validation.
+
+NOTE: the current **manual two-parent pairing UI (`MyLives`) is a v1 stepping stone
+that the user found flat** — v2 replaces deliberate selection with fate-pairing.
+Don't polish the manual selector; build toward §10.
 
 ## Open product decisions (the user owns these)
 
