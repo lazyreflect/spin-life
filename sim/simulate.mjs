@@ -21,6 +21,7 @@ const roller = makeRoller({
   countries: load('countries.json'), params: load('model-params.json'),
   names: load('names.json'), careers: load('careers.json').careers,
   bands: bandsData, imputation: load('imputation.json'), seed: SEED,
+  luckCdf: load('luckCdf.json'), // so life.luckPct/verdict are populated for the Fortune gates
 });
 const N = +(process.argv[2] || 40000);
 
@@ -104,6 +105,20 @@ const poorSmart = cond((l) => l.parentRank < 0.1 && l.zIq > 1.5);
 const richSmart = cond((l) => l.parentRank > 0.9 && l.zIq > 1.5);
 const poorDumb = cond((l) => l.parentRank < 0.1 && l.zIq < -1.5);
 
+// ---- Fortune-score sanity (guards the national-rank "$7.5k = luckier-than-98%"
+// bug from returning): luck % is GLOBAL, so the globally-poor must skew unlucky,
+// and the high tiers must stay genuinely rare.
+const median = (arr) => { const s = [...arr].sort((a, b) => a - b); return s.length ? s[s.length >> 1] : NaN; };
+const sub5k = adults.filter((l) => l.netWorth < 5000);
+const sub5kLuck = median(sub5k.map((l) => l.luckPct));
+// THE wealth ceiling: the verdict never outruns the visible net worth. Because
+// S ≤ the global wealth tail, a life clearly outside the global top quartile of
+// wealth (here >top-30%) can never reach a lucky tier (EPIC+). This is the guard
+// that keeps "$7.5k = luckier than 93%" from ever coming back.
+const below30 = adults.filter((l) => l.pct.money > 30);
+const below30Epic = below30.length ? below30.filter((l) => l.luckPct >= 82).length / below30.length : 0;
+const legRate = adults.filter((l) => l.luckPct >= 96).length / adults.length;
+
 // ---- report ----------------------------------------------------------------
 console.log(`\nSpin Your Life — model sim (shared model)   N=${N.toLocaleString()}, ${L.length} lives, ${adults.length} adults   seed=0x${SEED.toString(16)}\n`);
 
@@ -125,6 +140,11 @@ console.log(gate('steep drops carry a story', steepCovered >= 0.98, `${(steepCov
 // content change that balloons the event rate or mints elites fails loudly.
 console.log(gauge('lives with an event', evtRate, 0.45, 0.06, 'evtRate'));
 console.log(gate('elite class stays scarce', eliteRate < 0.01, `${(eliteRate * 100).toFixed(2)}% of adults`, 'eliteRate'));
+
+console.log('\nFORTUNE SCORE (wealth-dominant — the verdict never outruns the money)');
+console.log(gate('globally-poor read unlucky', sub5kLuck < 38, `sub-$5k median luck ${sub5kLuck.toFixed(1)}%`, 'sub5kLuck'));
+console.log(gate('wealth ceiling: <top-30% never EPIC+', below30Epic === 0, `${(below30Epic * 100).toFixed(3)}% of below-top-30% wealth reach EPIC+`, 'wealthCeiling'));
+console.log(gate('LEGENDARY+ stays rare', legRate < 0.06, `${(legRate * 100).toFixed(1)}% of adults`, 'legendRate'));
 
 console.log('\nEMERGENT CORRELATIONS (report)');
 console.log(note('corr(IQ, wealth)', rIqWealth, 'rIqWealth'));
