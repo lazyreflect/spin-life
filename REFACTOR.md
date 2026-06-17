@@ -10,6 +10,34 @@ Scope: `events.js`, `careers.json`, `content.js`, `roll.js`, `countries.json`,
 
 ---
 
+## Progress (branch `refactor/model-foundation`)
+
+The behavior-preserving foundation has landed, each step gated by `npm run sim`
+(now fail-loud) and committed atomically:
+
+- ✅ **Step 0** — harness fails loud (exits non-zero), runs from a fixed seed,
+  gates the previously-printed metrics, emits `sim/sim-report.json`; wired into CI.
+- ✅ **Step 0.5** (game-dev review) — seedable, injectable RNG; removed the
+  `_spare` global; `rollLife(seed)` is reproducible. Distributions unchanged.
+- ✅ **Step 1** — `load.js` impute + validate boundary + `imputation.json`;
+  removed the contradictory `??` country defaults; fails loud on bad data.
+- ✅ **Step 3** — `careers.json` carries `occRank` + `tags`; deleted the
+  `OCC_RANK` map (killed the silent `0.40` drift) and the 7 inverted-index Sets.
+- ✅ **Step 4** — `bands.json` descriptor; consolidated `BAND_SKILL`/`CAREER_RANK`/
+  `CAREER_RANGE`/precarity-ladder into one injected table.
+
+**Deliberately NOT auto-applied** (need design judgement / change game output, so
+they should not land unattended):
+- **Step 2** (relocate remaining scalars `RATE`/`IQ_COMPRESS`/blend → params) —
+  pure churn, low value until paired with the RATE *decouple* (a balance change).
+- **Step 6** (split `content.js`) — mechanical but broad import churn; cosmetic.
+- **Steps 7–9** (empirical-rarity CDF, affinity-score `rollCareer`, relative-
+  percentile class) — these intentionally **shift the output distribution**; the
+  "stats unchanged" gate can't validate a deliberate balance change, so they need
+  a human in the loop (and the new assertions noted in §8).
+
+---
+
 ## 1. The unifying diagnosis
 
 Every problem in these files is the same problem in different clothes: **a core
