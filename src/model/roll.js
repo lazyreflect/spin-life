@@ -10,6 +10,7 @@ import { rollEvents } from './events.js';
 import { normalizeCountries, validateInputs } from './load.js';
 import { fortuneScore, percentileOf, tierOf, shortClass } from './score.js';
 import { buildBeats } from './copy.js';
+import { makeChildDraw } from './genetics.js';
 
 const flagEmoji = (code) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
@@ -40,6 +41,11 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
   const cum = []; let t = 0;
   for (const c of countries) { t += c.births; cum.push(t); }
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
+  const childDraw = makeChildDraw({ endowmentCorr: params.endowmentCorr });
+  // a child's starting wealth rank blends inherited POSITION (the parents' realised
+  // standing) with heritable DISPOSITION (the zFw latent). Position-dominant, so a
+  // rich lineage starts ahead but genes still tell and β<1 still erodes it.
+  const WEALTH_POSITION = 0.6;
   const M = params.mobility, LS = params.lifespan;
   const careerRank = (career) => bandBy[career.incomeBand].centralRank;
   // looks/height tailwind on EARNED income, scaled by how much the career rewards
@@ -105,15 +111,11 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
   // rollLife(seed?) — with a seed (number or string) the entire life is
   // reproducible (shareable permalinks, golden snapshots); without one it draws
   // from the shared instance stream so the live app keeps varying.
-  function rollLife(seed) {
-    const rng = seed == null ? rootRng : makeRng(typeof seed === 'string' ? hashSeed(seed) : seed >>> 0);
-    const country = countries[sampleCumulative(cum, totalBirths, rng)];
-    const sex = rng() < params.sexMaleProb ? 'Male' : 'Female';
-    const z = corrNormals(L[sex], rng); // [famWealth, iq, height, looks]
-    const zFw = z[0], zIq = z[1], zHt = z[2], zLk = z[3];
-
-    const parentRank = normCdf(zFw);
-
+  // build a full life from an ORIGIN (country, sex, the four latents, and the
+  // starting wealth rank). Founders and bred children share this core so they land
+  // on ONE calibrated scale — only the origin differs: rollLife draws it from the
+  // population, rollChild composes it from two parents.
+  function buildLife({ country, sex, zFw, zIq, zHt, zLk, parentRank, seed, rng }) {
     const iq = clamp(Math.round(adjCountryIq(country.iq) + params.iqSd * zIq), 60, 160);
     const heightCm = (sex === 'Female' ? country.heightF : country.heightM) + (sex === 'Female' ? params.heightSdF : params.heightSdM) * zHt;
     const looks = clamp(params.looksMean + params.looksSd * zLk, 1, 10);
@@ -258,11 +260,45 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     return life;
   }
 
+  // rollLife(seed?) — a founder: origin drawn from the population. With a seed the
+  // whole life is reproducible (permalinks, golden snapshots); without one it draws
+  // from the shared instance stream so the live app keeps varying.
+  function rollLife(seed) {
+    const rng = seed == null ? rootRng : makeRng(typeof seed === 'string' ? hashSeed(seed) : seed >>> 0);
+    const country = countries[sampleCumulative(cum, totalBirths, rng)];
+    const sex = rng() < params.sexMaleProb ? 'Male' : 'Female';
+    const z = corrNormals(L[sex], rng); // [famWealth, iq, height, looks]
+    return buildLife({ country, sex, zFw: z[0], zIq: z[1], zHt: z[2], zLk: z[3], parentRank: normCdf(z[0]), seed, rng });
+  }
+
+  // rollChild(father, mother, opts?) — compose a child from two kept parent cards.
+  // Genes come from the parents (genetics.js); the child's environment is its own
+  // country, which is the regression anchor (nutrition/schooling pull the realised
+  // trait toward the local mean). Wealth is two-channel (§4.3): position from the
+  // parents' realised childRank, disposition from the heritable zFw.
+  function rollChild(father, mother, opts = {}) {
+    const rng = opts.rng || rootRng;
+    const sex = rng() < params.sexMaleProb ? 'Male' : 'Female';
+    const code = opts.countryCode || mother.code || father.code;     // child's environment country
+    const country = countries.find((c) => c.code === code) || countries[0];
+    const cz = childDraw.drawChildZ(
+      [father.zFw, father.zIq, father.zHeight, father.zLooks],
+      [mother.zFw, mother.zIq, mother.zHeight, mother.zLooks],
+      sex, rng,
+    );
+    const position = 0.5 * (father.childRank + mother.childRank);     // inherited standing (nurture)
+    const parentRank = clamp(WEALTH_POSITION * position + (1 - WEALTH_POSITION) * normCdf(cz[0]), 0.0005, 0.9995);
+    const child = buildLife({ country, sex, zFw: cz[0], zIq: cz[1], zHt: cz[2], zLk: cz[3], parentRank, seed: null, rng });
+    child.parentIds = [father.id, mother.id];
+    child.generation = Math.max(father.generation ?? 0, mother.generation ?? 0) + 1;
+    return child;
+  }
+
   // Re-render a life's beats with a sliding-window de-dup set (clause texts shown
   // recently this session) so a grinding session stays fresh — the DISPLAY layer
   // for freshness (b). The canonical life.beats (no `recent`) stays stable for
   // storage and sharing; this only varies what's shown live.
   const renderBeats = (life, recent) => (copy ? buildBeats(copy, life, { recent }) : life.beats);
 
-  return { rollLife, renderBeats, totalBirths, countries };
+  return { rollLife, rollChild, renderBeats, totalBirths, countries };
 }
