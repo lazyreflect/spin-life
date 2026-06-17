@@ -57,8 +57,8 @@ export function makeRoller({ countries, params, names, careers }) {
   // be known before the destination-wealth step)
   function rollJob(zIq, zLooks, zHt, sex, parentRank, country) {
     const education = rollEducation(zIq, parentRank, country, randn);
-    const career = rollCareer({ zIq, zLooks, zHeight: zHt, sex, education }, country, careers);
-    return { education, career };
+    const { career, pSelect } = rollCareer({ zIq, zLooks, zHeight: zHt, sex, education }, country, careers);
+    return { education, career, pCareer: pSelect };
   }
 
   // calibrate the EARNED-income spread once, plus the parent->child jump spread
@@ -109,7 +109,7 @@ export function makeRoller({ countries, params, names, careers }) {
     const looks = clamp(params.looksMean + params.looksSd * zLk, 1, 10);
 
     // education + career first: career income drives the EARNED component
-    const { education, career } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
+    const { education, career, pCareer } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
     const incomeRaw = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, zLk, zHt) + M.luckSd * randn();
     const [cFloor, cCeil] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
     const incomeRank = clamp(normCdf((incomeRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
@@ -125,7 +125,7 @@ export function makeRoller({ countries, params, names, careers }) {
     // life events: shift the outcome (may break career bounds — windfall, war),
     // cut the lifespan, and give the card a story. originStanding lets the forced
     // "steep fall" trigger compare like-for-like with the child's standing.
-    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career.id), originStanding }, country);
+    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career.id), originStanding, sex, zLooks: zLk, zHeight: zHt }, country);
     const childRank = clamp(childBase + evt.wealthDelta, 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
@@ -172,7 +172,11 @@ export function makeRoller({ countries, params, names, careers }) {
     // arc floored at ~top-2.5%: a single big climb/fall is rare, but can't by itself
     // push a life to 1-in-thousands — extreme rarity still needs a real combination.
     const arcP = clamp(2 * (1 - normCdf(Math.abs(childRank - parentRank) / jumpSd)), 0.025, 1);
-    const prod = p(life.pct.money) * p(life.pct.iq) * pPhys(life.pct.height) * p(life.pct.life) * pPhys(life.pct.looks) * arcP;
+    // career rarity is CONDITIONAL on the country: P(career | country, education,
+    // traits). A Software Developer in Niger is a far rarer roll than in the US.
+    // Floored at ~top-2% so an unusual job adds to rarity without dominating it.
+    const careerP = clamp(pCareer ?? 1, 0.02, 1);
+    const prod = p(life.pct.money) * p(life.pct.iq) * pPhys(life.pct.height) * p(life.pct.life) * pPhys(life.pct.looks) * arcP * careerP;
     life.rarity = 1 / Math.sqrt(prod);
     life.rarityLabel = rarityText(life.rarity);
 
