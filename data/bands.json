@@ -1,0 +1,19 @@
+{
+  "_note": "Income-band descriptors — the single home for every per-band property the model used to scatter across content.js (skill), roll.js (centralRank, range) and events.js (precarity ladder). Injected via makeRoller like all other data. centralRank/range are CALIBRATION OUTPUTS (they set where each band lands in national wealth rank and its hard floor/ceiling); treat them as sim-validated, not free knobs — npm run sim asserts class rises monotonically with band.",
+  "_schema": {
+    "id": "low|lowmid|mid|highmid|high|elite",
+    "order": "0..5 ordering",
+    "skill": "cognitive-demand level used in IQ<->skill career selection",
+    "centralRank": "central national wealth rank the band anchors to (0..1)",
+    "range": "[floor, ceiling] hard bounds on reachable wealth rank, even with inheritance/luck",
+    "precarity": "career-side lack-of-safety-net for this band (0..1)"
+  },
+  "bands": [
+    { "id": "low",     "order": 0, "skill": 1.0, "centralRank": 0.20, "range": [0.00, 0.40], "precarity": 0.45 },
+    { "id": "lowmid",  "order": 1, "skill": 1.5, "centralRank": 0.33, "range": [0.06, 0.55], "precarity": 0.45 },
+    { "id": "mid",     "order": 2, "skill": 2.0, "centralRank": 0.48, "range": [0.20, 0.66], "precarity": 0.20 },
+    { "id": "highmid", "order": 3, "skill": 3.5, "centralRank": 0.64, "range": [0.40, 0.82], "precarity": 0.08 },
+    { "id": "high",    "order": 4, "skill": 4.0, "centralRank": 0.80, "range": [0.58, 0.96], "precarity": 0.08 },
+    { "id": "elite",   "order": 5, "skill": 5.0, "centralRank": 0.93, "range": [0.72, 1.00], "precarity": 0.08 }
+  ]
+}

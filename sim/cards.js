@@ -10,9 +10,10 @@ const countries = load('countries.json');
 const params = load('model-params.json');
 const names = load('names.json');
 const careers = load('careers.json').careers;
+const bands = load('bands.json').bands;
 const imputation = load('imputation.json');
 
-const roller = makeRoller({ countries, params, names, careers, imputation });
+const roller = makeRoller({ countries, params, names, careers, bands, imputation });
 const n = +(process.argv[2] || 10);
 
 const pct = (x) => (x < 1 ? x.toFixed(2) : x < 10 ? x.toFixed(1) : Math.round(x)) + '%';

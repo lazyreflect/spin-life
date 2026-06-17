@@ -47,12 +47,21 @@ export function normalizeCountries(countries, policy = {}) {
   });
 }
 
-// Validate inputs; throw with a readable summary on any problem.
-export function validateInputs({ countries, careers }) {
+// Validate inputs; throw with a readable summary on any problem. `bands` is the
+// id->descriptor map built from data/bands.json.
+export function validateInputs({ countries, careers, bands }) {
   const errs = [];
   countries.forEach((c, i) => {
     for (const f of REQUIRED_COUNTRY) if (c[f] == null) errs.push(`country[${i}] ${c.code || c.name || i}: missing ${f}`);
   });
+  const bandIds = bands ? Object.keys(bands) : [];
+  if (!bandIds.length) errs.push('no income bands provided (data/bands.json)');
+  for (const id of bandIds) {
+    const b = bands[id];
+    if (typeof b.centralRank !== 'number' || !Array.isArray(b.range) || typeof b.skill !== 'number' || typeof b.precarity !== 'number') {
+      errs.push(`band ${id}: missing centralRank/range/skill/precarity`);
+    }
+  }
   const seen = new Set();
   for (const c of careers) {
     if (!c.id) { errs.push('career with no id'); continue; }
@@ -62,6 +71,8 @@ export function validateInputs({ countries, careers }) {
     // missing one is a build error, the whole point of consolidating it.
     if (typeof c.occRank !== 'number') errs.push(`career ${c.id}: missing/invalid occRank`);
     if (c.tags != null && !Array.isArray(c.tags)) errs.push(`career ${c.id}: tags must be an array`);
+    // every career's band must resolve to a descriptor (no silent 0.5/[0,1])
+    if (bandIds.length && !bands[c.incomeBand]) errs.push(`career ${c.id}: unknown incomeBand "${c.incomeBand}"`);
   }
   if (errs.length) {
     const shown = errs.slice(0, 20).join('\n  ');

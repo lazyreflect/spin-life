@@ -17,24 +17,17 @@ const flagEmoji = (code) =>
 // makes job and class agree by construction: a clerk can't reach elite, and a
 // rich kid who underachieves into a low-income job drops. Human capital (IQ,
 // education, looks) flows in through career SELECTION, not a separate add-on.
-const CAREER_RANK = { low: 0.20, lowmid: 0.33, mid: 0.48, highmid: 0.64, high: 0.80, elite: 0.93 };
+// Per-band centralRank + [floor, ceiling] now live in data/bands.json (one
+// descriptor per band): a clerk (mid) literally cannot reach elite; a high-income
+// professional cannot end up destitute; elite wealth needs a top-tier/owner band.
 const W_CAREER = 0.55; // career's share of the destination-wealth signal
-// Hard [floor, ceiling] on the national wealth rank a career can reach, even
-// with inheritance + luck. A clerk (mid) literally cannot end up elite; a
-// high-income professional cannot end up destitute.
-// Elite wealth (childRank >= 0.833) is reachable only by top-tier professions
-// (high) or business ownership (elite) — a salaried highmid role (nurse,
-// accountant, civil servant, scientist) tops out at "upper", never elite.
-const CAREER_RANGE = {
-  low: [0.00, 0.40], lowmid: [0.06, 0.55], mid: [0.20, 0.66],
-  highmid: [0.40, 0.82], high: [0.58, 0.96], elite: [0.72, 1.0],
-};
 
-export function makeRoller({ countries: rawCountries, params, names, careers, seed, imputation }) {
+export function makeRoller({ countries: rawCountries, params, names, careers, bands, seed, imputation }) {
   // Load boundary: impute missing country data ONCE and fail loud on bad input,
   // so the model below reads complete, validated data with no `??` fallbacks.
   const countries = normalizeCountries(rawCountries, imputation || {});
-  validateInputs({ countries, careers });
+  const bandBy = Object.fromEntries((bands || []).map((b) => [b.id, b]));
+  validateInputs({ countries, careers, bands: bandBy });
   // One instance RNG drives the whole population. Seed it explicitly for
   // reproducible runs (sim, golden snapshots, shared permalinks); otherwise draw
   // a one-time random seed so the live app still varies each session. Calibration
@@ -46,7 +39,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
   for (const c of countries) { t += c.births; cum.push(t); }
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
   const M = params.mobility, LS = params.lifespan;
-  const careerRank = (career) => CAREER_RANK[career.incomeBand] ?? 0.5;
+  const careerRank = (career) => bandBy[career.incomeBand].centralRank;
   // looks/height tailwind on EARNED income, scaled by how much the career rewards
   // them (its own looksTilt/heightTilt) — so attractive/tall people climb a little
   // more in looks- or stature-sensitive roles (actor, sales, athletics) and very
@@ -68,7 +61,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
   // be known before the destination-wealth step)
   function rollJob(zIq, zLooks, zHt, sex, parentRank, country, rng) {
     const education = rollEducation(zIq, parentRank, country, rng);
-    const { career, pSelect } = rollCareer({ zIq, zLooks, zHeight: zHt, sex, education }, country, careers, rng);
+    const { career, pSelect } = rollCareer({ zIq, zLooks, zHeight: zHt, sex, education }, country, careers, rng, bandBy);
     return { education, career, pCareer: pSelect };
   }
 
@@ -88,7 +81,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
       const z = corrNormals(male ? L.Male : L.Female, rootRng);
       const parentRank = normCdf(z[0]);
       const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c, rootRng);
-      const [lo, hi] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
+      const [lo, hi] = bandBy[career.incomeBand].range;
       par[i] = parentRank; cf[i] = lo; cc[i] = hi; af[i] = assetFloorOf(parentRank, c.wealthGini);
       occSorted[i] = occRankOf(career);
       vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, z[3], z[2]) + M.luckSd * randn(rootRng);
@@ -126,7 +119,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
     // education + career first: career income drives the EARNED component
     const { education, career, pCareer } = rollJob(zIq, zLk, zHt, sex, parentRank, country, rng);
     const incomeRaw = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, zLk, zHt) + M.luckSd * randn(rng);
-    const [cFloor, cCeil] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
+    const [cFloor, cCeil] = bandBy[career.incomeBand].range;
     const incomeRank = clamp(normCdf((incomeRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
     // inherited-asset floor (convex in parents' rank); wealth = the better of the two
     const assetFloor = assetFloorOf(parentRank, country.wealthGini);
@@ -140,7 +133,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
     // life events: shift the outcome (may break career bounds — windfall, war),
     // cut the lifespan, and give the card a story. originStanding lets the forced
     // "steep fall" trigger compare like-for-like with the child's standing.
-    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career), originStanding, sex, zLooks: zLk, zHeight: zHt }, country, rng);
+    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career), originStanding, sex, zLooks: zLk, zHeight: zHt }, country, rng, bandBy);
     const childRank = clamp(childBase + evt.wealthDelta, 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);

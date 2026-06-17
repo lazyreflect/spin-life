@@ -16,15 +16,16 @@ import { RULING } from '../src/model/content.js';
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const load = (f) => JSON.parse(fs.readFileSync(path.join(__dir, '../data', f), 'utf8'));
 const SEED = 0x5eed; // fixed root seed -> deterministic population
+const bandsData = load('bands.json').bands;
 const roller = makeRoller({
   countries: load('countries.json'), params: load('model-params.json'),
   names: load('names.json'), careers: load('careers.json').careers,
-  imputation: load('imputation.json'), seed: SEED,
+  bands: bandsData, imputation: load('imputation.json'), seed: SEED,
 });
 const N = +(process.argv[2] || 40000);
 
 const EDU_RANK = { none: 0, primary: 1, secondary: 2, vocational: 3, bachelor: 4, postgrad: 5 };
-const BANDS = ['low', 'lowmid', 'mid', 'highmid', 'high', 'elite'];
+const BANDS = [...bandsData].sort((a, b) => a.order - b.order).map((b) => b.id);
 const ELITE = 0.8333; // childRank threshold for "the elite" class (5/6)
 
 // ---- pass/fail tracking + report ------------------------------------------

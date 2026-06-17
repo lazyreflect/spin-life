@@ -41,17 +41,16 @@ const lowWealthFactor = (c) => {
 // worker and a catastrophe for an informal day-laborer. Combines the country's
 // vulnerable-employment share (real data) with the person's cohort/income band.
 // Null-safe: 55 countries lack vulnEmployment — fall back to instability+wealth.
-export function precarity(ctx, country) {
+export function precarity(ctx, country, bands) {
   // vulnEmployment is always present post-load (load.js imputes it from
   // life-expectancy instability where the column is absent — the same estimate
   // this function used to compute inline as a fallback).
   let cCountry = clamp(country.vulnEmployment / 100, 0, 1);
   cCountry = clamp(0.7 * cCountry + 0.3 * lowWealthFactor(country), 0, 1);
   const cohort = ctx.career.cohort;
-  const band = ctx.career.incomeBand;
-  const cCareer = VULN_COHORT.has(cohort) ? 0.9
-    : LOW_BAND.has(band) ? 0.45
-      : band === 'mid' ? 0.20 : 0.08;
+  // career-side precarity: no-safety-net cohorts are worst; otherwise it's the
+  // band's own precarity (data/bands.json), no inline magnitude ladder.
+  const cCareer = VULN_COHORT.has(cohort) ? 0.9 : bands[ctx.career.incomeBand].precarity;
   return clamp(0.5 * cCareer + 0.5 * cCountry, 0, 1);
 }
 
@@ -243,9 +242,9 @@ function severityOf(e, x, rand) {
 
 // ctx: { parentRank, childRank (= pre-event position), zIq, career, occ,
 //        originStanding, sex, zLooks, zHeight }
-export function rollEvents(ctx, country, rand = Math.random) {
+export function rollEvents(ctx, country, rand = Math.random, bands) {
   const inst = instabilityOf(country);
-  const prec = precarity(ctx, country);
+  const prec = precarity(ctx, country, bands);
   // enrich the context once so event predicates can read derived signals
   const x = {
     ...ctx, country, inst, prec,

@@ -39,7 +39,7 @@ export function rollEducation(zIq, parentRank, country, rng = Math.random) {
   return EDU[Math.max(tier, floor)];
 }
 
-export function rollCareer(life, country, careers, rng = Math.random) {
+export function rollCareer(life, country, careers, rng = Math.random, bands) {
   const tier = eduRank(life.education);
   const sectorShare = (sector) => {
     if (sector === 'agriculture') return country.empAg / 100;
@@ -55,7 +55,6 @@ export function rollCareer(life, country, careers, rng = Math.random) {
   const eligible = careers.filter((c) => eduRank(c.minEducation) <= tier && (c.regions.includes('*') || c.regions.includes(country.continent)));
   const pool = eligible.length ? eligible : careers.filter((c) => eduRank(c.minEducation) <= tier);
   if (!pool.length) return careers.find((c) => c.id === 'subsistence-farmer') || careers[0];
-  const BAND_SKILL = { low: 1, lowmid: 1.5, mid: 2, highmid: 3.5, high: 4, elite: 5 };
   const weights = pool.map((c) => {
     const cohort = c.cohort; // undefined = formal employment
     // base "menu share": formal jobs follow the sector employment split; the
@@ -84,7 +83,7 @@ export function rollCareer(life, country, careers, rng = Math.random) {
     // skill-allocated. Physical/artistic careers (low iqTilt) keep the edu demand.
     const cMin = eduRank(c.minEducation);
     if (cohort !== 'homemaker' && cohort !== 'unemployed') {
-      const skill = (c.iqTilt || 0) >= 0.4 ? Math.max(cMin, BAND_SKILL[c.incomeBand] ?? cMin) : cMin;
+      const skill = (c.iqTilt || 0) >= 0.4 ? Math.max(cMin, bands[c.incomeBand].skill) : cMin;
       const demand = (skill - 2.5) / 2.5; // -1 (unskilled) .. +1 (postgrad-level)
       w *= clamp(1 + 1.0 * demand * life.zIq, 0.06, 3.5);
     }
