@@ -271,6 +271,19 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     return buildLife({ country, sex, zFw: z[0], zIq: z[1], zHt: z[2], zLk: z[3], parentRank: normCdf(z[0]), seed, rng });
   }
 
+  // express a parent's IQ/height latents in the CHILD's country frame, so the
+  // child regresses toward ITS environment (§4.4). Only the country mean shifts;
+  // famWealth & looks aren't country-anchored, and height stays sex-standardized
+  // (each parent relative to their own sex). Same-country → zero shift (identity).
+  function reframeParentZ(parent, childCountry) {
+    const pc = countries.find((c) => c.code === parent.code) || childCountry;
+    const iqShift = (adjCountryIq(pc.iq) - adjCountryIq(childCountry.iq)) / params.iqSd;
+    const hMeanP = parent.sex === 'Female' ? pc.heightF : pc.heightM;
+    const hMeanC = parent.sex === 'Female' ? childCountry.heightF : childCountry.heightM;
+    const hSd = parent.sex === 'Female' ? params.heightSdF : params.heightSdM;
+    return [parent.zFw, parent.zIq + iqShift, parent.zHeight + (hMeanP - hMeanC) / hSd, parent.zLooks];
+  }
+
   // rollChild(father, mother, opts?) — compose a child from two kept parent cards.
   // Genes come from the parents (genetics.js); the child's environment is its own
   // country, which is the regression anchor (nutrition/schooling pull the realised
@@ -281,11 +294,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     const sex = rng() < params.sexMaleProb ? 'Male' : 'Female';
     const code = opts.countryCode || mother.code || father.code;     // child's environment country
     const country = countries.find((c) => c.code === code) || countries[0];
-    const cz = childDraw.drawChildZ(
-      [father.zFw, father.zIq, father.zHeight, father.zLooks],
-      [mother.zFw, mother.zIq, mother.zHeight, mother.zLooks],
-      sex, rng,
-    );
+    const cz = childDraw.drawChildZ(reframeParentZ(father, country), reframeParentZ(mother, country), sex, rng);
     const position = 0.5 * (father.childRank + mother.childRank);     // inherited standing (nurture)
     const parentRank = clamp(WEALTH_POSITION * position + (1 - WEALTH_POSITION) * normCdf(cz[0]), 0.0005, 0.9995);
     const child = buildLife({ country, sex, zFw: cz[0], zIq: cz[1], zHt: cz[2], zLk: cz[3], parentRank, seed: null, rng });
