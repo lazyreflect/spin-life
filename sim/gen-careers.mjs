@@ -148,6 +148,29 @@ const careers = [
   C('unemployed', 'Unemployed', '🔍', 'services', 'none', 0, 0, 0, 'low', 'common', 5, 'unemployed'),
 ];
 
+// ISCO-08 major group per FORMAL career (1 Mgr · 2 Prof · 3 Tech/assoc-prof ·
+// 4 Clerical · 5 Service/sales · 6 Skilled agriculture · 7 Craft/trades ·
+// 8 Plant/machine operators · 9 Elementary). When a country has ILOSTAT
+// occupation data (data/countries.json `isco`), rollCareer uses the country's
+// share of the career's group as its base weight instead of the 3-sector split.
+// Cohorts (informal/homemaker/unemployed) carry no group — they keep their own base.
+const ISCO = {
+  'subsistence-farmer': 6, farmer: 6, herder: 6, fisher: 6, forester: 6, 'farm-laborer': 9, 'plantation-worker': 9, agronomist: 2, veterinarian: 2,
+  'factory-worker': 8, 'garment-worker': 8, 'construction-worker': 7, mason: 7, carpenter: 7, mechanic: 7, electrician: 7, plumber: 7, welder: 7, machinist: 7, miner: 8, tailor: 7, 'factory-supervisor': 3, 'power-plant-operator': 8, 'oil-rig-worker': 8,
+  'truck-driver': 8, driver: 8, 'delivery-courier': 8, 'warehouse-worker': 9, 'bus-driver': 8, 'dock-worker': 9, sailor: 8, 'train-operator': 8,
+  'domestic-worker': 9, cleaner: 9, 'street-vendor': 5, 'retail-clerk': 5, waiter: 5, shopkeeper: 5, cook: 5, 'security-guard': 5, barber: 5, 'hotel-staff': 5, chef: 3,
+  'office-clerk': 4, 'call-center-agent': 4, receptionist: 4, 'sales-rep': 3, 'bank-teller': 4, bookkeeper: 3, 'it-support': 3, 'real-estate-agent': 3,
+  'civil-servant': 3, 'sanitation-worker': 9, 'postal-worker': 4, 'police-officer': 5, firefighter: 5, soldier: 5, 'military-officer': 3,
+  teacher: 2, 'teaching-assistant': 5, caregiver: 5, 'childcare-worker': 5, 'community-health-worker': 3, nurse: 2, midwife: 3, paramedic: 3, 'pharmacy-tech': 3, 'lab-technician': 3, 'dental-hygienist': 3, 'social-worker': 2,
+  accountant: 2, journalist: 2, 'data-analyst': 2, engineer: 2, 'software-developer': 2, architect: 2, 'management-consultant': 2, banker: 2, pharmacist: 2, psychologist: 2, lawyer: 2, doctor: 2, dentist: 2, professor: 2, scientist: 2, pilot: 3, diplomat: 1, judge: 2,
+  musician: 2, artist: 2, clergy: 2, 'content-creator': 2, actor: 2, athlete: 3,
+  entrepreneur: 1, politician: 1, executive: 1, astronaut: 2,
+};
+for (const c of careers) if (!c.cohort) {
+  if (!ISCO[c.id]) throw new Error(`missing ISCO group for ${c.id}`);
+  c.isco = ISCO[c.id];
+}
+
 // duplicate-id guard
 const ids = careers.map((c) => c.id);
 const dup = ids.find((id, i) => ids.indexOf(id) !== i);
@@ -163,6 +186,7 @@ const SCHEMA = {
   prestige: 'common|uncommon|rare|legendary (collectible label only)',
   prevalence: 'number (relative commonness given eligibility; drives selection weight)',
   cohort: "omit (formal) | 'informal' | 'homemaker' | 'unemployed'",
+  isco: 'ISCO-08 major group 1-9 (formal careers only); base weight = country isco share when available',
   regions: "['*'] or list of continents / culture-cluster ids",
 };
 

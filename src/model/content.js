@@ -63,6 +63,11 @@ export function rollCareer(life, country, careers) {
     if (cohort === 'informal') base = informality;
     else if (cohort === 'unemployed') base = unemp;
     else if (cohort === 'homemaker') base = life.sex === 'Female' ? clamp(1 - femaleLF, 0.05, 0.9) : 0.02;
+    // ILOSTAT 9-group occupation share when available, else the 3-sector split.
+    // The ×3 rescales the (finer) 9-group shares onto the same scale as the
+    // 3-sector base so the formal-vs-cohort (informal/homemaker) balance — tuned
+    // against the sector model — is preserved in ISCO-covered countries too.
+    else if (country.isco && c.isco) base = Math.max(0.02, 3 * (country.isco[c.isco] ?? 0) / 100);
     else base = Math.max(0.02, sectorShare(c.sector));
     // prevalence = how common the role is GIVEN eligibility (replaces the old
     // prestige throttle; prestige is now a pure collectible label).
@@ -96,7 +101,11 @@ export function rollCareer(life, country, careers) {
     w *= clamp(tilt, 0.1, 4);
     return w;
   });
-  return pool[sampleWeights(weights)];
+  const idx = sampleWeights(weights);
+  // conditional selection probability P(career | country, education, traits) — a
+  // Software Developer is mundane in Bangalore, rare in Niger. Fed into life rarity.
+  const sum = weights.reduce((a, x) => a + x, 0) || 1;
+  return { career: pool[idx], pSelect: weights[idx] / sum };
 }
 
 // --- formatting -------------------------------------------------------------

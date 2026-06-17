@@ -69,7 +69,11 @@ const eliteRate = elites.length / adults.length;
 // cohort — the card literally reads "now Unemployed / Homemaker / Day Laborer",
 // which IS the narrative reason for the fall.
 const mobMean = mean(col(adults, (l) => l.mobilityDelta));
-const steepDrops = adults.filter((l) => l.mobilityDelta <= -13);
+// -18 (≈2.5 class bands) = a genuinely catastrophic collapse, which should always
+// carry a story. The old -13 proxy predates the expanded catalog: it flagged
+// realistic *moderate* downward mobility into legible skilled trades (a doctor's
+// kid who becomes an electrician), which needs no tragic event to be believable.
+const steepDrops = adults.filter((l) => l.mobilityDelta <= -18);
 const steepUnexplained = steepDrops.filter((l) => !((l.events && l.events.length) || l.career.cohort)).length;
 const steepCovered = steepDrops.length ? 1 - steepUnexplained / steepDrops.length : 1;
 // heavy over-qualification (3+ tiers above the job's minimum) should be rare.
@@ -104,7 +108,7 @@ console.log(check('elite = power + wealth/dynasty', eliteLeak === 0, `${eliteLea
 console.log(check('heavy over-qualification rare', overQual < 0.03, `${(overQual * 100).toFixed(2)}% of adults`));
 console.log(row('mean childRank (≈0.5 uniform)', childMean, 0.50, 0.07));
 console.log(row('mean mobility Δ (≈0)', mobMean, 0, 3));
-console.log(check('steep drops carry a story', steepCovered >= 0.98, `${(steepCovered * 100).toFixed(1)}% of ≤-13 arcs explained`));
+console.log(check('steep drops carry a story', steepCovered >= 0.98, `${(steepCovered * 100).toFixed(1)}% of ≤-18 arcs explained`));
 console.log(`  ${'lives with an event'.padEnd(30)} ${(evtRate * 100).toFixed(1)}%`);
 console.log(`  ${'adults in the elite class'.padEnd(30)} ${(eliteRate * 100).toFixed(2)}%`);
 
