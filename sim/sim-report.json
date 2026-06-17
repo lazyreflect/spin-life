@@ -55,6 +55,18 @@
     "eliteRate": {
       "ok": true,
       "detail": "0.25% of adults"
+    },
+    "sub5kLuck": {
+      "ok": true,
+      "detail": "sub-$5k median luck 24.8%"
+    },
+    "wealthCeiling": {
+      "ok": true,
+      "detail": "0.000% of below-top-30% wealth reach EPIC+"
+    },
+    "legendRate": {
+      "ok": true,
+      "detail": "4.2% of adults"
     }
   },
   "metrics": {

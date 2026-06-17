@@ -1,58 +1,62 @@
 // Fortune score, percentile (vs every birth on earth), and verdict tiers.
 //
-// The card's headline — "Luckier than 87% of all births" + a tier (💀 FAIL →
+// The card's headline — "luckier than 87% of all births" + a tier (💀 FAIL →
 // MYTHIC) — comes from ONE designed number per life, the Fortune score S ∈ [0,1].
-// S is a deliberately-shaped weighted blend (not the multiplicative rarity), so a
-// long quiet life reads as "fine", not Legendary. The percentile is S's position
-// in the population CDF (Monte-Carlo'd once into data/luckCdf.json); tiers are cut
-// off the percentile, not the raw score. See sim/gen-cdf.mjs for the CDF build.
+//
+// Design principle: THE VERDICT NEVER OUTRUNS THE VISIBLE WEALTH. Players read
+// "luck" as the big number on the card (net worth) — a poor card is an unlucky
+// life, and no amount of longevity, climb, or IQ should override that. So WEALTH
+// (global) is the spine; everything else is a bonus that only modulates *within
+// what wealth allows* and is itself scaled by wealth — a climb counts only if it
+// ended in money, a long life only enriches an already-rich one. Mathematically
+// S ≤ wealth tail, so below-top-25% wealth simply cannot reach EPIC+. Wealth is
+// GLOBAL (1 − pct.money), killing the old "top-of-a-poor-country = luckier than
+// 98%" bug. Percentile = S's position in the population CDF (data/luckCdf.json);
+// tiers cut off the percentile.
 import { clamp } from './stats.js';
 
-// ── designed weights (the one knob block) ──────────────────────────────────
-// Each sub-signal is mapped to [0,1] then blended. Tunable; re-gen the CDF after
-// changing these (npm run cdf). Sum of WEIGHTS = 1 by construction.
+// ── the knob block (re-gen the CDF after changing these: npm run cdf) ───────
 export const FORTUNE = {
-  weights: { wealth: 0.40, mobility: 0.22, lifespan: 0.26, career: 0.12 },
-  mobSpan: 160,      // mobilityDelta that maps to a full ±0.5 swing around neutral
-  eventNudge: 0.05,  // small extra so good luck visibly lifts / fatal sinks beyond wealth
-  cutShortMax: 0.15, // ceiling for a life that never reached adulthood (see below)
+  wealthFloor: 0.82,  // pure wealth earns this fraction of its tail; story adds the rest
+  mobSpan: 70,        // mobilityDelta that maps to a full climb bonus
+  cutShortMax: 0.15,  // ceiling for a life that never reached adulthood
+  // "story" bonus — only matters scaled by wealth (climb counts only if it ended rich).
+  // weights sum to 1 so the bonus is in [0,1].
+  bonus: { climb: 0.35, life: 0.25, career: 0.18, iq: 0.12, looks: 0.05, height: 0.05 },
 };
 
-// band → 0..1 "how high the career lands" (rare/high job = a luck notch, not the
-// whole score). Mirrors data/bands.json order; stable 6-band ladder.
-const BAND_NOTCH = { low: 0, lowmid: 0.2, mid: 0.4, highmid: 0.6, high: 0.8, elite: 1.0 };
+// career prestige → global "impressiveness" tail (careers.json: common/uncommon/rare/legendary)
+const PREST_TAIL = { common: 0.10, uncommon: 0.35, rare: 0.62, legendary: 0.90 };
+// global TOP% → luck tail (smaller pct = rarer = luckier). pct fields are global.
+const tail = (pct) => clamp(1 - (pct == null ? 50 : pct) / 100, 0, 1);
 
 // A life that never reached adulthood never realized its rolled wealth/career —
-// those signals are counterfactual and must NOT lift the score. Such lives are
-// scored on survival alone (younger = unluckier), landing in FAIL/ROUGH whatever
-// destiny they never got to live.
+// those signals are counterfactual. Score it on survival alone (younger =
+// unluckier), landing in FAIL/ROUGH whatever destiny it never got to live.
 const reachedAdulthood = (life) => !life.diedYoung;
 const survivalScore = (age) => clamp((age / 18) * FORTUNE.cutShortMax, 0, FORTUNE.cutShortMax);
 
-// Fortune score S ∈ [0,1] for a rolled life. Pure: reads only fields roll.js
-// already computes (childRank, mobilityDelta, pct.life, career band, eventSwing).
+// Fortune score S ∈ [0,1]. Pure: reads only fields roll.js already computes
+// (global pct.*, mobilityDelta, career.prestige).
 export function fortuneScore(life) {
   if (!reachedAdulthood(life)) return survivalScore(life.age);
 
-  const W = FORTUNE.weights;
-  const wealth = clamp(life.childRank ?? 0.5, 0, 1);
-  const mobility = clamp(0.5 + (life.mobilityDelta ?? 0) / FORTUNE.mobSpan, 0, 1);
-  // pct.life = % of the world expected to outlive this age → low = rare long life.
-  const lifespan = clamp(1 - (life.pct?.life ?? 50) / 100, 0, 1);
-  const career = BAND_NOTCH[life.career?.incomeBand] ?? 0.4;
-  const core = W.wealth * wealth + W.mobility * mobility + W.lifespan * lifespan + W.career * career;
-  // eventSwing is in wealth-rank space (sum of event wealthDeltas); a windfall
-  // nudges up, a fatal/ruinous run nudges down — on top of what it already moved
-  // childRank, so the luck *reads* on the card.
-  const swing = clamp((life.eventSwing ?? 0) * FORTUNE.eventNudge, -0.15, 0.15);
-  return clamp(core + swing, 0, 1);
+  const F = FORTUNE, p = life.pct || {};
+  const wealth = tail(p.money);   // GLOBAL wealth — the spine; S is bounded by this
+  const climbUp = clamp((life.mobilityDelta ?? 0) / F.mobSpan, 0, 1); // a fall shows up as low wealth
+  const bo = F.bonus;
+  const story = clamp(
+    bo.climb * climbUp + bo.life * tail(p.life) + bo.career * (PREST_TAIL[life.career?.prestige] ?? 0.10)
+    + bo.iq * tail(p.iq) + bo.looks * tail(p.looks) + bo.height * tail(p.height),
+    0, 1,
+  );
+  // Wealth dominates: S ≤ wealth tail, and the story only modulates within
+  // [wealthFloor·wealth, wealth] — so on a poor card the story barely registers,
+  // and a globally-poor life can never reach a lucky tier.
+  return clamp(wealth * (F.wealthFloor + (1 - F.wealthFloor) * story), 0, 1);
 }
 
-// ── percentile via a precomputed CDF ────────────────────────────────────────
-// The CDF asset is the quantile function: edges[i] is the S value at cumulative
-// fraction i/(N-1). Compact (a few hundred floats) and exact under correlation.
-
-// Build the quantile-function representation from a sample of scores.
+// ── percentile via a precomputed CDF (quantile function) ────────────────────
 export function buildCdf(scores, buckets = 512) {
   const sorted = [...scores].sort((a, b) => a - b);
   const edges = new Array(buckets + 1);
@@ -64,8 +68,7 @@ export function buildCdf(scores, buckets = 512) {
   return { buckets, edges };
 }
 
-// percentile (0..100): "luckier than X% of all births". Binary-search S among the
-// quantile edges, interpolate within the bucket.
+// percentile (0..100): "luckier than X% of all births"
 export function percentileOf(score, cdf) {
   const { edges } = cdf;
   const n = edges.length - 1;
@@ -78,16 +81,19 @@ export function percentileOf(score, cdf) {
   return clamp(frac * 100, 0, 100);
 }
 
-// ── verdict tiers (cut off the percentile, exactly the prototype's cutoffs) ──
-// mood drives DIED opener register (dignified vs blunt); band keys the tail bank.
+// ── verdict tiers (cut off the percentile) ──────────────────────────────────
+// v2 cutoffs: high tiers are now genuinely RARE so they're earned, not the top
+// decile of a smooth blend. LEGENDARY ≈ top 4% (~1 in 25 pulls), MYTHIC ≈ top
+// 0.4% (~1 in 250). EPIC absorbs "very good but not rare". band keys the DIED
+// tail bank; mood the opener register; foil = the header shimmers (EPIC+).
 export const TIERS = [
-  { key: 'fail',      name: '💀 FAIL',    short: 'FAIL',      color: '#d4361f', max: 5,        band: 'low',  mood: 'grim'    },
-  { key: 'rough',     name: 'ROUGH',      short: 'ROUGH',     color: '#c2410c', max: 25,       band: 'low',  mood: 'grim'    },
-  { key: 'mid',       name: 'MID',        short: 'MID',       color: '#8a8178', max: 50,       band: 'mid',  mood: 'neutral' },
-  { key: 'blessed',   name: 'BLESSED',    short: 'BLESSED',   color: '#0b7a3a', max: 75,       band: 'good', mood: 'warm'    },
-  { key: 'epic',      name: 'EPIC',       short: 'EPIC',      color: '#7c3aed', max: 90,       band: 'good', mood: 'warm'    },
-  { key: 'legendary', name: 'LEGENDARY',  short: 'LEGENDARY', color: '#ff7a00', max: 98,       band: 'top',  mood: 'warm'    },
-  { key: 'mythic',    name: 'MYTHIC',     short: 'MYTHIC',    color: '#ff2d6b', max: Infinity, band: 'top',  mood: 'warm'    },
+  { key: 'fail',      name: '💀 FAIL',    short: 'FAIL',      color: '#d4361f', max: 5,        band: 'low',  mood: 'grim',    foil: false },
+  { key: 'rough',     name: 'ROUGH',      short: 'ROUGH',     color: '#c2410c', max: 25,       band: 'low',  mood: 'grim',    foil: false },
+  { key: 'mid',       name: 'MID',        short: 'MID',       color: '#8a8178', max: 50,       band: 'mid',  mood: 'neutral', foil: false },
+  { key: 'blessed',   name: 'BLESSED',    short: 'BLESSED',   color: '#0b7a3a', max: 82,       band: 'good', mood: 'warm',    foil: false },
+  { key: 'epic',      name: 'EPIC',       short: 'EPIC',      color: '#7c3aed', max: 96,       band: 'good', mood: 'warm',    foil: true  },
+  { key: 'legendary', name: 'LEGENDARY',  short: 'LEGENDARY', color: '#ff7a00', max: 99.6,     band: 'top',  mood: 'warm',    foil: true  },
+  { key: 'mythic',    name: 'MYTHIC',     short: 'MYTHIC',    color: '#ff2d6b', max: Infinity, band: 'top',  mood: 'warm',    foil: true  },
 ];
 
 export function tierOf(percentile) {
@@ -95,7 +101,7 @@ export function tierOf(percentile) {
   return TIERS[TIERS.length - 1];
 }
 
-// ── class label → short label the card's arc uses (model emits verbose labels) ─
+// ── class label → short label the card's arc uses ───────────────────────────
 const SHORT_CLASS = {
   'lower class': 'lower', 'working class': 'working', 'middle class': 'middle',
   'upper-middle class': 'upper-mid', 'upper class': 'upper', 'the elite': 'elite',

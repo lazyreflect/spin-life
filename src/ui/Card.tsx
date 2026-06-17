@@ -45,7 +45,7 @@ export function Card({ life }: { life: any }) {
   return (
     <div className="card" onClick={rv.skip} style={{ borderColor: rv.verdict ? tierColor : INK }}>
       <div className={'card-head' + (rv.verdict ? ' ignite' : '')} style={{ background: rv.verdict ? tierColor : HOLD_HEADER }}>
-        {rv.verdict && life.luckPct >= 90 && <div className="card-foil" />}
+        {rv.verdict && v.foil && <div className="card-foil" />}
         {rv.verdict ? (
           <>
             <div className="card-head-main">

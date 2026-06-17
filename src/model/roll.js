@@ -243,7 +243,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     if (luckCdf) {
       life.luckPct = percentileOf(life.fortune, luckCdf);
       const t = tierOf(life.luckPct);
-      life.verdict = { pct: life.luckPct, tier: t.short, name: t.name, color: t.color, key: t.key, band: t.band, mood: t.mood };
+      life.verdict = { pct: life.luckPct, tier: t.short, name: t.name, color: t.color, key: t.key, band: t.band, mood: t.mood, foil: t.foil };
     }
 
     // three-beat card copy (BORN · DIED); event pills come from life.events.
