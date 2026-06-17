@@ -163,6 +163,14 @@ child, occasionally (noise tail) a standout. That tail is the chase.
    G1+ correlation hits target. `chol(R)` fixes only the noise term.
 2. **Child residual uses the child's own sex matrix** `L[childSex]` (sex is 50/50).
 
+**Genes from parents, environment from the child's country.** Heritable potential
+comes from the two parents (the formula above); the **child's own country is the
+regression anchor** the trait maps through — `child = childCountryMean +
+childCountrySD·z_child`. That anchor *is the environment*: a poor-nutrition country
+has a lower mean, so a child there realises less of their inherited height/IQ
+potential (and migration to a richer country realises more). No global mean — the
+child has exactly one environment country, so the anchor is unambiguous.
+
 ### 4.3 Wealth — two channels *(position + disposition)*
 
 Wealth is heritable two ways, modeling nature *and* nurture without
@@ -184,9 +192,8 @@ Net: a child inherits both a starting rung (position) and an earning knack
 
 ### 4.4 Cross-country = migration *(not a coin-flip)*
 
-`z` is country-mean-relative, so parents from different countries can't be
-naively averaged. But the deeper point: **nationality choice models the migration
-instinct** — anchor babies, citizenship desirability, wanting a better life.
+**Nationality choice models the migration instinct** — anchor babies, citizenship
+desirability, wanting a better life.
 
 - Child's **primary nationality = player choice, framed as migration** and
   **friction-gated**: birthing a lineage into a higher-opportunity country (better
@@ -194,10 +201,17 @@ instinct** — anchor babies, citizenship desirability, wanting a better life.
   something or carries odds (reuses the deferred migration hook). It's an
   *achievement*, not a menu pick. The other parent's country becomes tagged
   **ancestry** (feeds heritage collection).
-- **Trait conversion:** map both parents' `z` to absolute phenotype via their own
-  country's marginal, mid-parent in absolute units, regress toward the *child's*
-  chosen-country mean, then re-express as country-relative `z` for §4.2.
-- Build same-country first, then enable cross-country (the riskiest module).
+- **No cross-country "conversion" module.** Because the child has exactly one
+  environment country (§4.2), cross-country collapses to: express each parent's
+  trait *in the child's one country's frame*, then run §4.2. Same-country is the
+  identity case (parents already in that frame); cross-country is a trivial
+  per-trait re-expression, not a two-country reconciliation. The genetically real
+  result falls out — a tall-country parent's height partly transmits and the child
+  regresses toward *its* country's mean. The earlier "riskiest module" dissolves.
+- **Sex-dimorphic height** stays sex-standardized (each parent's `zHeight` is
+  relative to their own sex), so a tall father raises a daughter's height in
+  female terms, not by his absolute cm. v1 ships same-country; cross-country adds
+  only the per-trait country-mean re-expression for IQ/height.
 
 ### 4.5 Fertility — the fertile window *(theme-first)*
 
