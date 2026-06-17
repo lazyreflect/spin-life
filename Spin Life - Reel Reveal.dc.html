@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;background:#efe7d6;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  @keyframes reelroll{from{transform:translateY(0);}to{transform:translateY(-50%);}}
+  @keyframes cardpop{from{transform:translateY(16px) scale(.95);opacity:0;}to{transform:none;opacity:1;}}
+  @keyframes holoShift{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+  @keyframes barfill{from{width:0;}}
+  @keyframes lockpop{0%{transform:scale(1.18);}55%{transform:scale(.95);}100%{transform:scale(1);}}
+  @keyframes beatIn{0%{opacity:0;transform:translateY(9px) scale(.95);}55%{opacity:1;}100%{opacity:1;transform:none;}}
+  @keyframes deltaIn{0%{opacity:0;transform:translateX(-8px) scale(.9);}100%{opacity:1;transform:none;}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(120% 80% at 50% 0%,#f4ecdb,#e7ddc9);font-family:'Space Grotesk',system-ui,sans-serif;padding:50px 24px 70px;display:flex;flex-direction:column;align-items:center;">
+
+  <div style="text-align:center;margin-bottom:30px;">
+    <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;letter-spacing:3px;color:#ff5a3c;text-transform:uppercase;">spin·life</div>
+    <h1 style="font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;color:#16130f;margin:6px 0 4px;letter-spacing:-1.5px;">Roll the reels. Watch your life land.</h1>
+    <p style="font-size:14px;color:#6a6258;margin:0;">Born somewhere · your stats spin in · luck moves the money. <b style="color:#16130f;">Tap the card to skip.</b></p>
+  </div>
+
+  <!-- PHONE -->
+  <div style="width:340px;height:710px;border-radius:50px;padding:10px;background:linear-gradient(160deg,#2a251d,#0e0c09);box-shadow:0 36px 70px -20px #0007, 0 0 0 1px #0003;">
+    <div style="width:100%;height:100%;border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#fff5e0;font-family:'Space Grotesk',sans-serif;">
+
+      <div style="height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;color:#16130f;flex:0 0 auto;"><span>9:41</span><span style="display:inline-flex;align-items:center;gap:6px;"><span style="letter-spacing:1px;">⬤⬤⬤</span><span style="display:inline-block;width:18px;height:10px;border:1.5px solid #16130f;border-radius:3px;position:relative;"><span style="position:absolute;left:1.5px;top:1.5px;bottom:1.5px;right:5px;background:#16130f;border-radius:1px;"></span><span style="position:absolute;right:-3px;top:3px;bottom:3px;width:1.5px;background:#16130f;border-radius:1px;"></span></span></span></div>
+
+      <div style="flex:1;position:relative;overflow:hidden;">
+
+        <!-- ============ SPIN TAB ============ -->
+        <sc-if value="{{ app.isSpin }}" hint-placeholder-val="{{ true }}">
+          <div style="height:100%;display:flex;flex-direction:column;">
+
+            <sc-if value="{{ app.notReveal }}" hint-placeholder-val="{{ true }}">
+              <div style="text-align:center;padding:10px 0 0;flex:0 0 auto;">
+                <span style="display:inline-block;background:#16130f;color:#ffd23c;font-family:'Archivo',sans-serif;font-weight:900;font-size:13px;letter-spacing:2px;padding:5px 14px;border-radius:7px;transform:rotate(-1.5deg);">★ SPIN YOUR LIFE ★</span>
+              </div>
+            </sc-if>
+
+            <!-- IDLE / SPINNING: one big WHERE reel -->
+            <sc-if value="{{ app.notReveal }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:0 26px;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:11px;padding:20px 22px 18px;background:#2b59ff;border:3px solid #16130f;border-radius:22px;box-shadow:8px 8px 0 #16130f;">
+                  <div style="width:124px;height:124px;background:#fff5e0;border:3px solid #16130f;border-radius:16px;overflow:hidden;position:relative;{{ app.country.lockStyle }}">
+                    <sc-if value="{{ app.country.spinning }}" hint-placeholder-val="{{ true }}">
+                      <div style="{{ app.country.scrollCss }}position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;">
+                        <sc-for list="{{ app.country.items }}" as="f" hint-placeholder-count="6"><div style="height:124px;display:flex;align-items:center;justify-content:center;font-size:64px;">{{ f }}</div></sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ app.country.resting }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;animation:{{ app.country.restAnim }};">{{ app.country.value }}</div>
+                    </sc-if>
+                  </div>
+                  <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;letter-spacing:1.5px;color:#fff5e0;background:#16130f;padding:4px 16px;border-radius:999px;">WHERE</span>
+                </div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:12px;color:#16130f;background:#ffd23c;border:2px solid #16130f;padding:4px 14px;border-radius:999px;box-shadow:3px 3px 0 #16130f;white-space:nowrap;">{{ app.spinsLabel }}</div>
+              </div>
+              <div style="flex:0 0 auto;padding:0 26px 22px;">
+                <button onClick="{{ app.onSpin }}" style="width:100%;border:3px solid #16130f;border-radius:16px;padding:18px;background:#ff5a3c;color:#fff5e0;font-family:'Archivo',sans-serif;font-weight:900;font-size:20px;letter-spacing:1px;cursor:pointer;box-shadow:7px 7px 0 #16130f;">{{ app.btnLabel }}</button>
+              </div>
+            </sc-if>
+
+            <!-- REVEAL: collectible card -->
+            <sc-if value="{{ app.reveal }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;overflow-y:auto;padding:14px 18px 18px;">
+                <div onClick="{{ app.onSkip }}" style="animation:cardpop .42s cubic-bezier(.2,.9,.3,1.3);background:#fff5e0;border:5px solid {{ app.life.cardBorder }};border-radius:20px;box-shadow:8px 8px 0 #16130f;overflow:hidden;position:relative;cursor:pointer;transition:border-color .45s ease;">
+
+                  <!-- header strip -->
+                  <div style="background:{{ app.life.headerBg }};padding:8px 14px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;transition:background .45s ease;{{ app.life.headerAnim }}">
+                    <sc-if value="{{ app.life.foil }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,#ffffffaa 38%,#ffffff00 56%);background-size:200% 100%;animation:holoShift 2.4s linear infinite;pointer-events:none;mix-blend-mode:overlay;"></div>
+                    </sc-if>
+                    <sc-if value="{{ app.life.verdict }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;line-height:1;position:relative;">
+                        <span style="font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;color:#fff5e0;letter-spacing:-.5px;text-shadow:1.5px 1.5px 0 #16130f;">{{ app.life.tier }}</span>
+                        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:9px;color:#fff5e0cc;margin-top:3px;">luckier than {{ app.luckShown }}% of births</span>
+                      </div>
+                      <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;color:#16130f;background:#fff5e0cc;border:1.5px solid #16130f;padding:2px 8px;border-radius:999px;position:relative;">◆ {{ app.life.rarity }}</span>
+                    </sc-if>
+                    <sc-if value="{{ app.life.notVerdict }}" hint-placeholder-val="{{ true }}">
+                      <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:10px;letter-spacing:2.5px;color:#fff5e088;text-transform:uppercase;width:100%;text-align:center;">tallying your luck…</span>
+                    </sc-if>
+                  </div>
+
+                  <div style="padding:11px 14px 12px;">
+                    <!-- portrait + opening (BORN folded into the subtitle to save a row) -->
+                    <div style="display:flex;align-items:center;gap:11px;">
+                      <div style="width:46px;height:46px;border:3px solid #16130f;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:3px 3px 0 #16130f;flex:0 0 auto;">{{ app.life.flag }}</div>
+                      <div style="min-width:0;">
+                        <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;color:#16130f;line-height:1.05;">{{ app.life.name }}</div>
+                        <div style="font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:600;color:#3a342c;line-height:1.3;margin-top:2px;text-wrap:pretty;">{{ app.life.opening }}</div>
+                      </div>
+                    </div>
+
+                    <!-- STAT REELS: Height → Looks → IQ -->
+                    <sc-if value="{{ app.life.alive }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;gap:7px;margin-top:10px;">
+                        <sc-for list="{{ app.life.reels }}" as="r" hint-placeholder-count="3">
+                          <div style="flex:1;text-align:center;background:{{ r.chipBg }};border:2px solid #16130f;border-radius:11px;padding:6px 3px 5px;box-shadow:3px 3px 0 #16130f;{{ r.chipAnim }}">
+                            <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:8px;letter-spacing:.6px;color:#16130f;text-transform:uppercase;">{{ r.label }}</div>
+                            <div style="height:34px;overflow:hidden;position:relative;margin-top:2px;">
+                              <sc-if value="{{ r.spinning }}" hint-placeholder-val="{{ true }}">
+                                <div style="{{ r.stripStyle }}position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;">
+                                  <sc-for list="{{ r.items }}" as="n" hint-placeholder-count="6"><div style="height:34px;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:900;font-size:19px;color:#16130f99;">{{ n }}</div></sc-for>
+                                </div>
+                              </sc-if>
+                              <sc-if value="{{ r.locked }}" hint-placeholder-val="{{ false }}">
+                                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:900;font-size:21px;color:{{ r.rampFg }};animation:lockpop .3s ease;">{{ r.value }}</div>
+                              </sc-if>
+                            </div>
+                            <div style="height:10px;margin-top:1px;">
+                              <sc-if value="{{ r.locked }}" hint-placeholder-val="{{ false }}">
+                                <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:8px;color:{{ r.rampFg }};">{{ r.tag }}</div>
+                              </sc-if>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+
+                    <!-- OUTCOME: the career reel spins out of the locked stats above -->
+                    <sc-if value="{{ app.life.showCareer }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:7px;animation:beatIn .42s cubic-bezier(.2,.9,.3,1.3) both;">
+                        <div style="width:100%;background:#fff5e0;border:3px solid #16130f;border-radius:13px;padding:5px 12px 6px;box-shadow:4px 4px 0 #16130f;{{ app.life.careerAnim }}">
+                          <div style="text-align:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:8px;letter-spacing:1.2px;color:#9a6b00;text-transform:uppercase;">{{ app.life.educationLine }}</div>
+                          <div style="height:34px;overflow:hidden;position:relative;margin-top:2px;">
+                            <sc-if value="{{ app.life.careerSpinning }}" hint-placeholder-val="{{ true }}">
+                              <div style="{{ app.life.careerStripStyle }}position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;">
+                                <sc-for list="{{ app.life.careerItems }}" as="c" hint-placeholder-count="6"><div style="height:34px;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;color:#16130f88;white-space:nowrap;">{{ c }}</div></sc-for>
+                              </div>
+                            </sc-if>
+                            <sc-if value="{{ app.life.careerLocked }}" hint-placeholder-val="{{ false }}">
+                              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:900;font-size:19px;color:#16130f;white-space:nowrap;">{{ app.life.careerTitle }}</div>
+                            </sc-if>
+                          </div>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <!-- EVENTS: the luck life dealt -->
+                    <sc-if value="{{ app.life.showEvents }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px;">
+                        <sc-for list="{{ app.life.events }}" as="e" hint-placeholder-count="1">
+                          <div style="display:flex;align-items:flex-start;gap:10px;animation:beatIn .42s cubic-bezier(.2,.9,.3,1.3) {{ e.delayCss }} both;">
+                            <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:8.5px;letter-spacing:1px;color:#fff5e0;background:{{ e.pillBg }};border-radius:999px;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:74px;height:19px;">{{ e.fx }}</span>
+                            <span style="flex:1;font-family:'Space Grotesk',sans-serif;font-size:12px;line-height:1.32;color:#3a342c;font-weight:600;text-wrap:pretty;">{{ e.text }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+
+                    <!-- THE END: death as the card's finale (age leads, legacy beside it) -->
+                    <sc-if value="{{ app.life.showDied }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:10px;animation:beatIn .42s cubic-bezier(.2,.9,.3,1.3) both;">
+                        <div style="height:2px;background:#16130f1f;border-radius:2px;"></div>
+                        <div style="display:flex;align-items:center;gap:13px;margin-top:9px;">
+                          <div style="flex:0 0 auto;text-align:center;min-width:50px;">
+                            <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:7.5px;letter-spacing:1px;color:#9a917f;text-transform:uppercase;">{{ app.life.endLead }}</div>
+                            <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:30px;color:#16130f;line-height:1;">{{ app.life.age }}</div>
+                          </div>
+                          <div style="flex:1;font-family:'Space Grotesk',sans-serif;font-size:12px;line-height:1.32;color:#3a342c;font-weight:600;text-wrap:pretty;">{{ app.life.legacyText }}</div>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <!-- NET WORTH: count to base, then luck swings it -->
+                    <sc-if value="{{ app.life.showMoneyAlive }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:8px;background:#16130f;border:2px solid #16130f;border-radius:14px;padding:8px 14px 9px;box-shadow:6px 6px 0 {{ app.life.luckColor }};transition:box-shadow .45s ease;animation:beatIn .42s cubic-bezier(.2,.9,.3,1.3) both;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:13px;">
+                          <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:9px;letter-spacing:1.5px;color:#ffd23c;text-transform:uppercase;">Final net worth</span>
+                          <sc-if value="{{ app.life.moneyDone }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:9px;color:{{ app.life.netWorthTagColor }};background:#fff5e0;border:1.5px solid {{ app.life.netWorthTagColor }};padding:2px 8px;border-radius:999px;white-space:nowrap;">{{ app.life.netWorthTag }}</span>
+                          </sc-if>
+                        </div>
+                        <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-top:4px;">
+                          <span style="font-family:'Archivo',sans-serif;font-weight:900;font-size:28px;color:#ffd23c;line-height:1;letter-spacing:-1px;">{{ app.life.netWorthShown }}</span>
+                          <sc-if value="{{ app.life.moneyShowDelta }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-family:'Archivo',sans-serif;font-weight:900;font-size:13px;color:#16130f;background:{{ app.life.moneyDeltaColor }};border-radius:999px;padding:3px 10px;animation:deltaIn .4s cubic-bezier(.2,.9,.3,1.3) both;white-space:nowrap;">{{ app.life.moneyDeltaLabel }} <span style="font-weight:700;font-size:9px;opacity:.8;">LUCK</span></span>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </sc-if>
+
+                    <!-- luck % now lives in the header; mobility is narrated in the DIED line -->
+
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:9px;margin-top:10px;">
+                  <button onClick="{{ app.onKeep }}" style="flex:1;border:3px solid #16130f;border-radius:13px;padding:12px;background:#ffd23c;color:#16130f;font-family:'Archivo',sans-serif;font-weight:900;font-size:13px;letter-spacing:.5px;cursor:pointer;box-shadow:4px 4px 0 #16130f;">{{ app.keepLabel }}</button>
+                  <button onClick="{{ app.onSpin }}" style="flex:1;border:3px solid #16130f;border-radius:13px;padding:12px;background:#ff5a3c;color:#fff5e0;font-family:'Archivo',sans-serif;font-weight:900;font-size:13px;letter-spacing:.5px;cursor:pointer;box-shadow:4px 4px 0 #16130f;">PULL AGAIN ↻</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- ============ LIVES TAB (album) ============ -->
+        <sc-if value="{{ app.isLives }}" hint-placeholder-val="{{ false }}">
+          <div style="height:100%;overflow-y:auto;padding:16px 18px 20px;">
+            <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:26px;color:#16130f;letter-spacing:-.5px;">My Lives</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:#6a6258;margin-bottom:14px;">{{ app.collectedCount }} of {{ app.livesCount }} collected · best: <b style="color:{{ app.bestColor }};">{{ app.bestTier }}</b></div>
+
+            <div style="display:flex;gap:5px;margin-bottom:16px;">
+              <sc-for list="{{ app.tierTrack }}" as="t" hint-placeholder-count="7">
+                <div style="flex:1;text-align:center;">
+                  <div style="height:11px;border-radius:999px;background:{{ t.dot }};border:2px solid #16130f;"></div>
+                  <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:6.5px;color:{{ t.txt }};margin-top:5px;letter-spacing:.2px;">{{ t.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+              <sc-for list="{{ app.album }}" as="L" hint-placeholder-count="6">
+                <div style="background:#fff5e0;border:3px solid {{ L.frame }};border-radius:14px;box-shadow:4px 4px 0 #16130f;overflow:hidden;{{ L.dimStyle }}">
+                  <div style="background:{{ L.frame }};padding:5px 9px;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-family:'Archivo',sans-serif;font-weight:900;font-size:10.5px;color:#fff5e0;text-shadow:1px 1px 0 #16130f;">{{ L.tier }}</span>
+                    <span style="font-size:18px;">{{ L.flag }}</span>
+                  </div>
+                  <div style="padding:9px 10px 11px;">
+                    <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;color:#16130f;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ L.name }}</div>
+                    <div style="font-size:10.5px;color:#6a6258;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ L.role }}</div>
+                    <div style="margin-top:8px;display:flex;align-items:baseline;gap:3px;">
+                      <span style="font-family:'Archivo',sans-serif;font-weight:900;font-size:16px;color:{{ L.frame }};">{{ L.luckPct }}<span style="font-size:9px;">%</span></span>
+                      <span style="font-size:9px;color:#6a6258;font-weight:600;">luck</span>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="border:3px dashed #16130f33;border-radius:14px;min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#16130f55;">
+                <span style="font-size:26px;">＋</span>
+                <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:10px;letter-spacing:.5px;">PULL TO FILL</span>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- nav -->
+      <div style="height:64px;flex:0 0 auto;display:flex;border-top:3px solid #16130f;background:#ffd23c;">
+        <button onClick="{{ app.onSpinTab }}" style="flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:{{ app.spinNavColor }};">
+          <span style="font-size:18px;">🎰</span><span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:10px;letter-spacing:.5px;">SPIN</span>
+        </button>
+        <button onClick="{{ app.onLivesTab }}" style="flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:{{ app.livesNavColor }};position:relative;">
+          <span style="font-size:18px;">🎟️</span><span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:10px;letter-spacing:.5px;">MY LIVES</span>
+          <sc-if value="{{ app.hasNew }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:9px;right:62px;width:9px;height:9px;background:#ff2d6b;border:1.5px solid #16130f;border-radius:50%;"></span></sc-if>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:22px;font-size:12px;color:#9a917f;text-align:center;max-width:340px;">Height, looks &amp; IQ spin in against your country's range — then luck swings the money.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.LIVES = [
+      { sex:'Female', flag:'🇰🇷', country:'South Korea', name:'Ji-woo Park', career:'Doctor', emoji:'🩺', education:'Postgrad',
+        classOrigin:'working', classFinal:'upper-mid', delta:38, rarity:'1 in 3,540', score:87,
+        netWorth:'$2.4M', iq:128, height:'168', looks:7.4, age:86, pct:{money:4,iq:3,height:34,looks:18,life:6},
+        events:[ {text:'won a life-changing scholarship', kind:'good'}, {text:'lived through a famine', kind:'bad'} ],
+        opening:'Born a working-class kid in 🇰🇷 South Korea.',
+        ending:'A respected doctor to the end — gone at 86, two classes above her start.' },
+      { sex:'Male', flag:'🇳🇪', country:'Niger', name:'Amadou Issoufou', career:'Subsistence Farmer', emoji:'🌾', education:'No school',
+        classOrigin:'lower', classFinal:'lower', delta:-3, rarity:'1 in 12', score:12,
+        netWorth:'$430', iq:84, height:'171', looks:5.1, age:58, pct:{money:96,iq:70,height:42,looks:50,life:88},
+        events:[ {text:'was ruined by a failed harvest', kind:'bad'} ],
+        opening:'Born dirt-poor in 🇳🇪 Niger.',
+        ending:'Gone at 58, having never escaped the poverty he was born into.' },
+      { sex:'Male', flag:'🇨🇭', country:'Switzerland', name:'Luca Brunner', career:'Executive', emoji:'🏦', education:'Postgrad',
+        classOrigin:'elite', classFinal:'elite', delta:2, rarity:'1 in 48,200', score:99,
+        netWorth:'$74M', iq:121, height:'186', looks:7.9, age:89, pct:{money:0.3,iq:8,height:9,looks:11,life:3},
+        events:[ {text:'came into an inheritance', kind:'good'}, {text:'watched investments multiply', kind:'good'} ],
+        opening:'Born into the 🇨🇭 Swiss elite.',
+        ending:'Surrounded by family at 89 — old money to the very last day.' },
+      { sex:'Female', flag:'🇦🇫', country:'Afghanistan', name:'Marwa Noori', career:null, emoji:'🕯️', education:null,
+        classOrigin:'lower', classFinal:'lower', delta:0, rarity:'1 in 9', score:2, diedYoung:true,
+        netWorth:'$210', iq:null, height:'—', looks:null, age:3, pct:{},
+        events:[],
+        opening:'Born in 🇦🇫 Afghanistan.',
+        ending:'Lost to a famine — gone at just 3.' },
+      { sex:'Male', flag:'🇧🇷', country:'Brazil', name:'Diego Souza', career:'Truck Driver', emoji:'🚚', education:'Secondary',
+        classOrigin:'working', classFinal:'middle', delta:14, rarity:'1 in 31', score:53,
+        netWorth:'$28k', iq:97, height:'175', looks:6.2, age:74, pct:{money:55,iq:48,height:40,looks:38,life:46},
+        events:[],
+        opening:'Born working-class in 🇧🇷 Brazil.',
+        ending:'Gone at 74 — a steady, decent life, a step up from his start.' },
+      { sex:'Female', flag:'🇳🇬', country:'Nigeria', name:'Chiamaka Okeke', career:'Musician', emoji:'🎤', education:'Secondary',
+        classOrigin:'lower', classFinal:'upper', delta:61, rarity:'1 in 6,800', score:96,
+        netWorth:'$5.1M', iq:104, height:'170', looks:8.6, age:71, pct:{money:2,iq:42,height:30,looks:4,life:52},
+        events:[ {text:'shot to fame', kind:'good'} ],
+        opening:'Born a broke kid in 🇳🇬 Nigeria.',
+        ending:'Gone at 71 — young, but a legend in the history books forever.' },
+    ];
+    this.THEME = { good:'#0b7a3a', bad:'#c2410c', up:'#0b7a3a', down:'#c2410c', flat:'#6a6258' };
+    this.STRIP_WHERE = ['🇰🇷','🇳🇪','🇨🇭','🇧🇷','🇳🇬','🇮🇳','🇺🇸','🇯🇵','🇪🇬','🇲🇽'];
+    this.REELRANGE = {
+      '🇰🇷':{iq:[70,135], ht:[150,177]}, '🇳🇪':{iq:[55,108], ht:[156,186]},
+      '🇨🇭':{iq:[72,135], ht:[163,193]}, '🇧🇷':{iq:[60,120], ht:[158,188]},
+      '🇳🇬':{iq:[55,112], ht:[147,174]}, '🇦🇫':{iq:[58,118], ht:[150,182]},
+    };
+    this.LOOKS_RANGE = [1.5, 9];
+    this.BASEWORTH = { 'Ji-woo Park':1700000, 'Amadou Issoufou':900, 'Luca Brunner':9000000,
+      'Diego Souza':28000, 'Chiamaka Okeke':120000, 'Marwa Noori':210 };
+    this.LEGACY = {
+      'Ji-woo Park':'A respected doctor to the end — two classes above where she started.',
+      'Amadou Issoufou':'Never escaped the poverty he was born into.',
+      'Luca Brunner':'Old money to the very last — surrounded by family.',
+      'Marwa Noori':'Lost to a famine.',
+      'Diego Souza':'A steady, decent life — a step up from his start.',
+      'Chiamaka Okeke':'A legend in the history books forever.',
+    };
+    this.CAREERS = ['🩺 Doctor','🎤 Musician','🏦 Executive','🚚 Driver','🌾 Farmer','⚖️ Lawyer','🔧 Mechanic','🎨 Artist','💻 Developer','🍳 Chef','🔬 Scientist','✈️ Pilot','👷 Laborer','🎬 Director'];
+    this.REELDUR = { height:1.6, looks:2.0, iq:2.5, career:1.75 };
+    this.REEL_H = 34;
+    this.timers = [];
+    this.state = {
+      tab:'spin', phase:'idle', spins:97, idx:5, countryLocked:false,
+      reelPhase:{ height:'spin', looks:'spin', iq:'spin', career:'spin' },
+      reelGo:false, careerGo:false, verdict:false,
+      showCareer:false, showEvents:false, showDied:false, showMoney:false, moneyPhase:'base',
+      cuWorth:0, luckShown:0, collected:[2,5], hasNew:true,
+    };
+  }
+  componentWillUnmount(){ this.clearTimers(); clearInterval(this._cu); }
+  clearTimers(){ this.timers.forEach((t)=>clearTimeout(t)); this.timers=[]; }
+  t(ms, fn){ this.timers.push(setTimeout(fn, ms)); }
+
+  parseWorth(str){ const m=String(str).replace(/[$,]/g,''); const mult=/m$/i.test(m)?1e6:/k$/i.test(m)?1e3:1; return (parseFloat(m)||0)*mult; }
+  fmtMoney(n){ n=Math.max(0,n); if(n>=1e6) return '$'+(+(n/1e6).toFixed(1))+'M'; if(n>=1e3) return '$'+(+(n/1e3).toFixed(0))+'k'; return '$'+Math.round(n); }
+
+  spin(){
+    if(this.state.phase==='spinning' || this.state.spins<=0) return;
+    const idx = Math.floor(Math.random()*this.LIVES.length);
+    this.clearTimers(); clearInterval(this._cu);
+    this.setState((s)=>({ phase:'spinning', idx, countryLocked:false, spins:Math.max(0,s.spins-1) }));
+    this.t(1100, ()=> this.setState({ countryLocked:true }));
+    this.t(1520, ()=> { this.setState({ phase:'reveal' }); this.startReveal(); });
+  }
+
+  startReveal(){
+    clearInterval(this._cu);
+    const L = this.LIVES[this.state.idx];
+    const alive = !L.diedYoung;
+    this.setState({
+      reelPhase:{ height:'spin', looks:'spin', iq:'spin', career:'spin' },
+      reelGo:false, careerGo:false, verdict:false,
+      showCareer:false, showEvents:false, showDied:false, showMoney:false, moneyPhase:'base',
+      cuWorth:0, luckShown:0,
+    });
+    const setR = (p)=> this.setState((s)=>({ reelPhase:{ ...s.reelPhase, ...p } }));
+    if(alive){
+      this.t(40,   ()=> this.setState({ reelGo:true }));
+      this.t(1660, ()=> setR({ height:'locked' }));
+      this.t(2080, ()=> setR({ looks:'locked' }));
+      this.t(2560, ()=> setR({ iq:'locked' }));
+      this.t(2740, ()=> this.setState({ showCareer:true }));
+      this.t(2800, ()=> this.setState({ careerGo:true }));
+      this.t(4570, ()=> setR({ career:'locked' }));
+    }
+    const evN = this.shownEvents(L).length;
+    const evStart = alive ? 4760 : 360;
+    this.t(evStart, ()=> this.setState({ showEvents:true }));
+    const diedAt = evStart + (evN>0 ? evN*240 + 220 : 180);
+    this.t(diedAt, ()=> this.setState({ showDied:true }));
+    const moneyAt = diedAt + 560;
+    this.t(moneyAt, ()=> { this.setState({ showMoney:true }); if(alive) this.startMoney(); else this.revealVerdict(); });
+  }
+
+  animateMoney(from, to, dur, done){
+    clearInterval(this._cu);
+    const t0 = performance.now(), ease=(p)=>1-Math.pow(1-p,2);
+    this._cu = setInterval(()=>{
+      const p = Math.min(1, (performance.now()-t0)/dur);
+      this.setState({ cuWorth: from + (to-from)*ease(p) });
+      if(p>=1){ clearInterval(this._cu); done && done(); }
+    }, 28);
+  }
+  startMoney(){
+    const L = this.LIVES[this.state.idx];
+    const base = this.BASEWORTH[L.name] ?? this.parseWorth(L.netWorth);
+    const finalW = this.parseWorth(L.netWorth);
+    this.setState({ moneyPhase:'base' });
+    this.animateMoney(0, base, 720, ()=>{
+      if(Math.abs(finalW-base) <= 1){ this.revealVerdict(); return; }
+      this.t(300, ()=>{ this.setState({ moneyPhase:'swing' }); this.animateMoney(base, finalW, 780, ()=> this.revealVerdict()); });
+    });
+  }
+  revealVerdict(){ this.setState({ verdict:true }); this.startLuck(); }
+  startLuck(){
+    clearInterval(this._cu);
+    const target = this.LIVES[this.state.idx].score, t0=performance.now(), dur=600;
+    this._cu = setInterval(()=>{
+      const p = Math.min(1, (performance.now()-t0)/dur);
+      this.setState({ luckShown: Math.round(target*(1-Math.pow(1-p,2))) });
+      if(p>=1){ clearInterval(this._cu); this.setState({ moneyPhase:'done' }); }
+    }, 28);
+  }
+  finishReveal(){
+    if(this.state.phase!=='reveal') return;
+    this.clearTimers(); clearInterval(this._cu);
+    const L = this.LIVES[this.state.idx];
+    this.setState({
+      reelPhase:{ height:'locked', looks:'locked', iq:'locked', career:'locked' },
+      reelGo:true, careerGo:true, verdict:true,
+      showCareer:!L.diedYoung, showEvents:true, showDied:true, showMoney:true, moneyPhase:'done',
+      cuWorth:this.parseWorth(L.netWorth), luckShown:L.score,
+    });
+  }
+
+  classIcon(c){ return { lower:'🏚️', working:'🔧', middle:'🏠', 'upper-mid':'🏢', upper:'🏢', elite:'👑' }[c] || '🏠'; }
+  eventView(e){
+    if(e.kind==='good') return { text:e.text, fx:'GOOD LUCK', pillBg:'#0b7a3a' };
+    if(e.kind==='fatal') return { text:e.text, fx:'FATAL', pillBg:'#d4361f' };
+    return { text:e.text, fx:'BAD LUCK', pillBg:'#c2410c' };
+  }
+  shownEvents(L){ return (L.events||[]).filter((e)=> e.kind!=='fatal'); }
+  keep(){ this.setState((s)=> s.collected.includes(s.idx) ? s : ({ collected:[...s.collected, s.idx], hasNew:true })); }
+  goTab(tab){ this.setState((s)=>({ tab, hasNew: tab==='lives' ? false : s.hasNew })); }
+
+  verdictTier(score){
+    if(score<5) return { name:'💀 FAIL', color:'#d4361f' };
+    if(score<25) return { name:'ROUGH', color:'#c2410c' };
+    if(score<50) return { name:'MID', color:'#8a8178' };
+    if(score<75) return { name:'BLESSED', color:'#0b7a3a' };
+    if(score<90) return { name:'EPIC', color:'#7c3aed' };
+    if(score<98) return { name:'LEGENDARY', color:'#ff7a00' };
+    return { name:'MYTHIC', color:'#ff2d6b' };
+  }
+  short(score){ const t=this.verdictTier(score); return { name:t.name.replace('💀 ',''), color:t.color }; }
+  tag(top, th){ if(top==null) return {tag:'',color:th.flat}; const good=top<=50; const v=top<1?top.toFixed(1):Math.round(top); return { tag: good?`top ${v}%`:`bot ${Math.round(100-top)}%`, color: good?th.good:th.bad }; }
+  statRamp(top){
+    if(top==null) return { bg:'#fff5e0', fg:'#16130f' };
+    if(top<=8)  return { bg:'linear-gradient(135deg,#fbe79a 0%,#e3b02a 48%,#b9851f 100%)', fg:'#4a3000' };
+    if(top<=28) return { bg:'#bfe9c8', fg:'#0b6a33' };
+    if(top<=55) return { bg:'#efe7d6', fg:'#6a6258' };
+    if(top<=80) return { bg:'#ffd2b6', fg:'#b23c08' };
+    return { bg:'#ffc2b8', fg:'#cf2e1a' };
+  }
+  cmToIn(cm){ return cm/2.54; }
+  inToImperial(inches){ const tot=Math.round(inches); const ft=Math.floor(tot/12); return ft+"'"+(tot-ft*12)+'"'; }
+  makeRange(lo, hi, fmt, n=16){ const out=[]; for(let i=0;i<n;i++){ out.push(fmt(lo+(hi-lo)*i/(n-1))); } return out; }
+  eduPhrase(e){ if(!e) return ''; const m={ 'Postgrad':'Postgrad-educated', 'Secondary':'Secondary-schooled', 'Primary':'Primary-schooled', 'No school':'Never schooled' }; return m[e] || e; }
+
+  countryReel(){
+    const st=this.state;
+    if(st.phase==='idle') return { spinning:false, resting:true, value:'🌍', restAnim:'none', lockStyle:'' };
+    if(st.phase==='spinning' && !st.countryLocked) return { spinning:true, resting:false, items:[...this.STRIP_WHERE, ...this.STRIP_WHERE], scrollCss:'animation:reelroll .26s linear infinite;', lockStyle:'' };
+    return { spinning:false, resting:true, value:this.LIVES[st.idx].flag, restAnim:'lockpop .3s ease', lockStyle:'box-shadow:inset 0 0 0 4px #ffd23c;' };
+  }
+
+  buildLife(){
+    const th=this.THEME, st=this.state, L=this.LIVES[st.idx], t=this.verdictTier(L.score);
+    const alive=!L.diedYoung;
+
+    const rr = this.REELRANGE[L.flag] || { iq:[60,140], ht:[150,195] };
+    const rp = st.reelPhase || {};
+    const H = this.REEL_H, EASE = 'cubic-bezier(.16,1,.3,1)';
+    const mk = (key, label, finalNum, lo, hi, fmt, pct, dur, go)=>{
+      const phase = rp[key] || 'spin';
+      const locked = phase==='locked';
+      const ramp = this.statRamp(pct), tg=this.tag(pct, th);
+      const loop = this.makeRange(lo, hi, fmt, 16);
+      let items = []; for(let i=0;i<6;i++) items = items.concat(loop);
+      const value = fmt(finalNum); items.push(value);
+      const rest = (items.length-1)*H;
+      return { key, label, locked, spinning:!locked, value, items,
+        stripStyle: `transform:translateY(${go?-rest:0}px);transition:transform ${dur}s ${EASE},filter ${Math.min(dur,1).toFixed(2)}s linear;filter:blur(${go?0:3}px);`,
+        chipBg: locked ? ramp.bg : '#fff5e0', rampFg: ramp.fg, tag: tg.tag,
+        chipAnim: locked ? 'animation:lockpop .34s ease;' : '' };
+    };
+    const reels = !alive ? [] : [
+      mk('height','Height', this.cmToIn(parseInt(L.height,10)), this.cmToIn(rr.ht[0]), this.cmToIn(rr.ht[1]), (v)=>this.inToImperial(v), L.pct.height, this.REELDUR.height, st.reelGo),
+      mk('looks','Looks', L.looks, this.LOOKS_RANGE[0], this.LOOKS_RANGE[1], (v)=>v.toFixed(1), L.pct.looks, this.REELDUR.looks, st.reelGo),
+      mk('iq','IQ', L.iq, rr.iq[0], rr.iq[1], (v)=>String(Math.round(v)), L.pct.iq, this.REELDUR.iq, st.reelGo),
+    ];
+    const cphase = rp.career || 'spin';
+    const cLocked = cphase==='locked';
+    let citems = []; for(let i=0;i<5;i++) citems = citems.concat(this.CAREERS);
+    const cTitle = alive ? `${L.emoji} ${L.career}` : `lived ${L.age} ${L.age===1?'year':'years'}`;
+    citems.push(cTitle);
+    const crest = (citems.length-1)*H, cgo = st.careerGo;
+
+    const A = { base:0.0, step:0.24 };
+    const events = this.shownEvents(L).map((e,i)=> ({ ...this.eventView(e), delayCss:`${(A.base+A.step*i).toFixed(2)}s` }));
+
+    const base = this.BASEWORTH[L.name] ?? this.parseWorth(L.netWorth);
+    const finalW = this.parseWorth(L.netWorth);
+    const swing = finalW - base;
+    const moneyTag = this.tag(L.pct.money, th);
+    const showDelta = st.showMoney && Math.abs(swing)>1 && (st.moneyPhase==='swing' || st.moneyPhase==='done');
+
+    return {
+      flag:L.flag, name:L.name, country:L.country, opening:L.opening, rarity:L.rarity,
+      careerTitle: cTitle,
+      educationLine: this.eduPhrase(L.education),
+      careerItems: citems,
+      careerSpinning: !cLocked, careerLocked: cLocked,
+      careerStripStyle: `transform:translateY(${cgo?-crest:0}px);transition:transform ${this.REELDUR.career}s cubic-bezier(.16,1,.3,1),filter ${Math.min(this.REELDUR.career,1).toFixed(2)}s linear;filter:blur(${cgo?0:2.6}px);`,
+      careerAnim: cLocked ? 'animation:lockpop .34s ease;' : '',
+      alive, reels,
+      endLead: alive ? 'DIED AT' : 'LOST AT', age: L.age,
+      legacyText: (!alive ? '💀 ' : '') + (this.LEGACY[L.name] || L.ending), events,
+      verdict: st.verdict, notVerdict: !st.verdict,
+      tier:t.name, tierColor:t.color, foil: st.verdict && L.score>=90,
+      cardBorder: st.verdict ? t.color : '#16130f',
+      headerBg: st.verdict ? t.color : '#23201a',
+      headerAnim: st.verdict ? 'animation:lockpop .44s ease;' : '',
+      luckColor: st.verdict ? t.color : '#16130f',
+      netWorthShown: this.fmtMoney(st.cuWorth),
+      netWorthTag: moneyTag.tag, netWorthTagColor: moneyTag.color,
+      moneyShowDelta: showDelta,
+      moneyDeltaLabel: (swing>=0 ? '+' : '−') + this.fmtMoney(Math.abs(swing)),
+      moneyDeltaColor: swing>=0 ? '#7be0a3' : '#ff9f87',
+      moneyDone: st.moneyPhase==='done',
+      showCareer: st.showCareer, showEvents: st.showEvents && events.length>0,
+      showDied: st.showDied, showMoney: st.showMoney, showMoneyAlive: st.showMoney && alive,
+    };
+  }
+
+  album(){
+    return this.LIVES.map((L,i)=>{ const t=this.short(L.score); const owned=this.state.collected.includes(i); const dead=L.diedYoung; return {
+      flag:L.flag, name:L.name, role: dead?`died at ${L.age}`:`${L.emoji} ${L.career}`,
+      tier:t.name, frame:t.color, luckPct:L.score,
+      dimStyle: owned ? '' : 'filter:grayscale(.9) opacity(.4);',
+    };});
+  }
+  tierTrack(){
+    const order=[['FAIL','#d4361f'],['ROUGH','#c2410c'],['MID','#8a8178'],['BLESSED','#0b7a3a'],['EPIC','#7c3aed'],['LEGENDARY','#ff7a00'],['MYTHIC','#ff2d6b']];
+    const ownedTiers=new Set(this.LIVES.filter((_,i)=>this.state.collected.includes(i)).map((L)=>this.short(L.score).name));
+    return order.map(([label,color])=>{ const owned=ownedTiers.has(label); return { label, dot: owned?color:'#e3dac7', txt: owned?'#16130f':'#bcae97' }; });
+  }
+
+  renderVals(){
+    const s=this.state; const reveal=s.phase==='reveal'; const isSpin=s.tab==='spin'; const spinning=s.phase==='spinning';
+    const owned=s.collected.includes(s.idx);
+    const best=this.LIVES.filter((_,i)=>s.collected.includes(i)).reduce((m,L)=>Math.max(m,L.score),0);
+    const bt=this.short(best);
+    return { app:{
+      isSpin, isLives:s.tab==='lives', reveal, notReveal:!reveal,
+      country:this.countryReel(),
+      spinsLabel: s.spins>0 ? `${s.spins} pulls left` : 'out of pulls',
+      btnLabel: spinning ? '· · ·' : s.spins<=0 ? 'REFILL +100' : 'PULL!',
+      keepLabel: owned ? '✓ IN MY LIVES' : '＋ KEEP IT',
+      life:this.buildLife(), album:this.album(), tierTrack:this.tierTrack(), luckShown:s.luckShown,
+      livesCount:this.LIVES.length, collectedCount:s.collected.length,
+      bestTier:bt.name, bestColor:bt.color, hasNew:s.hasNew,
+      spinNavColor: isSpin ? '#16130f' : '#16130f88',
+      livesNavColor: !isSpin ? '#16130f' : '#16130f88',
+      onSpin: ()=> s.spins<=0 ? this.setState({spins:100}) : this.spin(),
+      onKeep: ()=> this.keep(),
+      onSkip: ()=> this.finishReveal(),
+      onSpinTab: ()=> this.goTab('spin'), onLivesTab: ()=> this.goTab('lives'),
+    }};
+  }
+}
+</script>
+</body>
+</html>

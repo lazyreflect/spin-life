@@ -140,6 +140,23 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
     const netWorth = wealthQuantile(country.netWorth, country.wealthGini, childRank);
+    // EARNED net worth before luck moved it: the money finale counts up to this
+    // base, then visibly swings to `netWorth` by the event wealth-deltas. base on
+    // childBase (pre-event rank), so final − base reads as the luck swing.
+    const netWorthBase = wealthQuantile(country.netWorth, country.wealthGini, childBase);
+
+    // plausible per-country windows the stat reels scroll through (≈ mean ± 2.5σ),
+    // so where you land WITHIN your country is the suspense. Looks is universal,
+    // set in the UI.
+    const heightSd = sex === 'Female' ? params.heightSdF : params.heightSdM;
+    const heightMean = sex === 'Female' ? country.heightF : country.heightM;
+    const iqMean = adjCountryIq(country.iq);
+    const reelRange = {
+      iqLo: clamp(Math.round(iqMean - 2.5 * params.iqSd), 60, 160),
+      iqHi: clamp(Math.round(iqMean + 2.5 * params.iqSd), 60, 160),
+      htLoCm: Math.round(heightMean - 2.5 * heightSd),
+      htHiCm: Math.round(heightMean + 2.5 * heightSd),
+    };
 
     const baseLE = sex === 'Female' ? country.lifeF : country.lifeM;
     const targetLE = clamp(baseLE + wealthLifeAdj(childRank) + LS.iqLifeYrsPerSd * zIq, 28, 98);
@@ -163,7 +180,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
       country: country.name, code: country.code, flag: flagEmoji(country.code), continent: country.continent,
       sex, zIq, zHeight: zHt, zLooks: zLk, diedYoung,
       iq, heightCm, heightLabel: heightImperial(heightCm), looks,
-      parentRank, childRank, familyWealth, netWorth,
+      parentRank, childRank, familyWealth, netWorth, netWorthBase, reelRange,
       age, baseLE: Math.round(baseLE), events: shownEvents,
       eventSwing: evt.wealthDelta,        // net luck (rank space) → Fortune score
       fatalCause: cutShort ? evt.fatalCause : null, // set only when death was premature
@@ -212,6 +229,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     life.mobilityDelta = Math.round((finalStanding - originStanding) * 100);
     life.familyWealthLabel = money(familyWealth);
     life.netWorthLabel = money(netWorth);
+    life.netWorthBaseLabel = money(netWorthBase);
 
     // short class labels for the card's arc (model emits "upper-middle class" etc.)
     life.classOriginShort = shortClass(life.classOrigin);
@@ -235,6 +253,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
       life.beats = beats;
       life.opening = beats.opening;
       life.ending = beats.ending;
+      life.legacy = beats.legacy;
     }
     return life;
   }

@@ -118,5 +118,19 @@
       "Just {age} years, and then gone.",
       "Gone far too soon — only {age}."
     ]
-  }
+  },
+
+  "_legacyNote": "Age-free closing clauses for the v2 death FINALE (the card shows age as a hero number, so the legacy line must not repeat it). The natural-death legacy reuses diedTails (already age-free, just capitalized). fatalLegacy/cutShortLegacy below are the age-free forms for event-deaths and young deaths.",
+  "fatalLegacy": [
+    "Lost to {cause}.",
+    "{Cause} took {them}.",
+    "Taken by {cause}.",
+    "{Cause} — and that was the end."
+  ],
+  "cutShortLegacy": [
+    "A life barely begun.",
+    "Gone before it could start.",
+    "Taken far too soon.",
+    "Over before it began."
+  ]
 }

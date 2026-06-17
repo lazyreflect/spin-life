@@ -96,20 +96,31 @@ function bornBeat(banks, life, rng, recent) {
 }
 
 // DIED builders, dispatched by ending mode — one entry per mode, no if-chain.
+// Each returns { ending, legacy }: `ending` is the full sentence (age included,
+// used in text contexts); `legacy` is the AGE-FREE closing clause for the v2 card
+// finale (which shows age as its own hero number, so the line must not repeat it).
 const DIED = {
   natural(banks, life, rng, ctx, recent) {
     const band = life.verdict?.band || 'mid';
     const mood = life.verdict?.mood || 'neutral';
     const opener = clauseText(chooseClause(banks.diedOpeners[mood] || banks.diedOpeners.neutral, ctx, rng, recent));
     const tail = fill(clauseText(chooseClause(banks.diedTails[band] || banks.diedTails.mid, ctx, rng, recent)), tokensFor(life, ctx));
-    return `${opener} ${life.age} — ${tail}.`;
+    return { ending: `${opener} ${life.age} — ${tail}.`, legacy: cap(tail) + '.' };
   },
   fatal(banks, life, rng, ctx, recent) {
-    return fill(clauseText(chooseClause(banks.fatal, ctx, rng, recent)), tokensFor(life, ctx));
+    const tok = tokensFor(life, ctx);
+    return {
+      ending: fill(clauseText(chooseClause(banks.fatal, ctx, rng, recent)), tok),
+      legacy: fill(clauseText(chooseClause(banks.fatalLegacy, ctx, rng, recent)), tok),
+    };
   },
   cutShort(banks, life, rng, ctx, recent) {
+    const tok = tokensFor(life, ctx);
     const bank = life.age <= 1 ? banks.cutShort.infant : banks.cutShort.child;
-    return fill(clauseText(chooseClause(bank, ctx, rng, recent)), tokensFor(life, ctx));
+    return {
+      ending: fill(clauseText(chooseClause(bank, ctx, rng, recent)), tok),
+      legacy: fill(clauseText(chooseClause(banks.cutShortLegacy, ctx, rng, recent)), tok),
+    };
   },
 };
 
@@ -125,8 +136,10 @@ export function buildBeats(banks, life, opts = {}) {
   const rng = opts.rng || makeRng(hashSeed(copySig(life)));
   const recent = opts.recent;
   const ctx = diedContext(life);
+  const died = DIED[endingMode(life)](banks, life, rng, ctx, recent);
   return {
     opening: bornBeat(banks, life, rng, recent),
-    ending: DIED[endingMode(life)](banks, life, rng, ctx, recent),
+    ending: died.ending,
+    legacy: died.legacy,
   };
 }
