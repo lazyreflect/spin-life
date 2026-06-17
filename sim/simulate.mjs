@@ -116,8 +116,12 @@ const sub5kLuck = median(sub5k.map((l) => l.luckPct));
 // wealth (here >top-30%) can never reach a lucky tier (EPIC+). This is the guard
 // that keeps "$7.5k = luckier than 93%" from ever coming back.
 const below30 = adults.filter((l) => l.pct.money > 30);
-const below30Epic = below30.length ? below30.filter((l) => l.luckPct >= 82).length / below30.length : 0;
+const below30Epic = below30.length ? below30.filter((l) => l.luckPct >= 87).length / below30.length : 0;
 const legRate = adults.filter((l) => l.luckPct >= 96).length / adults.length;
+// early-death ceiling: a young adult death is the other hero number — it must
+// never read as a lucky tier (BLESSED+), no matter the wealth.
+const young = adults.filter((l) => l.age < 35);
+const youngBlessed = young.length ? young.filter((l) => l.luckPct >= 70).length / young.length : 0;
 
 // ---- report ----------------------------------------------------------------
 console.log(`\nSpin Your Life — model sim (shared model)   N=${N.toLocaleString()}, ${L.length} lives, ${adults.length} adults   seed=0x${SEED.toString(16)}\n`);
@@ -144,6 +148,7 @@ console.log(gate('elite class stays scarce', eliteRate < 0.01, `${(eliteRate * 1
 console.log('\nFORTUNE SCORE (wealth-dominant — the verdict never outruns the money)');
 console.log(gate('globally-poor read unlucky', sub5kLuck < 38, `sub-$5k median luck ${sub5kLuck.toFixed(1)}%`, 'sub5kLuck'));
 console.log(gate('wealth ceiling: <top-30% never EPIC+', below30Epic === 0, `${(below30Epic * 100).toFixed(3)}% of below-top-30% wealth reach EPIC+`, 'wealthCeiling'));
+console.log(gate('early-death ceiling: died<35 never BLESSED+', youngBlessed === 0, `${(youngBlessed * 100).toFixed(3)}% of died-young-adult reach BLESSED+`, 'earlyDeathCeiling'));
 console.log(gate('LEGENDARY+ stays rare', legRate < 0.06, `${(legRate * 100).toFixed(1)}% of adults`, 'legendRate'));
 
 console.log('\nEMERGENT CORRELATIONS (report)');

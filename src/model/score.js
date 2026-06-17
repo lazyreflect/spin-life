@@ -20,6 +20,10 @@ export const FORTUNE = {
   wealthFloor: 0.82,  // pure wealth earns this fraction of its tail; story adds the rest
   mobSpan: 70,        // mobilityDelta that maps to a full climb bonus
   cutShortMax: 0.15,  // ceiling for a life that never reached adulthood
+  // Early-death ceiling: age-at-death is a hero number on the card, so a young
+  // death VETOes a high tier the same way low wealth does. lifeFactor multiplies S
+  // — 1.0 for a full life, ramping to `floor` for a young-adult death.
+  longevity: { full: 68, young: 20, floor: 0.42 },
   // "story" bonus — only matters scaled by wealth (climb counts only if it ended rich).
   // weights sum to 1 so the bonus is in [0,1].
   bonus: { climb: 0.35, life: 0.25, career: 0.18, iq: 0.12, looks: 0.05, height: 0.05 },
@@ -50,10 +54,12 @@ export function fortuneScore(life) {
     + bo.iq * tail(p.iq) + bo.looks * tail(p.looks) + bo.height * tail(p.height),
     0, 1,
   );
-  // Wealth dominates: S ≤ wealth tail, and the story only modulates within
-  // [wealthFloor·wealth, wealth] — so on a poor card the story barely registers,
-  // and a globally-poor life can never reach a lucky tier.
-  return clamp(wealth * (F.wealthFloor + (1 - F.wealthFloor) * story), 0, 1);
+  const L = F.longevity;
+  const lifeFactor = clamp((life.age - L.young) / (L.full - L.young), L.floor, 1); // early death vetoes
+  // Two hero numbers — net worth and age — both GATE the verdict: S ≤ wealth·lifeFactor.
+  // Wealth dominates among full lives; a young death caps the tier no matter the money.
+  // The story only modulates within what those two allow.
+  return clamp(wealth * lifeFactor * (F.wealthFloor + (1 - F.wealthFloor) * story), 0, 1);
 }
 
 // ── percentile via a precomputed CDF (quantile function) ────────────────────
@@ -86,11 +92,13 @@ export function percentileOf(score, cdf) {
 // decile of a smooth blend. LEGENDARY ≈ top 4% (~1 in 25 pulls), MYTHIC ≈ top
 // 0.4% (~1 in 250). EPIC absorbs "very good but not rare". band keys the DIED
 // tail bank; mood the opener register; foil = the header shimmers (EPIC+).
+// MID is the broad "ordinary life" band (most rolls); BLESSED is a genuinely good
+// roll (~top third, ~1 in 6), not the default green. EPIC+ stay rare/earned.
 export const TIERS = [
   { key: 'fail',      name: '💀 FAIL',    short: 'FAIL',      color: '#d4361f', max: 5,        band: 'low',  mood: 'grim',    foil: false },
-  { key: 'rough',     name: 'ROUGH',      short: 'ROUGH',     color: '#c2410c', max: 25,       band: 'low',  mood: 'grim',    foil: false },
-  { key: 'mid',       name: 'MID',        short: 'MID',       color: '#8a8178', max: 50,       band: 'mid',  mood: 'neutral', foil: false },
-  { key: 'blessed',   name: 'BLESSED',    short: 'BLESSED',   color: '#0b7a3a', max: 82,       band: 'good', mood: 'warm',    foil: false },
+  { key: 'rough',     name: 'ROUGH',      short: 'ROUGH',     color: '#c2410c', max: 30,       band: 'low',  mood: 'grim',    foil: false },
+  { key: 'mid',       name: 'MID',        short: 'MID',       color: '#8a8178', max: 70,       band: 'mid',  mood: 'neutral', foil: false },
+  { key: 'blessed',   name: 'BLESSED',    short: 'BLESSED',   color: '#0b7a3a', max: 87,       band: 'good', mood: 'warm',    foil: false },
   { key: 'epic',      name: 'EPIC',       short: 'EPIC',      color: '#7c3aed', max: 96,       band: 'good', mood: 'warm',    foil: true  },
   { key: 'legendary', name: 'LEGENDARY',  short: 'LEGENDARY', color: '#ff7a00', max: 99.6,     band: 'top',  mood: 'warm',    foil: true  },
   { key: 'mythic',    name: 'MYTHIC',     short: 'MYTHIC',    color: '#ff2d6b', max: Infinity, band: 'top',  mood: 'warm',    foil: true  },
