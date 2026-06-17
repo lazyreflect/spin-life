@@ -146,6 +146,20 @@ body {
 .mini-empty { border: 3px dashed #16130f33; border-radius: 14px; min-height: 118px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: #16130f55; font-family: var(--archivo); font-weight: 800; font-size: 10px; letter-spacing: .5px; }
 .mini-empty-plus { font-size: 26px; }
 
+/* ════════════ LINEAGE — parent select + start a family ════════════ */
+.mini-card { cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.mini-card.selected { box-shadow: 0 0 0 3px var(--yellow), 4px 4px 0 var(--ink); transform: translate(-1px, -1px); }
+.mini-card.ineligible { opacity: .45; cursor: default; }
+.pair-bar { position: sticky; bottom: 0; margin: 16px -18px -20px; padding: 12px 18px; background: var(--yellow); border-top: 3px solid var(--ink); display: flex; align-items: center; gap: 12px; }
+.pair-hint { flex: 1; font-family: var(--archivo); font-weight: 800; font-size: 12.5px; color: var(--ink); }
+.pair-go { flex: 1; }
+.pair-clear { background: none; border: 0; font-family: var(--grotesk); font-weight: 700; font-size: 12px; color: var(--ink); text-decoration: underline; cursor: pointer; }
+.child-overlay { position: fixed; inset: 0; background: rgba(22,19,15,.6); display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 50; }
+.child-sheet { width: 100%; max-width: 420px; }
+.child-banner { text-align: center; font-family: var(--archivo); font-weight: 900; font-size: 13px; letter-spacing: .8px; color: var(--cream); margin-bottom: 10px; }
+.child-actions { display: flex; gap: 10px; margin-top: 12px; }
+.child-actions .btn { flex: 1; }
+
 /* ════════════ BOTTOM NAV ════════════ */
 .bottom-nav { position: sticky; bottom: 0; display: flex; height: 64px; border-top: 3px solid var(--ink); background: var(--yellow); }
 .bottom-nav button { flex: 1; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: #16130f88; position: relative; }

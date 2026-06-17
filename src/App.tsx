@@ -82,7 +82,7 @@ export default function App() {
             isKept={isKept}
           />
         )}
-        {tab === 'lives' && <MyLives lives={lives} />}
+        {tab === 'lives' && <MyLives lives={lives} onKeep={keep} />}
       </div>
 
       <nav className="bottom-nav">
