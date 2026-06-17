@@ -6,7 +6,12 @@ type Tab = 'spin' | 'lives';
 const PULLS_KEY = 'syl.pulls';
 const LIVES_KEY = 'syl.lives';
 const START_PULLS = 100;
-const MAX_KEPT = 200;
+// Soft cap on the kept collection. Eviction is lineage-aware (see capLives): it
+// drops only the oldest EVICTABLE cards — never a founder, never an ancestor of
+// another kept card — so a growing family tree never silently loses the cards
+// that anchor it. When a collection genuinely outgrows localStorage, the durable
+// IndexedDB store is the planned next step.
+const MAX_KEPT = 1000;
 
 function load<T>(key: string, fallback: T): T {
   try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch { return fallback; }
@@ -23,6 +28,22 @@ function migrate(lives: any[]): any[] {
   return lives.map((L) =>
     L.id ? L : { ...L, id: lifeKey(L), generation: L.generation ?? 0, parentIds: L.parentIds ?? null }
   );
+}
+// Lineage-aware cap: when the collection exceeds MAX_KEPT, evict the oldest cards
+// that are safe to lose — NOT founders (generation 0) and NOT ancestors (their id
+// is referenced by another kept card's parentIds, so dropping them would orphan a
+// tree). If everything is protected, the collection is kept whole rather than
+// silently truncated. `lives` is newest-first, so we evict from the tail inward.
+function capLives(lives: any[]): any[] {
+  if (lives.length <= MAX_KEPT) return lives;
+  const ancestorIds = new Set<string>();
+  for (const L of lives) for (const pid of L.parentIds || []) ancestorIds.add(pid);
+  const isProtected = (L: any) => L.generation === 0 || ancestorIds.has(L.id);
+  const out = lives.slice();
+  for (let i = out.length - 1; i >= 0 && out.length > MAX_KEPT; i--) {
+    if (!isProtected(out[i])) out.splice(i, 1);
+  }
+  return out;
 }
 
 export default function App() {
@@ -44,7 +65,7 @@ export default function App() {
       parentIds: L.parentIds ?? null,
       ts: Date.now(),
     };
-    setLives((prev) => [card, ...prev].slice(0, MAX_KEPT));
+    setLives((prev) => capLives([card, ...prev]));
     setHasNew(true);
   };
   const goTab = (t: Tab) => { setTab(t); if (t === 'lives') setHasNew(false); };
