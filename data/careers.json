@@ -29,6 +29,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 9,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -46,6 +47,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 6,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -63,6 +65,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 6,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -80,6 +83,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -97,6 +101,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -114,8 +119,12 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.15,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous"
       ],
       "isco": 6
     },
@@ -131,8 +140,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 1.5,
+      "occRank": 0.28,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous"
       ],
       "isco": 6
     },
@@ -148,6 +161,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 0.6,
+      "occRank": 0.62,
       "regions": [
         "*"
       ],
@@ -165,6 +179,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 0.4,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -182,8 +197,14 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 7,
+      "occRank": 0.28,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous",
+        "company-town",
+        "automatable"
       ],
       "isco": 8
     },
@@ -199,8 +220,13 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 5,
+      "occRank": 0.2,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "company-town",
+        "automatable"
       ],
       "isco": 8
     },
@@ -216,8 +242,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 6,
+      "occRank": 0.28,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous"
       ],
       "isco": 7
     },
@@ -233,6 +263,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -250,6 +281,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -267,6 +299,7 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -284,6 +317,7 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -301,6 +335,7 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -318,8 +353,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 2.5,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous"
       ],
       "isco": 7
     },
@@ -335,8 +374,13 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous",
+        "automatable"
       ],
       "isco": 7
     },
@@ -352,8 +396,13 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous",
+        "company-town"
       ],
       "isco": 8
     },
@@ -369,8 +418,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "trader"
       ],
       "isco": 7
     },
@@ -386,8 +439,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 1.5,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "company-town"
       ],
       "isco": 3
     },
@@ -403,8 +460,13 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 0.7,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous",
+        "company-town"
       ],
       "isco": 8
     },
@@ -420,8 +482,13 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 0.4,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous",
+        "company-town"
       ],
       "isco": 8
     },
@@ -437,8 +504,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.28,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 8
     },
@@ -454,6 +525,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -471,6 +543,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.2,
       "regions": [
         "*"
       ],
@@ -488,8 +561,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.2,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 9
     },
@@ -505,6 +582,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 2.5,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -522,8 +600,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 1.5,
+      "occRank": 0.28,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous"
       ],
       "isco": 9
     },
@@ -539,6 +621,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 1,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -556,6 +639,7 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 1,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -573,6 +657,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 7,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -590,6 +675,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 5,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -607,8 +693,12 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 5,
+      "occRank": 0.15,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "trader"
       ],
       "isco": 5
     },
@@ -624,8 +714,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 7,
+      "occRank": 0.28,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 5
     },
@@ -641,6 +735,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 6,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -658,8 +753,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 5,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "trader"
       ],
       "isco": 5
     },
@@ -675,8 +774,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "trader"
       ],
       "isco": 5
     },
@@ -692,6 +795,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 4,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -709,8 +813,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "trader"
       ],
       "isco": 5
     },
@@ -726,6 +834,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -743,6 +852,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 0.6,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -760,8 +870,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 6,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 4
     },
@@ -777,8 +891,12 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.28,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 4
     },
@@ -794,6 +912,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 2.5,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -811,6 +930,7 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -828,8 +948,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 1.5,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 4
     },
@@ -845,8 +969,12 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 1.5,
+      "occRank": 0.4,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 3
     },
@@ -862,6 +990,7 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -879,6 +1008,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 1,
+      "occRank": 0.62,
       "regions": [
         "*"
       ],
@@ -896,8 +1026,12 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 3,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 3
     },
@@ -913,6 +1047,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.2,
       "regions": [
         "*"
       ],
@@ -930,6 +1065,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 1.5,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -947,6 +1083,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 2.5,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -964,6 +1101,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 1,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -981,6 +1119,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 3,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -998,6 +1137,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 0.6,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1015,6 +1155,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 5,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -1032,6 +1173,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.28,
       "regions": [
         "*"
       ],
@@ -1049,6 +1191,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 3,
+      "occRank": 0.2,
       "regions": [
         "*"
       ],
@@ -1066,6 +1209,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 2.5,
+      "occRank": 0.2,
       "regions": [
         "*"
       ],
@@ -1083,6 +1227,7 @@
       "incomeBand": "lowmid",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.4,
       "regions": [
         "*"
       ],
@@ -1100,6 +1245,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 4,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -1117,6 +1263,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 1.5,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -1134,6 +1281,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 1,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -1151,6 +1299,7 @@
       "incomeBand": "mid",
       "prestige": "common",
       "prevalence": 1,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -1168,6 +1317,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 1.2,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -1185,6 +1335,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 0.6,
+      "occRank": 0.62,
       "regions": [
         "*"
       ],
@@ -1202,6 +1353,7 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 1.5,
+      "occRank": 0.52,
       "regions": [
         "*"
       ],
@@ -1219,6 +1371,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 2,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1236,8 +1389,12 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 1.2,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "performer"
       ],
       "isco": 2
     },
@@ -1253,8 +1410,12 @@
       "incomeBand": "highmid",
       "prestige": "rare",
       "prevalence": 1,
+      "occRank": 0.7,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "automatable"
       ],
       "isco": 2
     },
@@ -1270,6 +1431,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 1.5,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1287,6 +1449,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 1.5,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1304,6 +1467,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.6,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1321,6 +1485,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.4,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1338,8 +1503,12 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.8,
+      "occRank": 0.7,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 2
     },
@@ -1355,6 +1524,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.6,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1372,6 +1542,7 @@
       "incomeBand": "highmid",
       "prestige": "uncommon",
       "prevalence": 0.5,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1389,8 +1560,12 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.8,
+      "occRank": 0.7,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 2
     },
@@ -1406,6 +1581,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.7,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1423,6 +1599,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.4,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1440,6 +1617,7 @@
       "incomeBand": "highmid",
       "prestige": "rare",
       "prevalence": 0.4,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1457,6 +1635,7 @@
       "incomeBand": "highmid",
       "prestige": "rare",
       "prevalence": 0.4,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1474,6 +1653,7 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.3,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1491,8 +1671,12 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.2,
+      "occRank": 0.82,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 1
     },
@@ -1508,8 +1692,12 @@
       "incomeBand": "high",
       "prestige": "rare",
       "prevalence": 0.15,
+      "occRank": 0.82,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 2
     },
@@ -1525,8 +1713,12 @@
       "incomeBand": "lowmid",
       "prestige": "uncommon",
       "prevalence": 1.5,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "performer"
       ],
       "isco": 2
     },
@@ -1542,8 +1734,12 @@
       "incomeBand": "lowmid",
       "prestige": "uncommon",
       "prevalence": 1.5,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "performer"
       ],
       "isco": 2
     },
@@ -1559,8 +1755,12 @@
       "incomeBand": "mid",
       "prestige": "uncommon",
       "prevalence": 2,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 2
     },
@@ -1576,8 +1776,12 @@
       "incomeBand": "mid",
       "prestige": "rare",
       "prevalence": 0.5,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "performer"
       ],
       "isco": 2
     },
@@ -1593,8 +1797,12 @@
       "incomeBand": "high",
       "prestige": "legendary",
       "prevalence": 0.2,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "performer"
       ],
       "isco": 2
     },
@@ -1610,8 +1818,12 @@
       "incomeBand": "high",
       "prestige": "legendary",
       "prevalence": 0.15,
+      "occRank": 0.52,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "performer"
       ],
       "isco": 3
     },
@@ -1627,6 +1839,7 @@
       "incomeBand": "elite",
       "prestige": "legendary",
       "prevalence": 0.4,
+      "occRank": 0.82,
       "regions": [
         "*"
       ],
@@ -1644,8 +1857,12 @@
       "incomeBand": "high",
       "prestige": "legendary",
       "prevalence": 0.15,
+      "occRank": 0.82,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 1
     },
@@ -1661,8 +1878,12 @@
       "incomeBand": "elite",
       "prestige": "legendary",
       "prevalence": 0.12,
+      "occRank": 0.82,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "status"
       ],
       "isco": 1
     },
@@ -1678,6 +1899,7 @@
       "incomeBand": "highmid",
       "prestige": "legendary",
       "prevalence": 0.05,
+      "occRank": 0.7,
       "regions": [
         "*"
       ],
@@ -1695,6 +1917,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 7,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -1712,8 +1935,12 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 6,
+      "occRank": 0.15,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "trader"
       ],
       "cohort": "informal"
     },
@@ -1729,6 +1956,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 5,
+      "occRank": 0.12,
       "regions": [
         "*"
       ],
@@ -1746,6 +1974,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.1,
       "regions": [
         "*"
       ],
@@ -1763,6 +1992,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 2,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -1780,8 +2010,13 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 1.5,
+      "occRank": 0.15,
       "regions": [
         "*"
+      ],
+      "tags": [
+        "dangerous",
+        "company-town"
       ],
       "cohort": "informal"
     },
@@ -1797,6 +2032,7 @@
       "incomeBand": "low",
       "prestige": "uncommon",
       "prevalence": 1,
+      "occRank": 0.15,
       "regions": [
         "*"
       ],
@@ -1814,6 +2050,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 6,
+      "occRank": 0.35,
       "regions": [
         "*"
       ],
@@ -1831,6 +2068,7 @@
       "incomeBand": "low",
       "prestige": "common",
       "prevalence": 5,
+      "occRank": 0.1,
       "regions": [
         "*"
       ],

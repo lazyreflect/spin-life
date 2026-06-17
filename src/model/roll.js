@@ -90,7 +90,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
       const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c, rootRng);
       const [lo, hi] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
       par[i] = parentRank; cf[i] = lo; cc[i] = hi; af[i] = assetFloorOf(parentRank, c.wealthGini);
-      occSorted[i] = occRankOf(career.id);
+      occSorted[i] = occRankOf(career);
       vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, z[3], z[2]) + M.luckSd * randn(rootRng);
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
@@ -140,7 +140,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
     // life events: shift the outcome (may break career bounds — windfall, war),
     // cut the lifespan, and give the card a story. originStanding lets the forced
     // "steep fall" trigger compare like-for-like with the child's standing.
-    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career.id), originStanding, sex, zLooks: zLk, zHeight: zHt }, country, rng);
+    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career), originStanding, sex, zLooks: zLk, zHeight: zHt }, country, rng);
     const childRank = clamp(childBase + evt.wealthDelta, 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
@@ -199,7 +199,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, se
     // mobility / class arc — class is occupation-based, modified by wealth + power
     const ruling = RULING.has(career.id);
     const dynastic = parentRank >= 0.98;
-    const occ = occRankOf(career.id);
+    const occ = occRankOf(career);
     life.classOrigin = classOf(parentOcc, parentRank, false, dynastic); // family standing on the same scale as the child's
     life.classFinal = classOf(occ, childRank, ruling, dynastic);
     const finalStanding = 0.60 * occ + 0.40 * childRank;

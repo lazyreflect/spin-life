@@ -134,35 +134,10 @@ export function rarityText(rarity) {
 // controlling wealth. Merely rich (a lottery winner, a top-paid professional) is
 // "wealthy/upper", not elite.
 export const RULING = new Set(['entrepreneur', 'executive', 'politician']);
-const OCC_RANK = {
-  // not-in-work / informal survival economy (own household standing is set by
-  // inherited wealth; the occupation itself confers little)
-  unemployed: 0.10, 'waste-picker': 0.10, 'unpaid-family-worker': 0.12, homemaker: 0.35,
-  'day-laborer': 0.15, 'informal-trader': 0.15, 'rickshaw-puller': 0.15, 'artisanal-miner': 0.15, 'sex-worker': 0.15,
-  // elementary / low-skill
-  'subsistence-farmer': 0.15, farmer: 0.15, herder: 0.15, fisher: 0.15, 'street-vendor': 0.15, 'domestic-worker': 0.15,
-  cleaner: 0.15, 'farm-laborer': 0.15, 'plantation-worker': 0.15, caregiver: 0.20, 'childcare-worker': 0.20,
-  'garment-worker': 0.20, 'delivery-courier': 0.20, 'warehouse-worker': 0.20, 'sanitation-worker': 0.20,
-  // operatives / service workers
-  'factory-worker': 0.28, 'construction-worker': 0.28, 'truck-driver': 0.28, driver: 0.28, waiter: 0.28, 'retail-clerk': 0.28, 'security-guard': 0.28,
-  mason: 0.28, forester: 0.28, 'bus-driver': 0.28, 'dock-worker': 0.28, 'hotel-staff': 0.28, 'postal-worker': 0.28,
-  'call-center-agent': 0.28, receptionist: 0.28, 'teaching-assistant': 0.28,
-  // skilled trades / technicians / clerical
-  miner: 0.40, mechanic: 0.40, electrician: 0.40, plumber: 0.40, welder: 0.40, carpenter: 0.40, machinist: 0.40,
-  'oil-rig-worker': 0.40, sailor: 0.40, 'train-operator': 0.40, tailor: 0.40, cook: 0.40, barber: 0.40, soldier: 0.40, clerk: 0.40,
-  'sales-rep': 0.40, 'bank-teller': 0.40, bookkeeper: 0.40, 'community-health-worker': 0.40,
-  // mid professionals / supervisors / public service
-  shopkeeper: 0.52, 'civil-servant': 0.52, teacher: 0.52, nurse: 0.52, journalist: 0.52, clergy: 0.52, musician: 0.52, artist: 0.52, athlete: 0.52, actor: 0.52,
-  'factory-supervisor': 0.52, 'power-plant-operator': 0.52, 'it-support': 0.52, chef: 0.52, 'police-officer': 0.52, firefighter: 0.52,
-  midwife: 0.52, paramedic: 0.52, 'pharmacy-tech': 0.52, 'lab-technician': 0.52, 'social-worker': 0.52, 'content-creator': 0.52,
-  // upper professionals
-  accountant: 0.70, engineer: 0.70, 'software-developer': 0.70, architect: 0.70, pharmacist: 0.70, banker: 0.70, lawyer: 0.70, doctor: 0.70, professor: 0.70, scientist: 0.70, pilot: 0.70, astronaut: 0.70,
-  'real-estate-agent': 0.62, agronomist: 0.62, veterinarian: 0.70, 'dental-hygienist': 0.62, 'military-officer': 0.70,
-  'data-analyst': 0.70, 'management-consultant': 0.70, psychologist: 0.70, dentist: 0.70,
-  // authority / power elite
-  diplomat: 0.82, judge: 0.82, politician: 0.82, executive: 0.82, entrepreneur: 0.82,
-};
-export const occRankOf = (careerId) => OCC_RANK[careerId] ?? 0.40;
+// occRank (occupational class standing) now lives ON each career in careers.json
+// (emitted by gen-careers.mjs, validated present in load.js) — one source of
+// truth, no parallel map to drift, no silent 0.40 default.
+export const occRankOf = (career) => career.occRank;
 
 // occupational class standing, nudged by realized wealth; elite gated by power+wealth
 export function classOf(occRank, wealthRank, ruling, dynastic) {

@@ -55,9 +55,13 @@ export function validateInputs({ countries, careers }) {
   });
   const seen = new Set();
   for (const c of careers) {
-    if (!c.id) errs.push('career with no id');
-    else if (seen.has(c.id)) errs.push(`duplicate career id: ${c.id}`);
+    if (!c.id) { errs.push('career with no id'); continue; }
+    if (seen.has(c.id)) errs.push(`duplicate career id: ${c.id}`);
     seen.add(c.id);
+    // occRank is now data ON the career (no parallel map, no silent 0.40) — a
+    // missing one is a build error, the whole point of consolidating it.
+    if (typeof c.occRank !== 'number') errs.push(`career ${c.id}: missing/invalid occRank`);
+    if (c.tags != null && !Array.isArray(c.tags)) errs.push(`career ${c.id}: tags must be an array`);
   }
   if (errs.length) {
     const shown = errs.slice(0, 20).join('\n  ');
