@@ -257,6 +257,37 @@ the real one: `married` "married into wealth" `+0.22` (`events.js:144`),
 or convert into marriage/lineage outcomes (§6) so a card can't "marry into wealth"
 while paired with a poor partner.
 
+### 4.8 Inbreeding — genetic consequences (the Habsburg trap) *(designed, not built)*
+
+`pairBlock` gates eligibility / same-card / M+F but **not relatedness**, so
+closely-related pairings are currently possible. Don't just block them —
+inbreeding depression is the most on-theme mechanic available: dynasties marry kin
+to keep wealth/power consolidated (the preservation motive, §1) and rot the gene
+pool (the Habsburgs → Charles II; royal hemophilia). The optimal-looking
+"don't dilute the line" move is the trap that kills it — "dynasty as doomed" (§2)
+made *mechanical* and self-inflicted.
+
+**Model — scale by the offspring inbreeding coefficient F** (computable from
+`parentIds`, the lineage graph):
+- parent×child / full sibs → **F = 0.25**; half-sib / uncle-niece / grandparent-
+  grandchild → **0.125**; first cousins → **0.0625**.
+- **Mean depression:** subtract `depression_t · F` from the child's `z`, heaviest
+  on fitness traits (IQ, lifespan, health), lighter on neutral ones.
+- **Elevated mortality / defects:** boost died-young + fatal probability `∝ F`
+  (reuses the existing mortality machinery).
+- **Fatter bad tail, not just a lower mean:** inbreeding exposes rare recessives →
+  add **variance** (the occasional Charles II), not only a downward shift.
+- **Compounds:** F accumulates in a closed line → gradual self-inflicted decay.
+
+**Tone split (decided):** hard-block the incest-taboo cases (parent×child, full
+sibs) in `pairBlock`; allow cousins / uncle-niece / distant **with consequences**
+(the Habsburg mechanic — not taboo, just unwise) plus a "closely related" warning
+in the pairing bar. The game never depicts parent-child incest.
+
+**Implementation shape:** kinship F is computed in the UI/lineage layer (it has
+the full `lives` graph) → passed as `opts.inbreeding = F` into `rollChild` →
+z-penalty + variance in the draw, mortality boost in `buildLife`. Localized.
+
 ---
 
 ## 5. Value & the partner hunt
@@ -313,29 +344,35 @@ Decide before Phase 5 (UX); does **not** block Phases 0–4.
 
 ## 7. Build sequence
 
-- [ ] **Phase 0 — Identity & persistence** *(decision-invariant; in progress)*.
-      Add `id` / `parentIds` / `generation`; store the dropped `zFw`
-      (`roll.js:182`); fix the `lifeKey` (`App.tsx:15`) + `copySig` (`copy.js:83`)
-      sibling collisions by keying off `id`; replace the `MAX_KEPT=200` FIFO
-      (`App.tsx:9,29`) with lineage-aware durable storage (IndexedDB; never evict
-      founders or cards with descendants). *Prerequisite for everything.*
-- [ ] **Phase 1 — Fertile individual + gating** (§4.1).
-- [ ] **Phase 2 — Child draw** (§4.2–4.4): corrected formula + pre-inflated `R`;
-      two-channel wealth incl. the `zFw` restructure; cross-country `z` conversion
-      (same-country first).
-- [ ] **Phase 3 — Verdict = trajectory** (§4.6): drop the vestigial percentile;
-      dynasty net-worth trajectory; anti-compounding damping.
-- [ ] **Phase 4 — events.js reconciliation** (§4.7).
-- [ ] **— SCOPE GATE —** decide marriage-market scope (§6) here.
-- [ ] **Phase 5 — Mate value + marriage market + UX** (§6, §2): per scope. Lineage
-      tree; partner selection under the hidden-`z` band; family reveal reconciled
-      with the SpinScreen; plain family voice.
-- [ ] **Phase 6 — Validation.** Bred-generation sim: `corr(parent z, child z) ≈ H`;
-      dynasty net worth shows rise-and-fall (no runaway saturation);
-      `corr(height,looks)` green for G1+ (re-targeted per §4.2).
+- [x] **Phase 0 — Identity & persistence** — `id`/`parentIds`/`generation`, stored
+      `zFw`, `lifeKey`/`copySig` keyed off id, lineage-aware eviction
+      (`capLives`, stayed on localStorage not IndexedDB — see §8 note).
+- [x] **Phase 1 — Fertile individual + gating** — `src/model/lineage.js`
+      (`parentEligibility`, `pairBlock`).
+- [x] **Phase 2 — Child draw** (a/b/c) — `src/model/genetics.js` (`makeChildDraw`,
+      solved noise), `rollChild` + `buildLife` refactor, two-channel wealth,
+      cross-country single-environment reframe.
+- [x] **Destiny model + reveal** — death age hidden for ordinary lives, "Net
+      worth" climax (§4.0).
+- [x] **Phase 5a — Playable pairing loop** — select 2 parents → Start a family →
+      child reveal → keep (`MyLives`).
+- [x] **Phase 4 — events.js reconciliation** — `displayEvents`, marriages recorded
+      (`partnerIds` via `App.recordPairing`).
+- [ ] **Inbreeding consequences** (§4.8) — *next up.* Kinship F from `parentIds`,
+      F-scaled depression + mortality + tail variance, immediate-family block,
+      "closely related" warning.
+- [ ] **Litter** — a pairing currently makes ONE child; the plan wants a family of
+      N (each an independent draw). Product call on count/feel.
+- [ ] **Phase 3 — Verdict = trajectory** (§4.6): drop the vestigial "luckier than
+      X% of births" line (still showing in `Card.tsx`); dynasty net-worth
+      trajectory; anti-compounding damping. *(Replacement for the dropped line is a
+      UX call.)*
+- [ ] **— SCOPE GATE —** decide marriage-market scope (§6).
+- [ ] **Phase 5 — Mate value + marriage market + lineage tree UX** (§6, §2).
+- [ ] **Phase 6 — Validation** — bred-generation sim invariants.
 
-Phases 1–2 must precede Phase 3 — recalibrating a verdict against an undefined
-bred population is circular.
+Done through the playable loop; remaining items lean on product calls (litter
+count, percentile replacement, marriage-market scope).
 
 ---
 
