@@ -38,3 +38,20 @@ export function pairBlock(a, b) {
 }
 
 export const canPair = (a, b) => pairBlock(a, b) == null;
+
+// Shadow-family events (events.js) narrate a marriage/spouse/own-children, or the
+// card's own parents. Once the lineage is real they contradict it (§4.7), so the
+// display drops them: ORIGIN events ("orphaned") when the card has known parents,
+// PARTNER events (marriage/widowhood/divorce/lost-child) when it has a recorded
+// partner. The wealth EFFECT already happened at roll time — this only reconciles
+// what's shown, never the score.
+const FAMILY_ORIGIN = new Set(['orphaned']);
+const FAMILY_PARTNER = new Set(['married', 'widowed', 'divorce', 'lostchild']);
+export function displayEvents(life) {
+  const hasParents = Array.isArray(life.parentIds) && life.parentIds.length > 0;
+  const hasPartner = Array.isArray(life.partnerIds) && life.partnerIds.length > 0;
+  if (!hasParents && !hasPartner) return life.events || [];
+  return (life.events || []).filter(
+    (e) => !((hasParents && FAMILY_ORIGIN.has(e.id)) || (hasPartner && FAMILY_PARTNER.has(e.id))),
+  );
+}

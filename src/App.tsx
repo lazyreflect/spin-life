@@ -68,6 +68,14 @@ export default function App() {
     setLives((prev) => capLives([card, ...prev]));
     setHasNew(true);
   };
+  // record a marriage: link the two parents as a couple (lineage data + lets the
+  // display drop their now-contradicted shadow-family events, §4.7).
+  const recordPairing = (aId: string, bId: string) =>
+    setLives((prev) => prev.map((L) =>
+      L.id === aId ? { ...L, partnerIds: [...new Set([...(L.partnerIds || []), bId])] }
+      : L.id === bId ? { ...L, partnerIds: [...new Set([...(L.partnerIds || []), aId])] }
+      : L,
+    ));
   const goTab = (t: Tab) => { setTab(t); if (t === 'lives') setHasNew(false); };
 
   return (
@@ -82,7 +90,7 @@ export default function App() {
             isKept={isKept}
           />
         )}
-        {tab === 'lives' && <MyLives lives={lives} onKeep={keep} />}
+        {tab === 'lives' && <MyLives lives={lives} onKeep={keep} onPair={recordPairing} />}
       </div>
 
       <nav className="bottom-nav">

@@ -1,5 +1,6 @@
 import { DecelReel } from './DecelReel';
 import { useReveal } from './useReveal';
+import { displayEvents } from '../model/lineage';
 import {
   reelStrip, fmtImperial, LOOKS_RANGE, CAREERS, REELDUR,
   statRamp, statTag, eduPhrase, eventPill, fmtMoney,
@@ -35,7 +36,7 @@ export function Card({ life }: { life: any }) {
 
   const swing = life.netWorth - life.netWorthBase;
   const showDelta = rv.showMoney && Math.abs(swing) > 1 && (rv.moneyPhase === 'swing' || rv.moneyPhase === 'done');
-  const events = life.events || [];
+  const events = displayEvents(life);
 
   // death finale shows ONLY when a life was cut short — a fatal event or a child
   // death — where the age IS the story (DIED AT, with 💀). Ordinary adult lives

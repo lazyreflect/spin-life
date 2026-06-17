@@ -176,7 +176,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
     // folds into DIED); otherwise show it as a plain bad-luck pill.
     const shownEvents = (diedYoung ? evt.events.filter((e) => e.child) : evt.events)
       .filter((e) => !(cutShort && e.kind === 'fatal'))
-      .map((e) => ({ text: e.text, kind: e.kind === 'fatal' ? 'bad' : e.kind }));
+      .map((e) => ({ id: e.id, text: e.text, kind: e.kind === 'fatal' ? 'bad' : e.kind }));
 
     const life = {
       country: country.name, code: country.code, flag: flagEmoji(country.code), continent: country.continent,
