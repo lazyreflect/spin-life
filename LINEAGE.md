@@ -409,3 +409,81 @@ count, percentile replacement, marriage-market scope).
 Remaining beyond the scope fork is **build-time tuning** (fertile-window numbers,
 cross-country `z`-conversion calibration, `R` pre-inflation factor, mate-value
 weights) — resolved empirically against the Phase 6 suite, not by design debate.
+
+---
+
+## 10. v2 direction — the small-clan game (from population sims, 2026-06-17)
+
+A round of interactive population simulations reshaped the feature. After the
+playable loop shipped, the pairing UI felt flat — and the reason was diagnostic:
+**the spin is fun because it's *fate + story*; deliberate pairing made it
+*management*.** A series of sims found the version that keeps the fun. This
+refines §1–§9 (same model, voice, ascent theme); it does not replace them.
+
+### 10.1 Findings
+- **Scale: a clan, not a nation.** No player curates 200 founders — **10–20 is
+  realistic.** At that scale the game is *intimate* (you know your characters) and
+  bridges saga + population on one screen.
+- **Friction → fate.** The app should **pick the couple randomly** (an eligible
+  bachelor + a partner). Pairing *becomes a spin* instead of admin. The player's
+  real levers are **how good a pool you build** (spin) and **which offspring you
+  advance** (selection) — strategy without a management screen.
+- **Twin antagonists pull every clan down:**
+  - **Extinction** — a 10-founder start has **~16% chance of dying out in 8
+    generations** (sex imbalance / died-young runs). ~15 is the safe floor.
+    "How big a pool before I breed?" is a real risk/reward call (roguelike stakes).
+  - **Inbreeding** — small pools **homogenize fast** (15–20 founders → ~2 countries,
+    lose a third of founder lines in 8 generations). **§4.8 (the Habsburg trap) is
+    the CORE antagonist at this scale, not an edge case.**
+- **Spin is the lifeblood — the unlock.** Spinning fresh founders is the only
+  antidote to inbreeding/extinction (+4–5 spins/gen doubles diversity, keeps
+  founder lines growing). **This makes the spin — the proven-fun loop —
+  mechanically essential to breeding.** The two loops finally need each other:
+  you spin to keep your gene pool alive, not to "collect."
+- **Differential fertility dominates aggregates; the population median is the
+  wrong goal.** The poor out-breed everyone, so any population average is dragged
+  toward poverty (median founder $5.9k vs **mean $77.6k** — a 13× fat tail).
+  **Migration can't lift the median** (emigrants move to low-TFR rich countries →
+  breed less → can't beat differential fertility — confirmed: even 55% emigration
+  stays trapped). **Only selection moves the median.** So:
+  - **Don't optimize the population median** — it's fertility-doomed and bleak.
+  - **Cultivate YOUR line against the tide.** Selection (keep the best kids) +
+    migration (get *your* line out) on your chosen lineage. The bleak population is
+    the *backdrop that makes one ascending line mean something* — saga + dynasty,
+    unified.
+- **Migration = individual escape + diversification, never aggregate uplift.**
+  Auto-defaulting a mixed kid to the better parent's country is **degenerate**
+  (sim ran away to a $122k / 78%-monoculture). Migration must be **earned**: the
+  rare `emigrate` event **repurposed to relocate a character's descendants** to a
+  richer country (clean in the Destiny pipeline — it changes where the *kids* are
+  born, not the parent's own baked life), or a priced player choice. It lifts the
+  chosen line, at a cost, never everyone for free.
+
+### 10.2 The v2 loop
+Start a small clan (spin ~10–20) → **fate pairs them off** → each couple has a
+**litter by country TFR, all born at once** (siblings diverge → free drama) →
+read the saga / **curate the best to advance** → **spin fresh blood** to fight
+inbreeding & extinction → your line ascends (or dies) against a world sliding
+toward the mean. The couple **retires after one litter** (turnover → spin pressure).
+The reward is the **story** (§ connect a child's copy to its real parents and the
+generational arc — "rose above his father" / "the line ended at 4").
+
+### 10.3 Open tuning (TODO before building the v2 loop)
+- **Real per-country TFR** (World Bank, same source family as the other country
+  stats) instead of the `1.4 + 0.08·empAg` proxy, which **runs hot (~4 vs real
+  ~2.3)** and made every pool explode to the carrying cap — masking organic
+  growth/shrink/extinction. With real TFR, "is my clan thriving or dying?" becomes
+  a visible tension, and **low-TFR countries (Korea/Italy) become demographic-
+  collapse story beats**.
+- **Carrying cap = a backstop** (famine / attention limit), **not** the per-turn
+  population setter.
+- **Seed size** (10 = roguelike-risky vs 15–20 = safe) and **fresh-spin rate**.
+- **Litter size** sampled around TFR (Poisson), so low-TFR couples sometimes roll
+  **zero** — the line just ends.
+
+### 10.4 The honest bet
+Random pairing means the player *discovers* the story rather than authoring it —
+so **the writing is the entire product.** Prototype the **litter reveal + saga
+copy** (a child's story against its real parents) *before* the pool/odds/TFR
+plumbing: prove the stories are fun to read, then build the loop that generates
+them.
