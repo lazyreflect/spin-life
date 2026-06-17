@@ -96,6 +96,36 @@ framing stays biological for v1. Donor/adoption/same-sex parents deferred (§8).
 
 ## 4. The model
 
+### 4.0 Lifecycle — the Destiny model *(v1; the living-sim is explicitly out)*
+
+A card's whole life is still rolled at once (death age, events, outcome all
+predetermined — the model and its determinism are untouched). What changes is
+*when each fact is surfaced*, so a founder can be used as a living progenitor
+without the contradiction of "the story ended, now go make babies."
+
+- **Roll = the full predetermined destiny.** Nothing is simulated over time.
+- **Death age is rolled but HIDDEN until retirement.** The founding reveal lands
+  on **net worth + verdict — the climax — with no death age**; the character reads
+  as a person available to found a line, not a corpse with a tombstone.
+- **The lifecycle is information-ordering, not simulation:** founder (alive, no
+  death shown) → marriage → children (within the fertile window) → *retired* →
+  death age revealed as the closing beat → ancestor in the tree.
+- **Fertile window is free:** `[FERTILE_AGE, min(ageAtDeath, fertility end)]`,
+  known at roll time from the predetermined `ageAtDeath`. Died young → short
+  window → few children (§4.5). Fatal events already set `ageAtDeath`, so "some
+  events are fatal" needs no new machinery.
+- **No live `current age`, no events firing over time, no per-age state.** Showing
+  a live current age would oblige an age-consistent current state — the
+  "doctor-at-18" problem. The Destiny model dodges it by never depicting per-age
+  state: the career is the life's *endpoint*, children happened *across* the life.
+- **Content safety:** parents must have reached `FERTILE_AGE` (18); reproduction
+  is an abstract genotype combination between established adults, never a depicted
+  act — no CSAM surface (Phase 1 enforces the floor).
+
+The full **living-sim** (characters aging in meta-time, events firing live,
+age-consistent state, per-career attainment ages) is a different genre and a
+large build — **explicitly out of v1 scope** (§8).
+
 ### 4.1 Card → a person who can have children *(reframe + gating)*
 
 A card is currently a finished, dead life with an `age` at death
@@ -195,6 +225,11 @@ lineage mode rather than contort to recalibrate it.
 - The **meta-verdict is the lineage's trajectory**: did the dynasty *ascend, hold,
   or collapse*, measured in dynasty net worth across generations (§1). On-theme,
   and far simpler than a unified-CDF retrofit.
+- **Net worth is the founding-reveal climax, not death** (§4.0). The reveal lands
+  on net worth + verdict; the death age is withheld until retirement, when it
+  becomes the closing beat. "Final net worth" → "Net worth" (no morbid qualifier
+  on the primary metric). Lifespan stays visible only when it's the story — a
+  tragic/cut-short death — or a remarkable-longevity flat-out outlier.
 - Keep light **anti-compounding damping** so iterated selection doesn't trivially
   pin individual scores (`luckSd=0.10` headroom at `events.js:289` is tuned for
   one-shot births).
@@ -297,6 +332,9 @@ bred population is circular.
 - **Social/biological decoupling** — donor/adoption/same-sex parents (§2).
 - **Migration as a full subsystem** — v1 uses the lightweight friction-gate (§4.4);
   the richer migration arc comes later.
+- **Living-sim mode** — characters aging in meta-time, events firing live, a live
+  current age, age-consistent state, per-career attainment ages. v1 is the Destiny
+  model (§4.0); the living-sim is a different genre, deferred.
 
 ---
 
@@ -305,6 +343,7 @@ bred population is circular.
 | Question | Status |
 |---|---|
 | Core single-player goal | ✅ Generational ascent lifecycle (§1). |
+| Lifecycle / temporal model | ✅ Destiny model — predetermined life, death hidden until retirement; living-sim out (§4.0). |
 | Primary metric | ✅ Net worth (§1). |
 | Closed vs market | ✅ Closed single-player first (§3, §8). |
 | Genotype reveal | ✅ Proof-tightening band (§6). |
