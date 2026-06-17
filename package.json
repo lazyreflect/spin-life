@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "sim": "node sim/simulate.mjs 200000",
+    "cdf": "node sim/gen-cdf.mjs 200000",
     "cards": "node sim/cards.js 10"
   },
   "devDependencies": {
