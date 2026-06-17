@@ -81,6 +81,11 @@ function tokensFor(life, ctx) {
 
 // stable signature → seeds the private copy RNG (independent of the model stream)
 function copySig(life) {
+  // a kept/bred card carries a stable collectible id — key copy off it so two
+  // siblings with identical stats still get distinct copy (lineage Phase 0).
+  // Un-id'd lives (the sim, the live preview) fall back to the content signature,
+  // so existing behaviour and golden reproducibility are unchanged.
+  if (life.id) return `id:${life.id}`;
   const ev = (life.events || []).map((e) => e.text).join(',');
   return `${life.code}|${life.name}|${life.age}|${(life.childRank ?? 0).toFixed(4)}|${(life.eventSwing ?? 0).toFixed(3)}|${life.fatalCause || ''}|${ev}`;
 }

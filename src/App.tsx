@@ -11,22 +11,40 @@ const MAX_KEPT = 200;
 function load<T>(key: string, fallback: T): T {
   try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch { return fallback; }
 }
-// lives are unique (procedural) — a stable signature dedupes Keep / drives isKept
+// Identity (lineage Phase 0): every kept card carries a stable collectible `id`
+// (+ generation / parentIds for the family tree). `lifeKey` is the pre-id content
+// signature, kept only to (a) derive a deterministic id when migrating legacy
+// saves and (b) dedupe a life that somehow lacks an id.
 const lifeKey = (L: any) => `${L.code}|${L.name}|${L.age}|${L.netWorth}|${Math.round(L.luckPct)}`;
+const idOf = (L: any) => L.id ?? lifeKey(L);
+// stamp founder identity on saves made before the id layer existed
+function migrate(lives: any[]): any[] {
+  if (lives.every((L) => L.id)) return lives;
+  return lives.map((L) =>
+    L.id ? L : { ...L, id: lifeKey(L), generation: L.generation ?? 0, parentIds: L.parentIds ?? null }
+  );
+}
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('spin');
   const [pulls, setPulls] = useState<number>(() => load(PULLS_KEY, START_PULLS));
-  const [lives, setLives] = useState<any[]>(() => load(LIVES_KEY, []));
+  const [lives, setLives] = useState<any[]>(() => migrate(load(LIVES_KEY, [])));
   const [hasNew, setHasNew] = useState(false);
 
   useEffect(() => { localStorage.setItem(PULLS_KEY, JSON.stringify(pulls)); }, [pulls]);
   useEffect(() => { localStorage.setItem(LIVES_KEY, JSON.stringify(lives)); }, [lives]);
 
-  const isKept = (L: any) => lives.some((x) => lifeKey(x) === lifeKey(L));
+  const isKept = (L: any) => lives.some((x) => idOf(x) === idOf(L));
   const keep = (L: any) => {
     if (isKept(L)) return;
-    setLives((prev) => [{ ...L, ts: Date.now() }, ...prev].slice(0, MAX_KEPT));
+    const card = {
+      ...L,
+      id: L.id ?? crypto.randomUUID(),
+      generation: L.generation ?? 0,
+      parentIds: L.parentIds ?? null,
+      ts: Date.now(),
+    };
+    setLives((prev) => [card, ...prev].slice(0, MAX_KEPT));
     setHasNew(true);
   };
   const goTab = (t: Tab) => { setTab(t); if (t === 'lives') setHasNew(false); };

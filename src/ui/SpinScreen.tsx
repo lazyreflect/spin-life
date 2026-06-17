@@ -30,6 +30,12 @@ export function SpinScreen({
     if (pulls <= 0) { onRefill(); return; }
     onSpend();
     const L = roller.rollLife();
+    // collectible identity (lineage Phase 0): a spun card is a founder — its own
+    // line, no parents. Beats are already baked from content inside rollLife, so
+    // stamping the id here never changes the displayed copy.
+    L.id = crypto.randomUUID();
+    L.generation = 0;
+    L.parentIds = null;
     setLife(L); setCountryLocked(false); setPhase('spinning');
     clear();
     timers.current.push(setTimeout(() => setCountryLocked(true), COUNTRY_LOCK_MS));
