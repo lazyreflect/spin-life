@@ -85,16 +85,27 @@ npm run dev     # or the preview tooling
 
 ## Next tasks (priority order — per the §10 v2 direction)
 
-1. **Saga copy + litter reveal — THE prototype, do this first.** Wire a bred
-   child's copy to its **real parents and generational arc** ("born to Niran, a day
-   laborer who died with nothing… rose no further; gone at 4"), and reveal a
-   **litter** (siblings diverge → free drama). This is the honest bet — *the writing
-   is the product*; prove the stories are fun to read before building loop plumbing.
-   Extend `copy.json` banks + `buildBeats`; a child's origin is its *real parents*,
-   so `mobilityDelta` / `classOrigin→classFinal` give "rose above / repeated / line
-   ended" for free.
-2. **Real per-country TFR** (World Bank) to replace the hot `empAg` proxy (§10.3),
-   then re-run the small-clan sims so growth/shrink/extinction are accurate.
+> **Session 2026-06-17 update:** the saga prototype was **shelved** (samples didn't
+> land — "not that interesting"; the *writing-is-the-product* thesis is now
+> **unproven**, not the locked bet). **Real TFR shipped** (`sim/fetch-tfr.mjs` →
+> `countries.json.tfr`) and a **clan-forward "watch it live" sim shipped**
+> (`sim/clan.mjs`). The big finding (§10.5): **clans have no natural scale — they
+> die (~35% from 10 founders) or boom into the thousands; player curation is the
+> only thing that holds clan scale**, and which country the line pools into drives
+> its fate (migration becomes central). Lead with §10.5.
+
+0. **(shelved) Saga copy + litter reveal.** Was "THE prototype." A first pass of
+   parent-anchored sagas didn't interest the user; revisit later, don't assume the
+   writing is the hook. Mechanism for it (extend `copy.json` + `buildBeats`, child
+   origin = its *real parents*, `mobilityDelta`/`classOrigin→classFinal` give "rose
+   above / repeated / line ended") is still the right approach if resumed.
+1. ✅ **Real per-country TFR — DONE.** `sim/fetch-tfr.mjs` (WB `SP.DYN.TFRT.IN`);
+   `sim/clan.mjs` runs the clan forward (narrated single run + `--trials N`
+   distribution). See LINEAGE.md §10.5 for findings.
+2. **Unvalidated next from §10.5:** model the **curation loop** in `clan.mjs`
+   (advance best-K kids + real carrying cap → prove it yields the playable hovering
+   clan); quantify the **country-pooling die/boom split** and test **migration** as
+   the lever that changes a line's fate.
 3. **The v2 loop** (§10.2): small clan (~10–20), **app pairs couples randomly**
    (fate, not the current manual selection), litters by TFR, **spin fresh blood**
    vs inbreeding/extinction, curate who advances. Replaces the manual pairing UI.
