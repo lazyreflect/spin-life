@@ -469,12 +469,12 @@ The reward is the **story** (§ connect a child's copy to its real parents and t
 generational arc — "rose above his father" / "the line ended at 4").
 
 ### 10.3 Open tuning (TODO before building the v2 loop)
-- **Real per-country TFR** (World Bank, same source family as the other country
-  stats) instead of the `1.4 + 0.08·empAg` proxy, which **runs hot (~4 vs real
-  ~2.3)** and made every pool explode to the carrying cap — masking organic
-  growth/shrink/extinction. With real TFR, "is my clan thriving or dying?" becomes
-  a visible tension, and **low-TFR countries (Korea/Italy) become demographic-
-  collapse story beats**.
+- ✅ **Real per-country TFR — DONE** (`sim/fetch-tfr.mjs`, World Bank
+  `SP.DYN.TFRT.IN`, merged into `countries.json` as `tfr`; 215/241 filled, 26 tiny
+  territories fall back to 2.2). Replaces the `1.4 + 0.08·empAg` proxy (ran ~4 vs
+  real ~2.3 and masked organic demographics). Real values land where expected —
+  Korea 0.72, Italy 1.21, Japan 1.2 (collapse beats); Niger 6.06, Nigeria 4.48;
+  India 1.98, US 1.62. See **§10.5** for what driving the model with it revealed.
 - **Carrying cap = a backstop** (famine / attention limit), **not** the per-turn
   population setter.
 - **Seed size** (10 = roguelike-risky vs 15–20 = safe) and **fresh-spin rate**.
@@ -487,3 +487,45 @@ so **the writing is the entire product.** Prototype the **litter reveal + saga
 copy** (a child's story against its real parents) *before* the pool/odds/TFR
 plumbing: prove the stories are fun to read, then build the loop that generates
 them.
+
+> ⚠️ **Status note (2026-06-17):** the saga-copy prototype was **shelved** — a
+> first pass of hand-drafted parent-anchored sagas didn't land ("not that
+> interesting"). The honest-bet thesis (*the writing is the entire product*) is
+> therefore **unproven, not confirmed.** Energy moved to the demographic model
+> instead (§10.5). Revisit the writing later; don't assume it's the hook.
+
+### 10.5 What the clan sim found (real TFR, 2026-06-17)
+Built `sim/clan.mjs` — drives the **shared** model (`rollLife` founders +
+`rollChild` offspring) forward at clan scale: fate-pairs eligible couples, one
+litter per couple sized **Poisson(mother-country TFR)**, couples retire after a
+litter (§10.2). Two modes: one clan narrated generation-by-generation (the
+intimate "watch it live" view) and `--trials N` for the distribution. Findings:
+
+- **Extinction is real and scales with seed size** — over 8 generations: **~35%
+  extinct from 10 founders, ~10% from 15, ~8% from 20.** Roguelike stakes,
+  confirmed — and *higher* than the old hot-proxy run, because real (lower) TFR
+  kills more lines. "How big a pool before I breed?" is a genuine risk call.
+- **Diversity collapses fast and visibly** — 9 countries → 1, 12 founder lines →
+  4 in a single 8-gen run. The homogenization (the §4.8 inbreeding antagonist) is
+  now an on-screen number, not a footnote.
+- **⚠️ There is NO natural clan-scale equilibrium.** Among survivors, **0 "held"
+  near the seed size** — an unmanaged clan either **dies (~35% at start-10)** or
+  **booms into the hundreds/thousands** by gen 8. The model has no stable middle.
+  This contradicts the §10 mental image of "a clan that hovers at 10–20." Two
+  consequences, both promoting design pieces from optional to **load-bearing**:
+  - **Player curation IS the core verb.** Advancing only a handful of kids per
+    generation is the *only* thing that keeps the clan knowable. The cull is not a
+    backstop (§10.3) — it's the main loop. The carrying cap is the hard ceiling
+    behind it.
+  - **Which country the line pools into becomes its fate.** The die-vs-boom split
+    is driven by the TFR of the country the bloodline homogenizes into (Korea 0.72
+    → wither; Niger 6.06 → explode). This is a strong emergent story hook and makes
+    **migration (§10's earned-escape lever) mechanically central**, not flavor:
+    relocating your line is choosing its demographic destiny.
+- **Wealth stays bleak at clan scale too** — survivor median net worth
+  ~$1.3k–1.9k, unchanged from the population view (§10.1). Differential fertility
+  still dominates; only selection moves your line. Holds.
+
+**Unvalidated next** (not yet built): model the curation loop in the sim (advance
+best-K + real cap → prove it produces the playable hovering clan); quantify the
+country-pooling die/boom split and test migration as the lever.
