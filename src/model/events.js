@@ -22,24 +22,18 @@ const SUB_TOP = new Set(['low', 'lowmid', 'mid']);
 const LOW_BAND = new Set(['low', 'lowmid']);
 const MID_UP = new Set(['mid', 'highmid', 'high', 'elite']);
 const RICH_BAND = new Set(['high', 'elite']);
-const STATUS = new Set(['politician', 'banker', 'executive', 'civil-servant', 'clergy', 'lawyer', 'judge', 'diplomat']);
 // cohorts with no formal-employment safety net (informal economy + not-in-work)
 const VULN_COHORT = new Set(['informal', 'unemployed', 'homemaker']);
-// roles whose work is physically dangerous (injury/death on the job)
-const DANGEROUS = new Set(['miner', 'artisanal-miner', 'oil-rig-worker', 'power-plant-operator', 'construction-worker', 'welder', 'machinist', 'factory-worker', 'dock-worker', 'forester', 'fisher']);
-// roles a single-employer / company-town closure can wipe out
-const COMPANY_TOWN = new Set(['factory-worker', 'garment-worker', 'factory-supervisor', 'miner', 'artisanal-miner', 'oil-rig-worker', 'power-plant-operator']);
-// roles most exposed to automation / offshoring
-const AUTOMATABLE = new Set(['factory-worker', 'garment-worker', 'machinist', 'call-center-agent', 'bank-teller', 'office-clerk', 'bookkeeper', 'retail-clerk', 'warehouse-worker', 'data-analyst', 'truck-driver']);
-// roles where a "breakout" to fame is on the table at all
-const PERFORMER = new Set(['musician', 'artist', 'actor', 'athlete', 'content-creator', 'journalist']);
-// small-trade roles that can scale into a real business
-const TRADER = new Set(['informal-trader', 'street-vendor', 'shopkeeper', 'cook', 'tailor', 'barber']);
+// Role categories that used to be hardcoded id-Sets here (dangerous, company-town,
+// automatable, performer, trader, status) are now `tags` ON each career in
+// careers.json — one source of truth, validated on load, no inverted index to
+// drift out of sync with the catalog. Events gate on a tag instead of an id list.
+const hasTag = (career, tag) => !!career.tags && career.tags.includes(tag);
 
 // netWorth is absolute USD (catalog ~ p10 2k / p50 25k / p90 250k); map to a
 // low-wealth factor in [0,1] on a log scale (rich -> 0, poor -> 1).
 const lowWealthFactor = (c) => {
-  const nw = Math.max(c.netWorth ?? 25000, 500);
+  const nw = Math.max(c.netWorth, 500);
   return clamp((Math.log10(60000) - Math.log10(nw)) / (Math.log10(60000) - Math.log10(2000)), 0, 1);
 };
 
@@ -47,16 +41,16 @@ const lowWealthFactor = (c) => {
 // worker and a catastrophe for an informal day-laborer. Combines the country's
 // vulnerable-employment share (real data) with the person's cohort/income band.
 // Null-safe: 55 countries lack vulnEmployment — fall back to instability+wealth.
-export function precarity(ctx, country) {
-  let cCountry;
-  if (country.vulnEmployment != null) cCountry = clamp(country.vulnEmployment / 100, 0, 1);
-  else cCountry = clamp(0.15 + 0.85 * instabilityOf(country), 0, 1); // fallback
+export function precarity(ctx, country, bands) {
+  // vulnEmployment is always present post-load (load.js imputes it from
+  // life-expectancy instability where the column is absent — the same estimate
+  // this function used to compute inline as a fallback).
+  let cCountry = clamp(country.vulnEmployment / 100, 0, 1);
   cCountry = clamp(0.7 * cCountry + 0.3 * lowWealthFactor(country), 0, 1);
   const cohort = ctx.career.cohort;
-  const band = ctx.career.incomeBand;
-  const cCareer = VULN_COHORT.has(cohort) ? 0.9
-    : LOW_BAND.has(band) ? 0.45
-      : band === 'mid' ? 0.20 : 0.08;
+  // career-side precarity: no-safety-net cohorts are worst; otherwise it's the
+  // band's own precarity (data/bands.json), no inline magnitude ladder.
+  const cCareer = VULN_COHORT.has(cohort) ? 0.9 : bands[ctx.career.incomeBand].precarity;
   return clamp(0.5 * cCareer + 0.5 * cCountry, 0, 1);
 }
 
@@ -90,8 +84,8 @@ const disasterText = (x, rand) => pick(DISASTER[x.country.continent] || DISASTER
 // befall someone who dies before adulthood (shown on died-young cards).
 // decline = "this explains a fall", so the forced-arc story is not piled on top.
 // precaritySensitive = severity (w and fatalP) scales with lack of safety net.
-// Gates (all optional): sex, sector, ids (Set), cohortIn (Set), bandIn (Set),
-// region (continent list), formalOnly, minInst, requires, excludes.
+// Gates (all optional): sex, sector, tag (career tag), cohortIn (Set), bandIn
+// (Set), region (continent list), formalOnly, minInst, requires, excludes.
 export const EVENTS = [
   // ─────────────────────────── adversity ───────────────────────────
   { id: 'illness',   text: 'battled a serious illness',     prob: (x, i) => 0.06 * (1 + 1.4 * i),                 w: (x, r) => -mag(0.05, 0.40, r, 2.6), age: -7,  fatalP: 0.07, child: true, decline: true, precaritySensitive: true },
@@ -102,11 +96,11 @@ export const EVENTS = [
   { id: 'addiction', text: 'lost years to addiction',       prob: () => 0.030,                                    w: -0.20, age: -6,  fatalP: 0.05, decline: true },
   // a major loss, but rarely a total wipe — pensions/property/family usually leave a residue
   { id: 'ruin',      text: 'lost most of it to bad debt',   prob: (x) => 0.03 * (0.3 + x.childRank),              w: -0.30, decline: true },
-  { id: 'scandal',   text: 'fell from grace in a scandal',  prob: (x) => (STATUS.has(x.career.id) ? 0.04 : 0.004), w: -0.28, decline: true },
+  { id: 'scandal',   text: 'fell from grace in a scandal',  prob: (x) => (hasTag(x.career, 'status') ? 0.04 : 0.004), w: -0.28, decline: true },
   // permanent disability — rarely fatal, but income-ending; brutal without a safety net
-  { id: 'disability', text: 'was disabled by an injury',    prob: (x, i) => 0.018 * (1 + 1.0 * i) + (DANGEROUS.has(x.career.id) ? 0.02 : 0), w: (x, r) => -mag(0.08, 0.40, r, 2.2), age: -4, fatalP: 0.03, decline: true, precaritySensitive: true },
+  { id: 'disability', text: 'was disabled by an injury',    prob: (x, i) => 0.018 * (1 + 1.0 * i) + (hasTag(x.career, 'dangerous') ? 0.02 : 0), w: (x, r) => -mag(0.08, 0.40, r, 2.2), age: -4, fatalP: 0.03, decline: true, precaritySensitive: true },
   // on-the-job death/injury for physically dangerous trades (informal miners die uninsured)
-  { id: 'workinjury', text: 'was maimed in a workplace accident', ids: DANGEROUS, prob: (x, i) => 0.05 * (1 + 0.8 * i), w: -0.16, age: -8, fatalP: 0.18, decline: true, precaritySensitive: true },
+  { id: 'workinjury', text: 'was maimed in a workplace accident', tag: 'dangerous', prob: (x, i) => 0.05 * (1 + 0.8 * i), w: -0.16, age: -8, fatalP: 0.18, decline: true, precaritySensitive: true },
   { id: 'mentalill', text: 'struggled with mental illness',  prob: () => 0.05,                                    w: -0.10, age: -3,  fatalP: 0.03, decline: true },
   // approximate cohort shock (the sim rolls lives independently, so this is a
   // per-person stand-in for a shared pandemic rather than a true cohort event)
@@ -130,8 +124,8 @@ export const EVENTS = [
   { id: 'caregiver', text: 'gave up years to care for family', prob: () => 0.04,                                  w: -0.08, age: -1, decline: true },
 
   // ───────────────────────── work / economy ────────────────────────
-  { id: 'layoff',    text: 'lost a career to automation',   ids: AUTOMATABLE, formalOnly: true, prob: () => 0.05, w: -0.12, decline: true },
-  { id: 'closure',   text: 'lost the job when the plant closed', ids: COMPANY_TOWN, formalOnly: true, prob: (x, i) => 0.05 * (0.7 + 0.8 * i), w: -0.14, decline: true, precaritySensitive: true },
+  { id: 'layoff',    text: 'lost a career to automation',   tag: 'automatable', formalOnly: true, prob: () => 0.05, w: -0.12, decline: true },
+  { id: 'closure',   text: 'lost the job when the plant closed', tag: 'company-town', formalOnly: true, prob: (x, i) => 0.05 * (0.7 + 0.8 * i), w: -0.14, decline: true, precaritySensitive: true },
   { id: 'cropfail',  text: 'was ruined by a failed harvest', sector: 'agriculture', prob: (x, i) => 0.05 * (0.6 + 1.4 * i), w: -0.16, decline: true, precaritySensitive: true },
 
   // ──────────────────────── political / macro ──────────────────────
@@ -146,22 +140,22 @@ export const EVENTS = [
   // (RARE; opportunity events richer in functioning economies / for high traits)
   { id: 'emigrate',  text: 'emigrated for a better life',   prob: (x, i) => 0.06 * i * clamp(0.5 + 0.35 * x.zIq, 0, 1.6), w: 0.20, age: 3 },
   { id: 'windfall',  text: 'came into an inheritance',      prob: (x) => 0.05 * Math.pow(x.parentRank, 1.5),      w: 0.28 },
-  { id: 'business',  text: 'built a thriving business',     prob: (x, i) => (TRADER.has(x.career.id) ? 0.045 : SUB_TOP.has(x.career.incomeBand) ? 0.03 : 0.012) * (0.6 + 0.7 * (1 - i)) * clamp(0.5 + 0.5 * x.zIq, 0.06, 1.8), w: 0.33 },
+  { id: 'business',  text: 'built a thriving business',     prob: (x, i) => (hasTag(x.career, 'trader') ? 0.045 : SUB_TOP.has(x.career.incomeBand) ? 0.03 : 0.012) * (0.6 + 0.7 * (1 - i)) * clamp(0.5 + 0.5 * x.zIq, 0.06, 1.8), w: 0.33 },
   { id: 'married',   text: 'married into wealth',           prob: () => 0.020,                                    w: 0.22 },
   { id: 'bigbreak',  text: 'caught a lucky break',          prob: (x, i) => 0.02 * (0.6 + 0.7 * (1 - i)) * clamp(0.5 + 0.5 * x.zIq, 0.06, 1.8), w: 0.18 },
   { id: 'lottery',   text: 'won the lottery',               prob: () => 0.0008,                                   w: 0.90, exemptHeadroom: true },
   // scholarship — lifts a poor, bright kid where there is a school system to climb
-  { id: 'scholarship', text: 'won a life-changing scholarship', bandIn: SUB_TOP, prob: (x) => 0.04 * clamp(0.4 + 0.6 * x.zIq, 0, 1.6) * (1 - x.parentRank) * clamp((x.country.secondaryEnrollment ?? 70) / 100, 0.2, 1), w: 0.18 },
+  { id: 'scholarship', text: 'won a life-changing scholarship', bandIn: SUB_TOP, prob: (x) => 0.04 * clamp(0.4 + 0.6 * x.zIq, 0, 1.6) * (1 - x.parentRank) * clamp(x.country.secondaryEnrollment / 100, 0.2, 1), w: 0.18 },
   // promotion / made partner — only for the formally employed, mid-band and up
   { id: 'promotion', text: 'rose to the top of the field',  bandIn: MID_UP, formalOnly: true, prob: (x) => 0.05 * clamp(0.5 + 0.5 * x.zIq, 0.1, 1.6), w: 0.16 },
   // sports breakout — height-tilted, very rare unless already an athlete
   { id: 'sports',    text: 'broke through as a star athlete', prob: (x) => (x.career.id === 'athlete' ? 0.06 : 0.004) * clamp(0.4 + 0.5 * x.zHeight, 0.05, 1.8), w: 0.40 },
   // fame — looks/talent-tilted for performers; a legendary card
-  { id: 'fame',      text: 'shot to fame',                  ids: PERFORMER, prob: (x) => 0.03 * clamp(0.4 + 0.4 * x.zLooks + 0.3 * x.zIq, 0.06, 1.8), w: 0.42 },
+  { id: 'fame',      text: 'shot to fame',                  tag: 'performer', prob: (x) => 0.03 * clamp(0.4 + 0.4 * x.zLooks + 0.3 * x.zIq, 0.06, 1.8), w: 0.42 },
   // wealth compounds — property/equity appreciation lifts those who already hold assets
   { id: 'appreciation', text: 'watched investments multiply', bandIn: MID_UP, prob: (x, i) => 0.05 * x.childRank * (1 - 0.6 * i), w: (x) => 0.10 + 0.25 * x.childRank, exemptHeadroom: true },
   // dark fortune — graft for status careers in unequal, weakly-governed states
-  { id: 'corruption', text: 'grew rich on quiet corruption', prob: (x, i) => (STATUS.has(x.career.id) ? 0.05 : 0) * (0.3 + 1.2 * i) * clamp((x.country.wealthGini - 40) / 45, 0, 1), w: 0.30 },
+  { id: 'corruption', text: 'grew rich on quiet corruption', prob: (x, i) => (hasTag(x.career, 'status') ? 0.05 : 0) * (0.3 + 1.2 * i) * clamp((x.country.wealthGini - 40) / 45, 0, 1), w: 0.30 },
 
   // ───────────────────── narration (no wealth effect) ───────────────
   // captions an outcome the career model already produced (a girl in a low-LFP,
@@ -173,8 +167,8 @@ export const EVENTS = [
     prob: (x) => {
       const consistent = x.career.cohort === 'homemaker' || x.career.cohort === 'informal' || LOW_BAND.has(x.career.incomeBand);
       if (!consistent) return 0;
-      const enroll = x.country.secondaryEnrollment ?? 100;
-      const lfp = x.country.femaleLFP ?? 60;
+      const enroll = x.country.secondaryEnrollment;
+      const lfp = x.country.femaleLFP;
       const struct = clamp((75 - enroll) / 75, 0, 1) * clamp((55 - lfp) / 55, 0, 1);
       return 0.7 * struct;
     },
@@ -226,7 +220,7 @@ function forcedArcEvent(ctx, childPost, keep, rand, inst = 0) {
 function passesGates(e, x) {
   if (e.sex && e.sex !== x.sex) return false;
   if (e.sector && e.sector !== x.career.sector) return false;
-  if (e.ids && !e.ids.has(x.career.id)) return false;
+  if (e.tag && !hasTag(x.career, e.tag)) return false;
   if (e.bandIn && !e.bandIn.has(x.career.incomeBand)) return false;
   if (e.cohortIn && !e.cohortIn.has(x.career.cohort)) return false;
   if (e.formalOnly && VULN_COHORT.has(x.career.cohort)) return false;
@@ -248,9 +242,9 @@ function severityOf(e, x, rand) {
 
 // ctx: { parentRank, childRank (= pre-event position), zIq, career, occ,
 //        originStanding, sex, zLooks, zHeight }
-export function rollEvents(ctx, country, rand = Math.random) {
+export function rollEvents(ctx, country, rand = Math.random, bands) {
   const inst = instabilityOf(country);
-  const prec = precarity(ctx, country);
+  const prec = precarity(ctx, country, bands);
   // enrich the context once so event predicates can read derived signals
   const x = {
     ...ctx, country, inst, prec,

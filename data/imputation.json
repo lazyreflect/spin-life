@@ -1,0 +1,11 @@
+{
+  "_note": "Single source of truth for missing country-data policy. load.js (normalizeCountries) fills these ONCE at makeRoller time so the model sees complete data and carries zero `??` fallbacks in the math. Only vulnEmployment, unemployment, and isco are actually absent in the current dataset; the rest are present on all 241 countries and these constants are defensive. vulnEmployment is NOT a flat constant — it is derived in load.js from the country's life-expectancy instability (matching the legacy precarity estimate); listed here as null to document that it has a computed policy.",
+  "vulnEmployment": null,
+  "unemployment": 6,
+  "secondaryEnrollment": 70,
+  "femaleLFP": 55,
+  "empAg": 25,
+  "empIndustry": 25,
+  "empServices": 50,
+  "netWorth": 25000
+}

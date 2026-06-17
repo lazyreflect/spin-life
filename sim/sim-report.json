@@ -1,0 +1,166 @@
+{
+  "seed": 24301,
+  "n": 200000,
+  "checks": {
+    "reproducible": {
+      "ok": true,
+      "detail": "same seed -> identical life"
+    },
+    "corrHtLkM": {
+      "got": 0.1951,
+      "target": 0.2,
+      "tol": 0.03,
+      "ok": true
+    },
+    "corrHtLkF": {
+      "got": 0.103,
+      "target": 0.1,
+      "tol": 0.03,
+      "ok": true
+    },
+    "monotoneBands": {
+      "ok": true,
+      "detail": "[0.35 0.44 0.59 0.75 0.89 0.93]"
+    },
+    "eliteLeak": {
+      "ok": true,
+      "detail": "0 unearned leaks"
+    },
+    "overQual": {
+      "ok": true,
+      "detail": "0.32% of adults"
+    },
+    "childMean": {
+      "got": 0.4663,
+      "target": 0.5,
+      "tol": 0.07,
+      "ok": true
+    },
+    "mobMean": {
+      "got": -1.3567,
+      "target": 0,
+      "tol": 3,
+      "ok": true
+    },
+    "steepCovered": {
+      "ok": true,
+      "detail": "100.0% of ≤-18 arcs explained"
+    },
+    "evtRate": {
+      "got": 0.4836,
+      "target": 0.45,
+      "tol": 0.06,
+      "ok": true
+    },
+    "eliteRate": {
+      "ok": true,
+      "detail": "0.25% of adults"
+    }
+  },
+  "metrics": {
+    "rIqWealth": 0.3647,
+    "rEduWealth": 0.527,
+    "rParentChild": 0.4884,
+    "rIqLife": 0.1241,
+    "directional": {
+      "richDumb": 0.636,
+      "richSmart": 0.753,
+      "poorSmart": 0.56,
+      "poorDumb": 0.303
+    },
+    "bandMean": [
+      0.355,
+      0.443,
+      0.593,
+      0.751,
+      0.888,
+      0.935
+    ],
+    "eventFireRate": {
+      "was set back by a costly divorce": 0.0335,
+      "battled a serious illness": 0.0298,
+      "lived through a deadly pandemic": 0.0208,
+      "lived comfortably off old money": 0.0202,
+      "coasted on inherited wealth": 0.0202,
+      "struggled with mental illness": 0.0197,
+      "never had to work the family name": 0.0197,
+      "lived off the family money": 0.0196,
+      "gave up years to care for family": 0.0158,
+      "was widowed and left to cope": 0.014,
+      "was struck by tragedy": 0.0126,
+      "drained the savings supporting relatives": 0.0126,
+      "watched the family money run dry": 0.0126,
+      "lost steady work to a lasting injury": 0.0124,
+      "was evicted and fell into debt": 0.0123,
+      "never rebuilt after a business collapsed": 0.0122,
+      "lost years to addiction": 0.0121,
+      "never recovered from losing a child": 0.0102,
+      "lost most of it to bad debt": 0.0101,
+      "was orphaned young": 0.0099,
+      "was wiped out by a scam": 0.0099,
+      "was disabled by an injury": 0.0089,
+      "married into wealth": 0.0082,
+      "came into an inheritance": 0.0079,
+      "built a thriving business": 0.0075,
+      "was robbed of everything": 0.0071,
+      "sank it all into a failing business": 0.007,
+      "made a string of bad investments": 0.0069,
+      "ran through the family money": 0.0067,
+      "watched the family firm go under": 0.0067,
+      "gambled away the family money": 0.0067,
+      "backed one bad venture after another": 0.0066,
+      "frittered away the inheritance": 0.0066,
+      "let the family fortune slip away": 0.0065,
+      "was bled dry by a long legal battle": 0.0064,
+      "co-signed a loan that ruined them": 0.0064,
+      "caught a lucky break": 0.0051,
+      "rose to the top of the field": 0.005,
+      "was buried by debts that never cleared": 0.0048,
+      "lost the family land and never replaced it": 0.0045,
+      "never worked the same after a bad injury": 0.0045,
+      "never recovered after the family fell on hard times": 0.0044,
+      "watched investments multiply": 0.0038,
+      "lost years to prison": 0.0033,
+      "was ruined by a failed harvest": 0.003,
+      "was displaced by war": 0.0029,
+      "was wiped out when the currency collapsed": 0.0021,
+      "lost a career to automation": 0.0021,
+      "fell from grace in a scandal": 0.002,
+      "lost the harvest to a flood": 0.0019,
+      "won a life-changing scholarship": 0.0019,
+      "emigrated for a better life": 0.0019,
+      "was driven off the land by drought": 0.0019,
+      "was maimed in a workplace accident": 0.0018,
+      "lived through a famine": 0.0016,
+      "died in childbirth": 0.0016,
+      "survived a devastating earthquake": 0.0015,
+      "was married off young instead of schooled": 0.0013,
+      "was kept home from school to work": 0.0012,
+      "lost it all to a corrupt official": 0.0012,
+      "was driven off the family land by conflict": 0.0012,
+      "lost everything to a flood": 0.0012,
+      "never got to finish her schooling": 0.0011,
+      "saw the family's standing erased by upheaval": 0.0011,
+      "was wiped out by hyperinflation": 0.0011,
+      "lost everything when the economy collapsed": 0.001,
+      "was uprooted by a cyclone": 0.001,
+      "was trafficked and exploited": 0.0009,
+      "broke through as a star athlete": 0.0008,
+      "lost the job when the plant closed": 0.0005,
+      "won the lottery": 0.0004,
+      "was displaced by drought": 0.0003,
+      "had it all seized by the state": 0.0003,
+      "was flooded out of the home": 0.0003,
+      "fled the country as a refugee": 0.0002,
+      "grew rich on quiet corruption": 0.0002,
+      "lost the home to a wildfire": 0.0002,
+      "lost the home to a hurricane": 0.0001,
+      "shot to fame": 0.0001,
+      "survived a wildfire": 0.0001,
+      "was displaced by a landslide": 0.0001,
+      "was flooded out of everything": 0.0001,
+      "lost the coast to rising seas": 0,
+      "was battered by a cyclone": 0
+    }
+  }
+}

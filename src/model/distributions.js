@@ -48,10 +48,10 @@ export function ageWeights(baseLE, targetLE) {
   }
   return w;
 }
-export function sampleAge(baseLE, targetLE) {
+export function sampleAge(baseLE, targetLE, rng = Math.random) {
   const w = ageWeights(baseLE, targetLE);
   let total = 0; for (const x of w) total += x;
-  let pick = Math.random() * total;
+  let pick = rng() * total;
   for (let c = 0; c < w.length; c++) { pick -= w[c]; if (pick <= 0) return c; }
   return 130;
 }

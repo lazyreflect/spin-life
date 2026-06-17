@@ -2,6 +2,8 @@ import countries from '../data/countries.json';
 import params from '../data/model-params.json';
 import names from '../data/names.json';
 import careersData from '../data/careers.json';
+import bandsData from '../data/bands.json';
+import imputation from '../data/imputation.json';
 import { makeRoller } from './model/roll.js';
 
 export const roller = makeRoller({
@@ -9,6 +11,8 @@ export const roller = makeRoller({
   params: params as any,
   names: names as any,
   careers: (careersData as any).careers,
+  bands: (bandsData as any).bands,
+  imputation: imputation as any,
 });
 
 // --- birth desirability (drives wheel colour) -------------------------------

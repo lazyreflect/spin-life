@@ -1,12 +1,13 @@
 // Roll a single random life. Dependency-injected with data so both the Node
 // sim and the Vite app share one source of truth.
-import { clamp, normCdf, cholesky, corrNormals, sampleCumulative, randn } from './stats.js';
+import { clamp, normCdf, cholesky, corrNormals, sampleCumulative, randn, makeRng, hashSeed } from './stats.js';
 import {
   wealthQuantile, sampleAge, wealthLifeAdj, adjCountryIq,
   moneyTopPercent, iqTopPercent, heightTopPercent, looksTopPercent, lifeTopPercent,
 } from './distributions.js';
 import { pickName, rollEducation, rollCareer, money, heightImperial, rarityText, classOf, occRankOf, RULING, buildSentence } from './content.js';
 import { rollEvents } from './events.js';
+import { normalizeCountries, validateInputs } from './load.js';
 
 const flagEmoji = (code) =>
   String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
@@ -16,26 +17,29 @@ const flagEmoji = (code) =>
 // makes job and class agree by construction: a clerk can't reach elite, and a
 // rich kid who underachieves into a low-income job drops. Human capital (IQ,
 // education, looks) flows in through career SELECTION, not a separate add-on.
-const CAREER_RANK = { low: 0.20, lowmid: 0.33, mid: 0.48, highmid: 0.64, high: 0.80, elite: 0.93 };
+// Per-band centralRank + [floor, ceiling] now live in data/bands.json (one
+// descriptor per band): a clerk (mid) literally cannot reach elite; a high-income
+// professional cannot end up destitute; elite wealth needs a top-tier/owner band.
 const W_CAREER = 0.55; // career's share of the destination-wealth signal
-// Hard [floor, ceiling] on the national wealth rank a career can reach, even
-// with inheritance + luck. A clerk (mid) literally cannot end up elite; a
-// high-income professional cannot end up destitute.
-// Elite wealth (childRank >= 0.833) is reachable only by top-tier professions
-// (high) or business ownership (elite) — a salaried highmid role (nurse,
-// accountant, civil servant, scientist) tops out at "upper", never elite.
-const CAREER_RANGE = {
-  low: [0.00, 0.40], lowmid: [0.06, 0.55], mid: [0.20, 0.66],
-  highmid: [0.40, 0.82], high: [0.58, 0.96], elite: [0.72, 1.0],
-};
 
-export function makeRoller({ countries, params, names, careers }) {
+export function makeRoller({ countries: rawCountries, params, names, careers, bands, seed, imputation }) {
+  // Load boundary: impute missing country data ONCE and fail loud on bad input,
+  // so the model below reads complete, validated data with no `??` fallbacks.
+  const countries = normalizeCountries(rawCountries, imputation || {});
+  const bandBy = Object.fromEntries((bands || []).map((b) => [b.id, b]));
+  validateInputs({ countries, careers, bands: bandBy });
+  // One instance RNG drives the whole population. Seed it explicitly for
+  // reproducible runs (sim, golden snapshots, shared permalinks); otherwise draw
+  // a one-time random seed so the live app still varies each session. Calibration
+  // and every rollLife() advance this same stream unless a per-life seed is given.
+  const rootSeed = seed != null ? (typeof seed === 'string' ? hashSeed(seed) : seed >>> 0) : ((Math.random() * 0x100000000) >>> 0);
+  const rootRng = makeRng(rootSeed);
   const totalBirths = countries.reduce((a, c) => a + c.births, 0);
   const cum = []; let t = 0;
   for (const c of countries) { t += c.births; cum.push(t); }
   const L = { Male: cholesky(params.endowmentCorr.male), Female: cholesky(params.endowmentCorr.female) };
   const M = params.mobility, LS = params.lifespan;
-  const careerRank = (career) => CAREER_RANK[career.incomeBand] ?? 0.5;
+  const careerRank = (career) => bandBy[career.incomeBand].centralRank;
   // looks/height tailwind on EARNED income, scaled by how much the career rewards
   // them (its own looksTilt/heightTilt) — so attractive/tall people climb a little
   // more in looks- or stature-sensitive roles (actor, sales, athletics) and very
@@ -55,9 +59,9 @@ export function makeRoller({ countries, params, names, careers }) {
 
   // roll education + career for a draw (career income drives wealth, so it must
   // be known before the destination-wealth step)
-  function rollJob(zIq, zLooks, zHt, sex, parentRank, country) {
-    const education = rollEducation(zIq, parentRank, country, randn);
-    const { career, pSelect } = rollCareer({ zIq, zLooks, zHeight: zHt, sex, education }, country, careers);
+  function rollJob(zIq, zLooks, zHt, sex, parentRank, country, rng) {
+    const education = rollEducation(zIq, parentRank, country, rng);
+    const { career, pSelect } = rollCareer({ zIq, zLooks, zHeight: zHt, sex, education }, country, careers, rng, bandBy);
     return { education, career, pCareer: pSelect };
   }
 
@@ -72,15 +76,15 @@ export function makeRoller({ countries, params, names, careers }) {
   const occSorted = new Array(30000);
   { const N = 30000, vals = new Array(N), par = new Array(N), cf = new Array(N), cc = new Array(N), af = new Array(N);
     for (let i = 0; i < N; i++) {
-      const c = countries[sampleCumulative(cum, totalBirths)];
-      const male = Math.random() < params.sexMaleProb;
-      const z = corrNormals(male ? L.Male : L.Female);
+      const c = countries[sampleCumulative(cum, totalBirths, rootRng)];
+      const male = rootRng() < params.sexMaleProb;
+      const z = corrNormals(male ? L.Male : L.Female, rootRng);
       const parentRank = normCdf(z[0]);
-      const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c);
-      const [lo, hi] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
+      const { career } = rollJob(z[1], z[3], z[2], male ? 'Male' : 'Female', parentRank, c, rootRng);
+      const [lo, hi] = bandBy[career.incomeBand].range;
       par[i] = parentRank; cf[i] = lo; cc[i] = hi; af[i] = assetFloorOf(parentRank, c.wealthGini);
-      occSorted[i] = occRankOf(career.id);
-      vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, z[3], z[2]) + M.luckSd * randn();
+      occSorted[i] = occRankOf(career);
+      vals[i] = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, z[3], z[2]) + M.luckSd * randn(rootRng);
     }
     let m = 0; for (const v of vals) m += v; mu = m / N;
     let s = 0; for (const v of vals) s += (v - mu) ** 2; sd = Math.sqrt(s / N);
@@ -96,10 +100,14 @@ export function makeRoller({ countries, params, names, careers }) {
   // occupation rank a parentRank-percentile person would hold (quantile of the pop)
   const parentOccOf = (parentRank) => occSorted[clamp(Math.floor(parentRank * occSorted.length), 0, occSorted.length - 1)];
 
-  function rollLife() {
-    const country = countries[sampleCumulative(cum, totalBirths)];
-    const sex = Math.random() < params.sexMaleProb ? 'Male' : 'Female';
-    const z = corrNormals(L[sex]); // [famWealth, iq, height, looks]
+  // rollLife(seed?) — with a seed (number or string) the entire life is
+  // reproducible (shareable permalinks, golden snapshots); without one it draws
+  // from the shared instance stream so the live app keeps varying.
+  function rollLife(seed) {
+    const rng = seed == null ? rootRng : makeRng(typeof seed === 'string' ? hashSeed(seed) : seed >>> 0);
+    const country = countries[sampleCumulative(cum, totalBirths, rng)];
+    const sex = rng() < params.sexMaleProb ? 'Male' : 'Female';
+    const z = corrNormals(L[sex], rng); // [famWealth, iq, height, looks]
     const zFw = z[0], zIq = z[1], zHt = z[2], zLk = z[3];
 
     const parentRank = normCdf(zFw);
@@ -109,9 +117,9 @@ export function makeRoller({ countries, params, names, careers }) {
     const looks = clamp(params.looksMean + params.looksSd * zLk, 1, 10);
 
     // education + career first: career income drives the EARNED component
-    const { education, career, pCareer } = rollJob(zIq, zLk, zHt, sex, parentRank, country);
-    const incomeRaw = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, zLk, zHt) + M.luckSd * randn();
-    const [cFloor, cCeil] = CAREER_RANGE[career.incomeBand] ?? [0, 1];
+    const { education, career, pCareer } = rollJob(zIq, zLk, zHt, sex, parentRank, country, rng);
+    const incomeRaw = W_CAREER * careerRank(career) + (1 - W_CAREER) * 0.5 + traitIncome(career, zLk, zHt) + M.luckSd * randn(rng);
+    const [cFloor, cCeil] = bandBy[career.incomeBand].range;
     const incomeRank = clamp(normCdf((incomeRaw - mu) / sd), Math.max(cFloor, 0.0005), Math.min(cCeil, 0.9995));
     // inherited-asset floor (convex in parents' rank); wealth = the better of the two
     const assetFloor = assetFloorOf(parentRank, country.wealthGini);
@@ -125,7 +133,7 @@ export function makeRoller({ countries, params, names, careers }) {
     // life events: shift the outcome (may break career bounds — windfall, war),
     // cut the lifespan, and give the card a story. originStanding lets the forced
     // "steep fall" trigger compare like-for-like with the child's standing.
-    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career.id), originStanding, sex, zLooks: zLk, zHeight: zHt }, country);
+    const evt = rollEvents({ parentRank, childRank: childBase, zIq, career, occ: occRankOf(career), originStanding, sex, zLooks: zLk, zHeight: zHt }, country, rng, bandBy);
     const childRank = clamp(childBase + evt.wealthDelta, 0.0005, 0.9995);
 
     const familyWealth = wealthQuantile(country.netWorth, country.wealthGini, parentRank);
@@ -133,8 +141,8 @@ export function makeRoller({ countries, params, names, careers }) {
 
     const baseLE = sex === 'Female' ? country.lifeF : country.lifeM;
     const targetLE = clamp(baseLE + wealthLifeAdj(childRank) + LS.iqLifeYrsPerSd * zIq, 28, 98);
-    let age = sampleAge(baseLE, targetLE);
-    if (evt.fatal) age = clamp(Math.round(16 + Math.random() * (age - 16)), 15, age);
+    let age = sampleAge(baseLE, targetLE, rng);
+    if (evt.fatal) age = clamp(Math.round(16 + rng() * (age - 16)), 15, age);
     else age = clamp(Math.round(age + evt.ageDelta), 1, 110);
     const diedYoung = age < 18; // never reached a career / adult class
     // suppress adult-life events (marriage, business…) for those who died young
@@ -147,7 +155,8 @@ export function makeRoller({ countries, params, names, careers }) {
       parentRank, childRank, familyWealth, netWorth,
       age, baseLE: Math.round(baseLE), events: eventTexts,
     };
-    life.name = pickName(country, sex, names);
+    life.name = pickName(country, sex, names, rng);
+    life.seed = seed ?? null;
     life.education = education;
     life.career = career;
 
@@ -183,7 +192,7 @@ export function makeRoller({ countries, params, names, careers }) {
     // mobility / class arc — class is occupation-based, modified by wealth + power
     const ruling = RULING.has(career.id);
     const dynastic = parentRank >= 0.98;
-    const occ = occRankOf(career.id);
+    const occ = occRankOf(career);
     life.classOrigin = classOf(parentOcc, parentRank, false, dynastic); // family standing on the same scale as the child's
     life.classFinal = classOf(occ, childRank, ruling, dynastic);
     const finalStanding = 0.60 * occ + 0.40 * childRank;

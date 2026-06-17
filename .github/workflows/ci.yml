@@ -1,0 +1,25 @@
+name: CI (model gate)
+
+# Runs the seeded model sim on every push and PR. The harness exits non-zero if
+# any invariant regresses, so a balance/refactor regression can't merge silently.
+on:
+  push:
+    branches-ignore: [main] # main is covered by the deploy workflow's sim job
+  pull_request:
+
+jobs:
+  sim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run sim
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sim-report
+          path: sim/sim-report.json
