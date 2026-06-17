@@ -178,7 +178,7 @@ export function makeRoller({ countries: rawCountries, params, names, careers, ba
 
     const life = {
       country: country.name, code: country.code, flag: flagEmoji(country.code), continent: country.continent,
-      sex, zIq, zHeight: zHt, zLooks: zLk, diedYoung,
+      sex, zFw, zIq, zHeight: zHt, zLooks: zLk, diedYoung,
       iq, heightCm, heightLabel: heightImperial(heightCm), looks,
       parentRank, childRank, familyWealth, netWorth, netWorthBase, reelRange,
       age, baseLE: Math.round(baseLE), events: shownEvents,
